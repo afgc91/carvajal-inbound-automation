@@ -28,7 +28,7 @@ public class CarvajalPostgresConnection {
 	/**
 	 * Permite la conexión a la BD 
 	 * @return conexión a la BD 
-	 * @throws SQLException Si se presenta  un error en la conexiòn a la BD
+	 * @throws SQLException Si se presenta  un error en la conexión a la BD
 	 */
 	
 	public Connection getConnetion() throws SQLException {
