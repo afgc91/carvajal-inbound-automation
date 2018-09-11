@@ -4,8 +4,14 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 
+import javafx.scene.paint.Color;
+
+
 public class CarvajalFrame extends JFrame {
 
+
+	private static final long serialVersionUID = 1L;
+	
 	private CarvajalMainPanel panel;
 
 	public CarvajalFrame(String name, CarvajalMainPanel panel) {
@@ -13,7 +19,7 @@ public class CarvajalFrame extends JFrame {
 		this.setPanel(panel);
 		this.add(panel);
 		this.setResizable(false);
-		this.setSize(new Dimension(500, 380));
+		this.setSize(new Dimension(520, 320));
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 
