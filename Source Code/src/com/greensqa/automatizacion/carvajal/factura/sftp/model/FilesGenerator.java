@@ -1,18 +1,29 @@
 package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.stream.Stream;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.json.simple.parser.ParseException;
+import org.xml.sax.SAXException;
 
 /**
  * Genera archivos de prueba de Carvajal y los distribuye en una lista de directorios.
@@ -21,6 +32,8 @@ import java.util.stream.Stream;
  */
 public class FilesGenerator {
 
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
+	
 	/**
 	 * Ruta del archivo con la lista de directorios de salida (donde deben quedar guardados los archivos).
 	 */
@@ -47,10 +60,40 @@ public class FilesGenerator {
 	private String fileContent;
 	
 	/**
-	 * índice para comenzar con la enumeración de los archivos.
+	 * Índice para comenzar con la enumeración de los archivos.
 	 */
 	private int fileIndex;
 	
+	/**
+	 * Archivo en formato JSON con configuraciones iniciales para la generación de archivos de prueba para el
+	 * proceso funcional automatizado.
+	 */
+	private String configFilePath;
+	
+	/**
+	 * Directorio donde se almacenarán los archivos para la automatización funcional.
+	 */
+	private String directoryOut;
+	
+	/**
+	 * Cantidad de archivos a generar.
+	 */
+	private int filesNum;
+	
+	/**
+	 * Datos de entrada del archivo de configuración.
+	 */
+	CarvajalStandardFactStructure standardFactStructure;
+	
+	/**
+	 * Constructor de FilesGenerator para crear archivos distribuidos en varios directorios de salida especificados
+	 * por el usuario.
+	 * @param baseFilePath URL del archivo base.
+	 * @param directoriesOutFilePath URL del archivo con los directorios de salida.
+	 * @param filesPerDirectory Cantidad de archivos que debe haber por cada directorio.
+	 * @param fileIndex Índice desde el cual se empieza la enumeración de los archivos de facturas.
+	 * @throws IOException En caso de error en un flujo de entrada/salida.
+	 */
 	public FilesGenerator(String baseFilePath, String directoriesOutFilePath, int filesPerDirectory, int fileIndex) throws IOException {
 		this.baseFilePath = baseFilePath;
 		this.directoriesOutFilePath = directoriesOutFilePath;
@@ -60,6 +103,26 @@ public class FilesGenerator {
 		
 		CarvajalUtils.loadDirectoriesFromFile(directoriesOutFilePath, directoriesOut);
 		loadBaseFileContent();
+	}
+	
+	/**
+	 * Constructor de FilesGenerator para crear archivos que serán enviados en la automatización del proceso
+	 * funcional.
+	 * @param baseFilePath URL del archivo base.
+	 * @param configFilePath URL del archivo JSON con la configuración inicial.
+	 * @param directoryOut URL del directorio donde se almacenarán temporalmente los archivos generados.
+	 * @param filesNum Número de archivos a generar para enviar vía SFTP.
+	 * @throws ParseException 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws java.text.ParseException 
+	 */
+	public FilesGenerator(String baseFilePath, String configFilePath, String directoryOut, int filesNum) throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
+		this.baseFilePath = baseFilePath;
+		this.configFilePath = configFilePath;
+		this.directoryOut = directoryOut;
+		this.filesNum = filesNum;
+		this.standardFactStructure = CarvajalUtils.loadConfigFile(configFilePath, sdf);
 	}
 	
 	/**
@@ -103,6 +166,142 @@ public class FilesGenerator {
 				}
 			}
 		}
+	}
+	
+	public boolean generateTestFiles() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
+		//baseFilePath, configFilePath, directoryOut, filesNum;
+		//Identificar el tipo de archivo a replicar.
+		String type = CarvajalUtils.getFileExtension(this.baseFilePath);
+		if (type.equalsIgnoreCase("txt")) {
+			if (CarvajalUtils.isValidTxt(this.baseFilePath)) {
+				return generateTxtFiles();
+			}
+		} else if (type.equalsIgnoreCase("xml")) {
+			int xmlType = CarvajalUtils.getXmlType(this.baseFilePath);
+			if (xmlType == 0) {
+				return false;
+			} else if (xmlType == 1) {
+				return generateXmlStandardFiles();
+			} else {
+				return generateUBLStandardFiles();
+			}
+		}
+		return false;
+	}
+	
+	private boolean generateTxtFiles() throws FileNotFoundException, IOException {
+		File file = new File(this.baseFilePath);
+		ArrayList<String> fileLines = new ArrayList<>();
+		ArrayList<String> fileLinesCopy =  null;
+		try (FileReader fr = new FileReader(file);
+				BufferedReader br = new BufferedReader(fr)) {
+			String line = "";
+			
+			//Guardar líneas del archivo en el ArrayList.
+			while (true) {
+				line = br.readLine();
+				if (line == null) {
+					break;
+				}
+				fileLines.add(line);
+			}
+			
+			long factStartNum = this.standardFactStructure.getFactStartNum();
+			long index = factStartNum;
+			String docTypeId = this.standardFactStructure.getDocTypeId();
+			String nitSender = this.standardFactStructure.getNitSender();
+			String nitReceiver = this.standardFactStructure.getNitReceiver();
+			String fact = "";
+			int docType = this.standardFactStructure.getDocType();
+			long authNumber = this.standardFactStructure.getAuthNumber();
+			Date startingRangeDate = this.standardFactStructure.getStartingRangeDate();
+			Date endingRangeDate = this.standardFactStructure.getEndingRangeDate();
+			String prefix = this.standardFactStructure.getFactPrefix();
+			long startingRangeNum = this.standardFactStructure.getStartingRangeNum();
+			long endingRangeNum = this.standardFactStructure.getEndingRangeNum();
+			String[] lineArray = null;
+			String tag = "";
+			String filePath = "";
+			for (int i = 0; i < this.filesNum; i++) {
+				fileLinesCopy = fileLines;
+				fact = prefix + index;
+				
+				//Modificar las líneas que hay que cambiar al archivo base y crear el archivo
+				String fileName = docType == 1 ? "FV" : docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "UNKNOWN";
+				if (fileName == "") {
+					fileName = docTypeId;
+				}
+				fileName += "_" + fact;
+				filePath = this.directoryOut + "/" + fileName + ".txt";
+				File f = new File(filePath);
+				f.createNewFile();
+				
+				try (FileWriter fw = new FileWriter(f);
+						BufferedWriter bw = new BufferedWriter(fw);
+						PrintWriter pw = new PrintWriter(bw)) {
+					for (int j = 0; j < fileLinesCopy.size(); j++) {
+						line = fileLinesCopy.get(j);
+						lineArray = line.split(",");
+						tag = lineArray[0];
+						if (tag.equalsIgnoreCase("ENC")) {
+							//Modificar campos ENC
+							lineArray[1] = docTypeId;
+							lineArray[2] = nitSender;
+							lineArray[3] = nitReceiver;
+							lineArray[6] = fact;
+							lineArray[9] = docType + "";
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						} else if (tag.equalsIgnoreCase("EMI")) {
+							//Modificar campos EMI
+							lineArray[2] = nitSender;
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						} else if (tag.equalsIgnoreCase("ADQ")) {
+							//Modificar campos ADQ
+							lineArray[2] = nitReceiver;
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						} else if (tag.equalsIgnoreCase("DRF")) {
+							//Modificar campos DRF
+							lineArray[1] = authNumber + "";
+							lineArray[2] = startingRangeDate + "";
+							lineArray[3] = endingRangeDate + "";
+							lineArray[4] = prefix;
+							lineArray[5] = startingRangeNum + "";
+							lineArray[6] = endingRangeNum + "";
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						} else if (tag.equalsIgnoreCase("QFA")) {
+							lineArray[1] = nitSender;
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						} else if (tag.equalsIgnoreCase("AQF")) {
+							lineArray[1] = nitReceiver;
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						}
+						
+						if (j != fileLinesCopy.size() - 1) {
+							line += "\r\n";
+						}
+						pw.write(line);
+						//System.out.println(line);
+					}	
+				}
+				
+				index += 1;
+			}
+		}
+		return false;
+	}
+	
+	private boolean generateXmlStandardFiles() {
+		return false;
+	}
+	
+	private boolean generateUBLStandardFiles() {
+		return false;
 	}
 
 	public String getDirectoriesOutFilePath() {
@@ -151,5 +350,29 @@ public class FilesGenerator {
 	
 	public void setFileIndex(int fileIndex) {
 		this.fileIndex = fileIndex;
+	}
+
+	public String getConfigFilePath() {
+		return configFilePath;
+	}
+
+	public void setConfigFilePath(String configFilePath) {
+		this.configFilePath = configFilePath;
+	}
+
+	public String getDirectoryOut() {
+		return directoryOut;
+	}
+
+	public void setDirectoryOut(String directoryOut) {
+		this.directoryOut = directoryOut;
+	}
+
+	public int getFilesNum() {
+		return filesNum;
+	}
+
+	public void setFilesNum(int filesNum) {
+		this.filesNum = filesNum;
 	}
 }
