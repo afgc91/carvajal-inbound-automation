@@ -19,7 +19,7 @@ public class CarvajalFrame extends JFrame {
 		this.setPanel(panel);
 		this.add(panel);
 		this.setResizable(false);
-		this.setSize(new Dimension(520, 320));
+		this.setSize(new Dimension(545, 320));
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 

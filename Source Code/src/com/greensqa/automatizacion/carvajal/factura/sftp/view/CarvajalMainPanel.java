@@ -141,7 +141,7 @@ public class CarvajalMainPanel extends JPanel{
 		outDirectoryFC = new JFileChooser(); 
 		image = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
-		JButton accept = new JButton("Aceptar");
+		accept = new JButton("Aceptar");
 
 		int widthLabel = 1000, heightLabel = 100;
 
@@ -158,7 +158,7 @@ public class CarvajalMainPanel extends JPanel{
 		accept.setSize(accept.getPreferredSize());
 		image.setSize(image.getPreferredSize());
 
-		int x = 30, y = 30, d = 40;
+		int x = 30, y = 30, d = 20;
 		selectFile.setLocation(x, y);
 
 		x += selectFile.getWidth() + d;
@@ -201,7 +201,7 @@ public class CarvajalMainPanel extends JPanel{
 		y = 220;
 		accept.setLocation(x, y);
 
-		x = 365;
+		x = 385;
 		y = 220;
 		image.setLocation(x, y);
 
@@ -220,6 +220,19 @@ public class CarvajalMainPanel extends JPanel{
 		this.add(image);
 
 	}
+	
+	public boolean isValidInput() {
+		boolean directoriesInFile = !fileLabel.getText().equals(DIR_SELECTED_DEFAULT);
+		boolean directoriesConfi = !configFileLabel.getText().equals(DIR_SELECTED_DEFAULT); 
+		boolean directoriesBD = !fileBDLabel.getText().equals(DIR_SELECTED_DEFAULT); 
+		boolean directoryOutPath = !outFilePathLabel.getText().equals("<<Seleccione carpeta...>>");
+		boolean filesPerDirectoy = filesPerDirectoryField.getText().matches("\\d+");
+		return directoriesInFile && directoriesConfi && directoriesBD && directoryOutPath && filesPerDirectoy; 
+
+	}	
+		
+	
+
 	
 	/**
 	 * Etiqueta para mostrar el archivo seleccionado Insumo en txt o xml.
@@ -319,7 +332,7 @@ public class CarvajalMainPanel extends JPanel{
 	}
 	
 	/**
-	 * Etiqueta para mostrar el archivo con los datos de entrada seleccionado.
+	 * Botón para seleccionar el archivo con los datos de conexión a la BD.
 	 */
 
 	public JButton getSelectDBFile() {
@@ -327,7 +340,7 @@ public class CarvajalMainPanel extends JPanel{
 	}
 	
 	/**
-	 * Etiqueta para mostrar el archivo con los datos de entrada seleccionado.
+	 * Botón para seleccionar el archivo con los datos de conexión a la BD.
 	 */
 
 	public void setSelectDBFile(JButton selectDBFile) {

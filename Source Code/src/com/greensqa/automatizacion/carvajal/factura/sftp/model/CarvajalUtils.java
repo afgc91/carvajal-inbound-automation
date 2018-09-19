@@ -140,7 +140,7 @@ public class CarvajalUtils {
 	 * @throws FileNotFoundException En caso de no encontrar el archivo.
 	 * @throws IOException En caso de un error de entrada/salida.
 	 */
-	public static boolean isValidTxt(String filePath) throws FileNotFoundException, IOException {
+	protected static boolean isValidTxt(String filePath) throws FileNotFoundException, IOException {
 		File file = new File(filePath);
 		try (FileReader fr = new FileReader(file);
 				BufferedReader br = new BufferedReader(fr)) {
