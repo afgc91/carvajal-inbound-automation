@@ -395,7 +395,7 @@ public class FilesGenerator {
 			index += 1;
 		}
 		
-		return false;
+		return true;
 	}
 
 	private boolean generateUBLStandardFiles() {
