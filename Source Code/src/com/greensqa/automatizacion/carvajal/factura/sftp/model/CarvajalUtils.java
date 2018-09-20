@@ -2,9 +2,13 @@ package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -27,7 +31,7 @@ public class CarvajalUtils {
 	 * Carga las rutas de los directorios del archivo de entrada.
 	 * @throws IOException
 	 */
-	public static void loadDirectoriesFromFile(String directoriesInOutFilePath, ArrayList<String> directoriesOut) throws IOException {
+	protected static void loadDirectoriesFromFile(String directoriesInOutFilePath, ArrayList<String> directoriesOut) throws IOException {
 		try (FileReader fr = new FileReader(directoriesInOutFilePath);
 				BufferedReader br = new BufferedReader(fr)) {
 			String str = "";
@@ -53,7 +57,7 @@ public class CarvajalUtils {
 	 * @throws FileNotFoundException si no encuentra el archivo.
 	 * @throws IOException si hay un error de lectura/escritura.
 	 */
-	public static String[] getCredentialsFromFile(String awsCredentialsFilePath) throws FileNotFoundException, IOException {
+	protected static String[] getCredentialsFromFile(String awsCredentialsFilePath) throws FileNotFoundException, IOException {
 		String[] credentials = new String[4];
 		try (FileReader fr = new FileReader(awsCredentialsFilePath);
 				BufferedReader br = new BufferedReader(fr)) {
@@ -74,7 +78,7 @@ public class CarvajalUtils {
 	 * @param b Array 2
 	 * @return Array 1 + Array 2
 	 */
-	public static <T> T[] concatArrays(T[] a, T[] b) {
+	protected static <T> T[] concatArrays(T[] a, T[] b) {
 	    int aLen = a.length;
 	    int bLen = b.length;
 
@@ -95,7 +99,7 @@ public class CarvajalUtils {
 	 * @throws ParseException En caso de un error al leer el JSON.
 	 * @throws java.text.ParseException  En caso de error al interpretar el JSON.
 	 */
-	public static CarvajalStandardFactStructure loadConfigFile(String configFilePath, SimpleDateFormat sdf) throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
+	protected static CarvajalStandardFactStructure loadConfigFile(String configFilePath, SimpleDateFormat sdf) throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
 		File file = new File(configFilePath);
 		if (!file.exists()) {
 			return null;
@@ -126,7 +130,7 @@ public class CarvajalUtils {
 	 * @param filePath Ruta del archivo.
 	 * @return Extensión del archivo.
 	 */
-	public static String getFileExtension(String filePath) {
+	protected static String getFileExtension(String filePath) {
 		String[] fileArray = filePath.split("\\.");
 		String extension = fileArray[fileArray.length - 1];
 		return extension;
@@ -161,7 +165,7 @@ public class CarvajalUtils {
 	 * @throws SAXException En caso de error en la lectura del XML.
 	 * @throws IOException En caso de un error de entrada/salida.
 	 */
-	public static int getXmlType(String filePath) throws ParserConfigurationException, SAXException, IOException {
+	protected static int getXmlType(String filePath) throws ParserConfigurationException, SAXException, IOException {
 		File file = new File(filePath);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
@@ -178,7 +182,12 @@ public class CarvajalUtils {
 		return 0;
 	}
 	
-	public static String concatTxtFileLineArray(String[] lineArray) {
+	/**
+	 * Concatena los elementos de un array separados por coma (,).
+	 * @param lineArray Array de entrada.
+	 * @return Línea resultante de la concatenación de los elementos del array.
+	 */
+	protected static String concatTxtFileLineArray(String[] lineArray) {
 		String line = "";
 		for (int j = 0; j < lineArray.length; j++) {
 			line += lineArray[j];
@@ -187,5 +196,30 @@ public class CarvajalUtils {
 			}
 		}
 		return line;
+	}
+	
+	/**
+	 * Crea una copia de un archivo en la ruta especificada.
+	 * @param source Path absoluto del archivo a copiar.
+	 * @param dest Path absoluto con el que debe quedar el archivo copiado.
+	 * @throws IOException En caso de un error de entrada/salida.
+	 */
+	protected static void copyFileUsingStream(File source, File dest) throws IOException {
+	    try (InputStream is = new FileInputStream(source);
+		        OutputStream os = new FileOutputStream(dest)) {
+	        
+	        byte[] buffer = new byte[1024];
+	        int length;
+	        while ((length = is.read(buffer)) > 0) {
+	            os.write(buffer, 0, length);
+	        }
+	    }
+	}
+	
+	protected static void setXmlNode(Document doc, String tag, String value) {
+		NodeList nodeList = doc.getElementsByTagName(tag);
+		if (nodeList != null && nodeList.item(0) != null) {
+			nodeList.item(0).setTextContent(value);
+		}
 	}
 }
