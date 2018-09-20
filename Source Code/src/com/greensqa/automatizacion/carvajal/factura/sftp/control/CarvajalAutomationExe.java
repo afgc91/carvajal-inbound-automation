@@ -73,11 +73,11 @@ public class CarvajalAutomationExe {
 							directoriesOutFilePath, filesPerDirectory);
 
 					if (!file.generateTestFiles()) {
-						
-						JOptionPane.showMessageDialog(panel, "Se presento un error", "error", JOptionPane.ERROR_MESSAGE);
-						
+
+						JOptionPane.showMessageDialog(panel, "Se presento un error", "error",
+								JOptionPane.ERROR_MESSAGE);
+
 					}
-				
 
 				} catch (IOException | ParseException | java.text.ParseException | ParserConfigurationException
 						| SAXException e1) {
@@ -106,13 +106,15 @@ public class CarvajalAutomationExe {
 				fileInFC.setFileFilter(Filter);
 
 				fileInFC.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				
+				
 				int option = fileInFC.showOpenDialog(panel);
 				if (option == JFileChooser.APPROVE_OPTION) {
 
 					File fileName = fileInFC.getSelectedFile();
 					String directoriesFilePath = (fileName.getAbsolutePath());
 					panel.getFileLabel().setText(directoriesFilePath);
-
+					
 				}
 
 			}
@@ -127,14 +129,18 @@ public class CarvajalAutomationExe {
 
 				FileNameExtensionFilter Filter = new FileNameExtensionFilter("txt", "txt");
 				fileConfi.setFileFilter(Filter);
-
+				fileConfi.setCurrentDirectory(fileInFC.getCurrentDirectory());
 				fileConfi.setFileSelectionMode(JFileChooser.FILES_ONLY);
+								
+				
 				int option = fileConfi.showOpenDialog(panel);
 				if (option == JFileChooser.APPROVE_OPTION) {
 
 					File fileName = fileConfi.getSelectedFile();
 					String confiFilePath = (fileName.getAbsolutePath());
 					panel.getConfigFileLabel().setText(confiFilePath);
+					
+					
 
 				}
 			}
@@ -148,7 +154,8 @@ public class CarvajalAutomationExe {
 
 				FileNameExtensionFilter Filter = new FileNameExtensionFilter("txt", "txt");
 				fileConnection.setFileFilter(Filter);
-
+				fileConnection.setCurrentDirectory(fileConfi.getCurrentDirectory());
+				
 				fileConnection.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				int option = fileConnection.showOpenDialog(panel);
 				if (option == JFileChooser.APPROVE_OPTION) {
@@ -167,7 +174,8 @@ public class CarvajalAutomationExe {
 			public void actionPerformed(ActionEvent e) {
 				// Botón para seleccionar la carpeta en la cual se guardaran los archivos
 				// generados.
-
+				
+				directoryOut.setCurrentDirectory(fileConnection.getCurrentDirectory());
 				directoryOut.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				int option = directoryOut.showOpenDialog(panel);
 				if (option == JFileChooser.APPROVE_OPTION) {
@@ -175,7 +183,6 @@ public class CarvajalAutomationExe {
 					File fileName = directoryOut.getSelectedFile();
 					String outDirectoryPath = (fileName.getAbsolutePath());
 					panel.getOutFilePathLabel().setText(outDirectoryPath);
-				
 
 				}
 			}
