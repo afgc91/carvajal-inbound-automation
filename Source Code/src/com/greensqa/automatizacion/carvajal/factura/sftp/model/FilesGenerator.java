@@ -388,12 +388,10 @@ public class FilesGenerator {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource domSource = new DOMSource(doc);
-			System.out.println(filePath);
 			try (Writer writer = new OutputStreamWriter(new FileOutputStream(new File(filePath)), "UTF-8")) {
 				StreamResult streamResult = new StreamResult(writer);
 				transformer.transform(domSource, streamResult);	
 			}
-			//System.out.println("Archivo " + i + " creado");
 			index += 1;
 		}
 		
