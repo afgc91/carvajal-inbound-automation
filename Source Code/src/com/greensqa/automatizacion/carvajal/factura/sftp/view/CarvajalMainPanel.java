@@ -201,15 +201,15 @@ public class CarvajalMainPanel extends JPanel {
 		filesPerDirectoryField.setLocation(x, y);
 
 		x = 130;
-		y = 220;
+		y = 235;
 		accept.setLocation(x, y);
 
 		x = 300;
-		y = 220;
+		y = 235;
 		send.setLocation(x, y);
 
 		x = 385;
-		y = 220;
+		y = 240;
 		image.setLocation(x, y);
 
 		this.add(selectFile);
