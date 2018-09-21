@@ -4,8 +4,6 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 
-import javafx.scene.paint.Color;
-
 
 public class CarvajalFrame extends JFrame {
 
