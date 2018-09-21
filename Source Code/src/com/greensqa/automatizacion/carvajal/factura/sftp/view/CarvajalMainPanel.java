@@ -130,7 +130,7 @@ public class CarvajalMainPanel extends JPanel {
 		configFile.setToolTipText("Seleccionar el archivo con datos de configuración de los archivos de salida");
 		selectDBFile = new JButton("Seleccionar Datos Conexión");
 		fileBDLabel = new JLabel(DIR_SELECTED_DEFAULT);
-		selectDBFile.setToolTipText("Seleccionar Archivo con Datos de conexión a la BD");
+		selectDBFile.setToolTipText("Seleccionar Archivo con Datos de conexión a la BD y al servidor SFTP");
 		outFilePathLabel = new JLabel("<<Seleccione carpeta...>>");
 		outFilePath = new JButton("Seleccionar Carpeta de Salida");
 		outFilePath.setToolTipText("Seleccionar la ruta en la cual se guardaran los archivos generados");
@@ -230,12 +230,13 @@ public class CarvajalMainPanel extends JPanel {
 	public boolean isValidInput() {
 		boolean directoriesInFile = !fileLabel.getText().equals(DIR_SELECTED_DEFAULT);
 		boolean directoriesConfi = !configFileLabel.getText().equals(DIR_SELECTED_DEFAULT);
-		boolean directoriesBD = !fileBDLabel.getText().equals(DIR_SELECTED_DEFAULT);
+//		boolean directoriesBD = !fileBDLabel.getText().equals(DIR_SELECTED_DEFAULT);
 		boolean directoryOutPath = !outFilePathLabel.getText().equals("<<Seleccione carpeta...>>");
-		boolean filesPerDirectoy = filesPerDirectoryField.getText().matches("\\d+");
-		return directoriesInFile && directoriesConfi && directoriesBD && directoryOutPath && filesPerDirectoy;
+		boolean filesPerDirectoy =  filesPerDirectoryField.getText().matches("\\d+");
+		return directoriesInFile && directoriesConfi && directoryOutPath && filesPerDirectoy;
 	}
 
+	
 	/**
 	 * Etiqueta para mostrar el archivo seleccionado Insumo en txt o xml.
 	 */
