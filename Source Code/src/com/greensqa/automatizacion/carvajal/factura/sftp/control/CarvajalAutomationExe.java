@@ -1,5 +1,6 @@
 package com.greensqa.automatizacion.carvajal.factura.sftp.control;
 
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -10,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
@@ -80,7 +82,7 @@ public class CarvajalAutomationExe {
 					}
 
 				} catch (IOException | ParseException | java.text.ParseException | ParserConfigurationException
-						| SAXException e1) {
+						| SAXException | HeadlessException | TransformerException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}

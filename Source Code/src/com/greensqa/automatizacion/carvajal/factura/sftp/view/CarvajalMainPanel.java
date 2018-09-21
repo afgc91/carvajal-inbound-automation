@@ -1,17 +1,14 @@
 package com.greensqa.automatizacion.carvajal.factura.sftp.view;
 
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-
 
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
-public class CarvajalMainPanel extends JPanel{
+public class CarvajalMainPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -79,30 +76,35 @@ public class CarvajalMainPanel extends JPanel{
 	private JLabel image;
 
 	/**
-	 * Botón para inciar la ejecución
+	 * Botón para inciar la Generación de Archivos
 	 */
-	
+
 	private JButton accept;
-	
+
 	/**
-	 * Seleccionador de archivo de entrada plano o xml. 
-	 */	
-	private JFileChooser fileFC; 
-	
+	 * Botón para el envío de los archivos a Cen Financiero
+	 **/
+
+	private JButton send;
+
+	/**
+	 * Seleccionador de archivo de entrada plano o xml.
+	 */
+	private JFileChooser fileFC;
+
 	/**
 	 * Seleccionador de archivo de configuración de los nuevos archivos.
 	 */
-	private JFileChooser fileConfiFC; 
+	private JFileChooser fileConfiFC;
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
-	private JFileChooser fileConnectionFC; 
+	private JFileChooser fileConnectionFC;
 	/**
-	 * Seleccionador de Carpeta de salida para los archivos generados. 
+	 * Seleccionador de Carpeta de salida para los archivos generados.
 	 */
-	private JFileChooser outDirectoryFC; 
-	
-	
+	private JFileChooser outDirectoryFC;
+
 	/**
 	 * Texto mostrado cuando no se ha seleccionado ningún archivo
 	 */
@@ -119,7 +121,6 @@ public class CarvajalMainPanel extends JPanel{
 	 **/
 
 	private void initializeComponents() {
-		
 
 		fileLabel = new JLabel(DIR_SELECTED_DEFAULT);
 		selectFile = new JButton("Seleccionar Archivo de Entrada");
@@ -135,13 +136,14 @@ public class CarvajalMainPanel extends JPanel{
 		outFilePath.setToolTipText("Seleccionar la ruta en la cual se guardaran los archivos generados");
 		filesPerDirectoryLabel = new JLabel("No. de Archivos a generar");
 		filesPerDirectoryField = new JTextField("");
-		fileFC = new JFileChooser(); 
+		fileFC = new JFileChooser();
 		fileConfiFC = new JFileChooser();
-		fileConnectionFC = new JFileChooser(); 
-		outDirectoryFC = new JFileChooser(); 
+		fileConnectionFC = new JFileChooser();
+		outDirectoryFC = new JFileChooser();
 		image = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
-		accept = new JButton("Aceptar");
+		accept = new JButton("Generar Archivos");
+		send = new JButton("Enviar Archivos");
 
 		int widthLabel = 1000, heightLabel = 100;
 
@@ -156,6 +158,7 @@ public class CarvajalMainPanel extends JPanel{
 		outFilePath.setSize(selectFile.getPreferredSize());
 		filesPerDirectoryField.setSize(50, 20);
 		accept.setSize(accept.getPreferredSize());
+		send.setSize(send.getPreferredSize());
 		image.setSize(image.getPreferredSize());
 
 		int x = 30, y = 30, d = 20;
@@ -197,15 +200,18 @@ public class CarvajalMainPanel extends JPanel{
 		y = 185;
 		filesPerDirectoryField.setLocation(x, y);
 
-		x = 230;
+		x = 130;
 		y = 220;
 		accept.setLocation(x, y);
+
+		x = 300;
+		y = 220;
+		send.setLocation(x, y);
 
 		x = 385;
 		y = 220;
 		image.setLocation(x, y);
 
-	
 		this.add(selectFile);
 		this.add(fileLabel);
 		this.add(configFile);
@@ -217,23 +223,19 @@ public class CarvajalMainPanel extends JPanel{
 		this.add(filesPerDirectoryLabel);
 		this.add(filesPerDirectoryField);
 		this.add(accept);
+		this.add(send);
 		this.add(image);
-
 	}
-	
+
 	public boolean isValidInput() {
 		boolean directoriesInFile = !fileLabel.getText().equals(DIR_SELECTED_DEFAULT);
-		boolean directoriesConfi = !configFileLabel.getText().equals(DIR_SELECTED_DEFAULT); 
-		boolean directoriesBD = !fileBDLabel.getText().equals(DIR_SELECTED_DEFAULT); 
+		boolean directoriesConfi = !configFileLabel.getText().equals(DIR_SELECTED_DEFAULT);
+		boolean directoriesBD = !fileBDLabel.getText().equals(DIR_SELECTED_DEFAULT);
 		boolean directoryOutPath = !outFilePathLabel.getText().equals("<<Seleccione carpeta...>>");
 		boolean filesPerDirectoy = filesPerDirectoryField.getText().matches("\\d+");
-		return directoriesInFile && directoriesConfi && directoriesBD && directoryOutPath && filesPerDirectoy; 
+		return directoriesInFile && directoriesConfi && directoriesBD && directoryOutPath && filesPerDirectoy;
+	}
 
-	}	
-		
-	
-
-	
 	/**
 	 * Etiqueta para mostrar el archivo seleccionado Insumo en txt o xml.
 	 */
@@ -241,7 +243,7 @@ public class CarvajalMainPanel extends JPanel{
 	public JLabel getFileLabel() {
 		return fileLabel;
 	}
-	
+
 	/**
 	 * Etiqueta para mostrar el archivo seleccionado Insumo en txt o xml.
 	 */
@@ -253,7 +255,7 @@ public class CarvajalMainPanel extends JPanel{
 	/**
 	 * Botón para seleccionar Archivo de Entrada - Insumo en txt o xml.
 	 */
-	
+
 	public JButton getSelectFile() {
 		return selectFile;
 	}
@@ -261,25 +263,39 @@ public class CarvajalMainPanel extends JPanel{
 	/**
 	 * Botón para seleccionar Archivo de Entrada - Insumo en txt o xml.
 	 */
-	
+
 	public void setSelectFile(JButton selectFile) {
 		this.selectFile = selectFile;
 	}
 
-
 	/**
-	 * Botón para inciar la ejecución
+	 * Botón para inciar la Generación de Archivos
 	 */
 	public JButton getAccept() {
 		return accept;
 	}
 
 	/**
-	 * Botón para inciar la ejecución
+	 * Botón para inciar la Generación de Archivos
 	 */
 
 	public void setAccept(JButton accept) {
 		this.accept = accept;
+	}
+
+	/**
+	 * Botón para enviar los archivos generados a Send Financiero
+	 **/
+	public JButton getSend() {
+		return send;
+	}
+
+	/**
+	 * Botón para enviar los archivos generados a Send Financiero
+	 **/
+
+	public void setSend(JButton send) {
+		this.send = send;
 	}
 
 	public static String getDirSelectedDefault() {
@@ -307,7 +323,7 @@ public class CarvajalMainPanel extends JPanel{
 	public JTextField getFilesPerDirectoryField() {
 		return filesPerDirectoryField;
 	}
-	
+
 	/**
 	 * Campo para ingresar la cantidad de archivos por folder.
 	 */
@@ -317,20 +333,20 @@ public class CarvajalMainPanel extends JPanel{
 	}
 
 	/**
-	 * Logo GreenSQA 
-	**/
+	 * Logo GreenSQA
+	 **/
 	public JLabel getImage() {
 		return image;
 	}
-	
+
 	/**
-	 * Logo GreenSQA 
-	**/
+	 * Logo GreenSQA
+	 **/
 
 	public void setImage(JLabel image) {
 		this.image = image;
 	}
-	
+
 	/**
 	 * Botón para seleccionar el archivo con los datos de conexión a la BD.
 	 */
@@ -338,7 +354,7 @@ public class CarvajalMainPanel extends JPanel{
 	public JButton getSelectDBFile() {
 		return selectDBFile;
 	}
-	
+
 	/**
 	 * Botón para seleccionar el archivo con los datos de conexión a la BD.
 	 */
@@ -346,20 +362,18 @@ public class CarvajalMainPanel extends JPanel{
 	public void setSelectDBFile(JButton selectDBFile) {
 		this.selectDBFile = selectDBFile;
 	}
-	
+
 	/**
 	 * Etiqueta de la cantidad de archivos por folder.
 	 */
-
 
 	public JLabel getFileBDLabel() {
 		return fileBDLabel;
 	}
-	
+
 	/**
 	 * Etiqueta de la cantidad de archivos por folder.
 	 */
-
 
 	public void setFileBDLabel(JLabel fileBDLabel) {
 		this.fileBDLabel = fileBDLabel;
@@ -387,6 +401,7 @@ public class CarvajalMainPanel extends JPanel{
 	public JButton getConfigFile() {
 		return configFile;
 	}
+
 	/**
 	 * Botón para seleccionar el archivo de configuración de los archivos de salida.
 	 */
@@ -394,7 +409,7 @@ public class CarvajalMainPanel extends JPanel{
 	public void setConfigFile(JButton configFile) {
 		this.configFile = configFile;
 	}
-	
+
 	/**
 	 * Etiqueta para mostrar la ruta seleccionada.
 	 **/
@@ -402,7 +417,7 @@ public class CarvajalMainPanel extends JPanel{
 	public JLabel getOutFilePathLabel() {
 		return outFilePathLabel;
 	}
-	
+
 	/**
 	 * Etiqueta para mostrar la ruta seleccionada.
 	 **/
@@ -410,7 +425,7 @@ public class CarvajalMainPanel extends JPanel{
 	public void setOutFilePathLabel(JLabel outFilePathLabel) {
 		this.outFilePathLabel = outFilePathLabel;
 	}
-	
+
 	/**
 	 * Botón para seleccionar la ruta en la cual se guardaran los archivos
 	 * generados.
@@ -419,7 +434,7 @@ public class CarvajalMainPanel extends JPanel{
 	public JButton getOutFilePath() {
 		return outFilePath;
 	}
-	
+
 	/**
 	 * Botón para seleccionar la ruta en la cual se guardaran los archivos
 	 * generados.
@@ -428,23 +443,22 @@ public class CarvajalMainPanel extends JPanel{
 	public void setOutFilePath(JButton outFilePath) {
 		this.outFilePath = outFilePath;
 	}
-	
-	
+
 	/**
-	 * Seleccionador de archivo de entrada plano o xml. 
-	 */	
+	 * Seleccionador de archivo de entrada plano o xml.
+	 */
 	public JFileChooser getFileFC() {
 		return fileFC;
 	}
-	
+
 	/**
-	 * Seleccionador de archivo de entrada plano o xml. 
-	 */	
+	 * Seleccionador de archivo de entrada plano o xml.
+	 */
 
 	public void setFileFC(JFileChooser fileFC) {
 		this.fileFC = fileFC;
 	}
-	
+
 	/**
 	 * Seleccionador de archivo de configuración de los nuevos archivos.
 	 */
@@ -452,17 +466,15 @@ public class CarvajalMainPanel extends JPanel{
 	public JFileChooser getFileConfiFC() {
 		return fileConfiFC;
 	}
-	
-	
+
 	/**
 	 * Seleccionador de archivo de configuración de los nuevos archivos.
 	 */
 
-
 	public void setFileConfiFC(JFileChooser fileConfiFC) {
 		this.fileConfiFC = fileConfiFC;
 	}
-	
+
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
@@ -470,7 +482,7 @@ public class CarvajalMainPanel extends JPanel{
 	public JFileChooser getFileConnectionFC() {
 		return fileConnectionFC;
 	}
-	
+
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
@@ -478,9 +490,9 @@ public class CarvajalMainPanel extends JPanel{
 	public void setFileConnectionFC(JFileChooser fileConnectionFC) {
 		this.fileConnectionFC = fileConnectionFC;
 	}
-	
+
 	/**
-	 * Seleccionador de Carpeta de salida para los archivos generados. 
+	 * Seleccionador de Carpeta de salida para los archivos generados.
 	 */
 
 	public JFileChooser getOutDirectoryFC() {
@@ -488,12 +500,11 @@ public class CarvajalMainPanel extends JPanel{
 	}
 
 	/**
-	 * Seleccionador de Carpeta de salida para los archivos generados. 
+	 * Seleccionador de Carpeta de salida para los archivos generados.
 	 */
-	
+
 	public void setOutDirectoryFC(JFileChooser outDirectoryFC) {
 		this.outDirectoryFC = outDirectoryFC;
 	}
-	
 
 }

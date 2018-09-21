@@ -31,6 +31,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.json.simple.parser.ParseException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -200,10 +202,10 @@ public class FilesGenerator {
 	 * @throws IOException
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
-	 * @throws TransformerException 
+	 * @throws TransformerException
 	 */
-	public boolean generateTestFiles()
-			throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerException {
+	public boolean generateTestFiles() throws FileNotFoundException, IOException, ParserConfigurationException,
+			SAXException, TransformerException {
 		// Obtener datos del archivo base.
 		long factStartNum = this.standardFactStructure.getFactStartNum();
 		long index = factStartNum;
@@ -234,8 +236,10 @@ public class FilesGenerator {
 				return generateXmlStandardFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType,
 						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum);
 			} else {
-				return generateUBLStandardFiles();
+				return generateUBLStandardFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType,
+						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum);
 			}
+
 		}
 		return false;
 	}
@@ -360,10 +364,10 @@ public class FilesGenerator {
 			filePath = this.directoryOut + "/" + fileName + ".xml";
 			dest = new File(filePath);
 			dest.createNewFile();
-			
-			//Crear la copia del archivo
+
+			// Crear la copia del archivo
 			CarvajalUtils.copyFileUsingStream(source, dest);
-			
+
 			// Modificar contenido del archivo
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
@@ -384,22 +388,154 @@ public class FilesGenerator {
 			CarvajalUtils.setXmlNode(doc, "DRF_6", endingRangeNum + "");
 			CarvajalUtils.setXmlNode(doc, "QFA_1", nitSender);
 			CarvajalUtils.setXmlNode(doc, "AQF_2", nitReceiver);
-			
+
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource domSource = new DOMSource(doc);
 			try (Writer writer = new OutputStreamWriter(new FileOutputStream(new File(filePath)), "UTF-8")) {
 				StreamResult streamResult = new StreamResult(writer);
-				transformer.transform(domSource, streamResult);	
+				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
 		}
-		
+
 		return true;
 	}
 
-	private boolean generateUBLStandardFiles() {
-		return false;
+	private boolean generateUBLStandardFiles(long factStartNum, long index, String docTypeId, String nitSender,
+			String nitReceiver, String type, int docType, long authNumber, Date startingRangeDate, Date endingRangeDate,
+			String prefix, long startingRangeNum, long endingRangeNum)
+			throws ParserConfigurationException, SAXException, IOException, TransformerException {
+
+		File source = new File(this.baseFilePath);
+		File dest = null;
+		String fileName = "";
+		String filePath = "";
+		String fact = "";
+		long factIndex = factStartNum;
+
+		// Crear los archivos (inicialmente como copias idénticas al original y después
+		// cambiar el contenido de los tags que se deben modificar.
+		for (int i = 0; i < this.filesNum; i++) {
+			fact = prefix + index;
+			fileName = docType == 1 ? "FV" : docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "UNKNOWN";
+			if (fileName == "") {
+				fileName = docTypeId;
+			}
+			fileName += "_" + fact;
+			filePath = this.directoryOut + "/" + fileName + ".xml";
+			dest = new File(filePath);
+			dest.createNewFile();
+
+			// Crear la copia del archivo
+			CarvajalUtils.copyFileUsingStream(source, dest);
+
+			// Modificar contenido del archivo
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+			Document doc = builder.parse(dest);
+			doc.getDocumentElement().normalize();
+			NodeList cbcList = doc.getElementsByTagName("cbc:ID");
+			Node authorizationNode = doc.getElementsByTagName("sts:InvoiceAuthorization").item(0);
+
+			if (authorizationNode != null) {
+				// Tag Número de autorización
+				authorizationNode.setTextContent(authNumber + "");
+			}
+
+			Node startDateNode = doc.getElementsByTagName("cbc:StartDate").item(0);
+
+			if (startDateNode != null) {
+				// Tag Fecha de Inicio del Rango del Prefijo
+				startDateNode.setTextContent(startingRangeDate + "");
+			}
+
+			Node endDateNode = doc.getElementsByTagName("cbc:EndDate").item(0);
+
+			if (endDateNode != null) {
+				// Tag Fecha final del rango del prefijo
+				endDateNode.setTextContent(endingRangeDate + "");
+			}
+
+			Node prefixNode = doc.getElementsByTagName("sts:Prefix").item(0);
+
+			if (prefixNode != null) {
+				// Tag Prefijo
+				prefixNode.setTextContent(prefix);
+			}
+
+			Node startingRangeNode = doc.getElementsByTagName("sts:From").item(0);
+
+			if (startingRangeNode != null) {
+				// Tag Número de inicio del rango para el prefijo
+				startingRangeNode.setTextContent(startingRangeNum + "");
+			}
+
+			Node endingRangeNode = doc.getElementsByTagName("sts:To").item(0);
+
+			if (endingRangeNode != null) {
+				// Tag Número final del rango para el prefijo
+				endingRangeNode.setTextContent(endingRangeNum + "");
+			}
+
+			Node typeCodeDocNode = doc.getElementsByTagName("cbc:InvoiceTypeCode").item(0);
+
+			if (typeCodeDocNode != null) {
+				// Tag código para el tipo de documento
+				typeCodeDocNode.setTextContent(docType + "");
+			}
+
+			int nodeListIndex = 0;
+			Node tmpNode = null;
+			Node tmpParentNode = null;
+			Node tmpGrandpaNode = null;
+			Node tmpGreatGrndpaNode = null;
+
+			while (true) {
+				tmpNode = cbcList.item(nodeListIndex);
+				if (tmpNode == null) {
+					break;
+				}
+
+				tmpParentNode = tmpNode.getParentNode();
+				if (tmpParentNode != null) {
+					tmpGrandpaNode = tmpParentNode.getParentNode();
+					if (tmpParentNode.getNodeName().equalsIgnoreCase("fe:Invoice")) {
+						// Tag de factura
+						tmpNode.setTextContent(prefix + factIndex);
+					}
+					if (tmpGrandpaNode != null) {
+						tmpGreatGrndpaNode = tmpGrandpaNode.getParentNode();
+						if (tmpGreatGrndpaNode != null) {
+							if (tmpGreatGrndpaNode.getNodeName().equalsIgnoreCase("fe:AccountingSupplierParty")) {
+								// Tag Nit de emisor
+								tmpNode.setTextContent(nitSender);
+							} else if (tmpGreatGrndpaNode.getNodeName()
+									.equalsIgnoreCase("fe:AccountingCustomerParty")) {
+								// Tag Nit Receptor
+								tmpNode.setTextContent(nitReceiver);
+							}
+						}
+					} else {
+						tmpGreatGrndpaNode = null;
+					}
+				} else {
+					tmpGrandpaNode = null;
+				}
+				nodeListIndex += 1;
+			}
+			factIndex += 1;
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource domSource = new DOMSource(doc);
+			try (Writer writer = new OutputStreamWriter(new FileOutputStream(new File(filePath)), "UTF-8")) {
+				StreamResult streamResult = new StreamResult(writer);
+				transformer.transform(domSource, streamResult);
+			}
+			index += 1;
+		}
+		return true;
 	}
 
 	public String getDirectoriesOutFilePath() {

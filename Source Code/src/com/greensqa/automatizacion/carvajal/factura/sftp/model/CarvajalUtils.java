@@ -26,16 +26,17 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class CarvajalUtils {
-	
+
 	/**
 	 * Carga las rutas de los directorios del archivo de entrada.
+	 * 
 	 * @throws IOException
 	 */
-	protected static void loadDirectoriesFromFile(String directoriesInOutFilePath, ArrayList<String> directoriesOut) throws IOException {
-		try (FileReader fr = new FileReader(directoriesInOutFilePath);
-				BufferedReader br = new BufferedReader(fr)) {
+	protected static void loadDirectoriesFromFile(String directoriesInOutFilePath, ArrayList<String> directoriesOut)
+			throws IOException {
+		try (FileReader fr = new FileReader(directoriesInOutFilePath); BufferedReader br = new BufferedReader(fr)) {
 			String str = "";
-			
+
 			while (true) {
 				str = br.readLine();
 				if (str == null || str.equals("")) {
@@ -45,66 +46,70 @@ public class CarvajalUtils {
 			}
 		}
 	}
-	
+
 	/**
 	 * Retorna las credenciales a partir del archivo cargado por el usuario.
+	 * 
 	 * @param awsCredentialsFilePath Ruta del archivo cargado por el usuario.
-	 * @return Array con las credenciales.
-	 * Pos. 0: Access Key
-	 * Pos. 1: Secret Access Key
-	 * Pos. 2: Bucket Name
-	 * Pos. 3: Region
+	 * @return Array con las credenciales. Pos. 0: Access Key Pos. 1: Secret Access
+	 *         Key Pos. 2: Bucket Name Pos. 3: Region
 	 * @throws FileNotFoundException si no encuentra el archivo.
-	 * @throws IOException si hay un error de lectura/escritura.
+	 * @throws IOException           si hay un error de lectura/escritura.
 	 */
-	protected static String[] getCredentialsFromFile(String awsCredentialsFilePath) throws FileNotFoundException, IOException {
+	protected static String[] getCredentialsFromFile(String awsCredentialsFilePath)
+			throws FileNotFoundException, IOException {
 		String[] credentials = new String[4];
-		try (FileReader fr = new FileReader(awsCredentialsFilePath);
-				BufferedReader br = new BufferedReader(fr)) {
+		try (FileReader fr = new FileReader(awsCredentialsFilePath); BufferedReader br = new BufferedReader(fr)) {
 			String str = "";
-			
+
 			for (int i = 0; i < credentials.length; i++) {
 				str = br.readLine();
 				credentials[i] = str;
 			}
-			
+
 			return credentials;
 		}
 	}
-	
+
 	/**
 	 * Concatena dos Arrays
+	 * 
 	 * @param a Array 1
 	 * @param b Array 2
 	 * @return Array 1 + Array 2
 	 */
 	protected static <T> T[] concatArrays(T[] a, T[] b) {
-	    int aLen = a.length;
-	    int bLen = b.length;
+		int aLen = a.length;
+		int bLen = b.length;
 
-	    @SuppressWarnings("unchecked")
-	    T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLen + bLen);
-	    System.arraycopy(a, 0, c, 0, aLen);
-	    System.arraycopy(b, 0, c, aLen, bLen);
+		@SuppressWarnings("unchecked")
+		T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLen + bLen);
+		System.arraycopy(a, 0, c, 0, aLen);
+		System.arraycopy(b, 0, c, aLen, bLen);
 
-	    return c;
+		return c;
 	}
-	
+
 	/**
-	 * Lee el archivo con las configuraciones iniciales de los archivos de factura a generar.
-	 * @param configFilePath Ruta del archivo de configuración inicial de las facturas a generar.
+	 * Lee el archivo con las configuraciones iniciales de los archivos de factura a
+	 * generar.
+	 * 
+	 * @param configFilePath Ruta del archivo de configuración inicial de las
+	 *                       facturas a generar.
 	 * @return Datos de configuración de las facturas a generar.
 	 * @throws FileNotFoundException En caso de que no exista el archivo.
-	 * @throws IOException En caso de un error de entrada/salida.
-	 * @throws ParseException En caso de un error al leer el JSON.
-	 * @throws java.text.ParseException  En caso de error al interpretar el JSON.
+	 * @throws IOException           En caso de un error de entrada/salida.
+	 * @throws ParseException        En caso de un error al leer el JSON.
+	 * @throws                       java.text.ParseException En caso de error al
+	 *                               interpretar el JSON.
 	 */
-	protected static CarvajalStandardFactStructure loadConfigFile(String configFilePath, SimpleDateFormat sdf) throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
+	protected static CarvajalStandardFactStructure loadConfigFile(String configFilePath, SimpleDateFormat sdf)
+			throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
 		File file = new File(configFilePath);
 		if (!file.exists()) {
 			return null;
 		}
-		
+
 		try (FileReader fr = new FileReader(file)) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(fr);
@@ -119,14 +124,17 @@ public class CarvajalUtils {
 			long endingRangeNum = Long.parseLong(json.get("numFinalRango") + "");
 			String docTypeId = (String) json.get("idTipoDoc");
 			int docType = Integer.parseInt(json.get("tipoDoc") + "");
-			
-			CarvajalStandardFactStructure fact = new CarvajalStandardFactStructure(factPrefix, factStartNum, nitSender, nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum, docTypeId, docType);
+
+			CarvajalStandardFactStructure fact = new CarvajalStandardFactStructure(factPrefix, factStartNum, nitSender,
+					nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum,
+					docTypeId, docType);
 			return fact;
 		}
 	}
-	
+
 	/**
 	 * Obtiene la extensión del archivo a partir del path del archivo.
+	 * 
 	 * @param filePath Ruta del archivo.
 	 * @return Extensión del archivo.
 	 */
@@ -135,19 +143,19 @@ public class CarvajalUtils {
 		String extension = fileArray[fileArray.length - 1];
 		return extension;
 	}
-	
+
 	/**
-	 * Precondición: El archivo es de extensión .txt.
-	 * Verifica si el archivo plano de factura contiene "ENC" (encabezado).
+	 * Precondición: El archivo es de extensión .txt. Verifica si el archivo plano
+	 * de factura contiene "ENC" (encabezado).
+	 * 
 	 * @param filePath Ruta del archivo.
 	 * @return true Si contiene encabezado. false Si no contiene encabezado.
 	 * @throws FileNotFoundException En caso de no encontrar el archivo.
-	 * @throws IOException En caso de un error de entrada/salida.
+	 * @throws IOException           En caso de un error de entrada/salida.
 	 */
 	protected static boolean isValidTxt(String filePath) throws FileNotFoundException, IOException {
 		File file = new File(filePath);
-		try (FileReader fr = new FileReader(file);
-				BufferedReader br = new BufferedReader(fr)) {
+		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 			String line = br.readLine();
 			if (line.contains("ENC")) {
 				return true;
@@ -155,15 +163,17 @@ public class CarvajalUtils {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Precondición: La extensión del archivo es .xml.
-	 * Obtiene el tipo de archivo XML de factura.
+	 * Precondición: La extensión del archivo es .xml. Obtiene el tipo de archivo
+	 * XML de factura.
+	 * 
 	 * @param filePath Ruta del archivo.
-	 * @return 1 Si el archivo es un XML estándar. 2 Si el archivo es un XML UBL. 0 Si no es ninguno de los dos.
+	 * @return 1 Si el archivo es un XML estándar. 2 Si el archivo es un XML UBL. 0
+	 *         Si no es ninguno de los dos.
 	 * @throws ParserConfigurationException En caso de error en la lectura del XML.
-	 * @throws SAXException En caso de error en la lectura del XML.
-	 * @throws IOException En caso de un error de entrada/salida.
+	 * @throws SAXException                 En caso de error en la lectura del XML.
+	 * @throws IOException                  En caso de un error de entrada/salida.
 	 */
 	protected static int getXmlType(String filePath) throws ParserConfigurationException, SAXException, IOException {
 		File file = new File(filePath);
@@ -181,9 +191,10 @@ public class CarvajalUtils {
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * Concatena los elementos de un array separados por coma (,).
+	 * 
 	 * @param lineArray Array de entrada.
 	 * @return Línea resultante de la concatenación de los elementos del array.
 	 */
@@ -197,25 +208,25 @@ public class CarvajalUtils {
 		}
 		return line;
 	}
-	
+
 	/**
 	 * Crea una copia de un archivo en la ruta especificada.
+	 * 
 	 * @param source Path absoluto del archivo a copiar.
-	 * @param dest Path absoluto con el que debe quedar el archivo copiado.
+	 * @param dest   Path absoluto con el que debe quedar el archivo copiado.
 	 * @throws IOException En caso de un error de entrada/salida.
 	 */
 	protected static void copyFileUsingStream(File source, File dest) throws IOException {
-	    try (InputStream is = new FileInputStream(source);
-		        OutputStream os = new FileOutputStream(dest)) {
-	        
-	        byte[] buffer = new byte[1024];
-	        int length;
-	        while ((length = is.read(buffer)) > 0) {
-	            os.write(buffer, 0, length);
-	        }
-	    }
+		try (InputStream is = new FileInputStream(source); OutputStream os = new FileOutputStream(dest)) {
+
+			byte[] buffer = new byte[1024];
+			int length;
+			while ((length = is.read(buffer)) > 0) {
+				os.write(buffer, 0, length);
+			}
+		}
 	}
-	
+
 	protected static void setXmlNode(Document doc, String tag, String value) {
 		NodeList nodeList = doc.getElementsByTagName(tag);
 		if (nodeList != null && nodeList.item(0) != null) {
