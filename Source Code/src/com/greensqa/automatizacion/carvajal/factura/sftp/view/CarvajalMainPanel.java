@@ -145,7 +145,7 @@ public class CarvajalMainPanel extends JPanel {
 		accept = new JButton("Generar Archivos");
 		send = new JButton("Enviar Archivos");
 
-		int widthLabel = 1000, heightLabel = 100;
+		int widthLabel = 250, heightLabel = 100;
 
 		fileLabel.setSize(widthLabel, heightLabel);
 		configFileLabel.setSize(widthLabel, heightLabel);
