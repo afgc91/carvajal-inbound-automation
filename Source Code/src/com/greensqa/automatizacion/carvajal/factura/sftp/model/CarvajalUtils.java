@@ -227,10 +227,43 @@ public class CarvajalUtils {
 		}
 	}
 
+	/**
+	 * Modifica el primer tag del nodeList obtenido con el nombre de la etiqueta, con el valor enviado.
+	 * @param doc Documento XML.
+	 * @param tag Nombre del NodeList a buscar.
+	 * @param value Valorque se le quiere colocar al primer tag del NodeList.
+	 */
 	protected static void setXmlNode(Document doc, String tag, String value) {
 		NodeList nodeList = doc.getElementsByTagName(tag);
 		if (nodeList != null && nodeList.item(0) != null) {
 			nodeList.item(0).setTextContent(value);
+		}
+	}
+	
+	protected static SftpAndDbData loadConnectionsData(String filePath) throws FileNotFoundException, IOException, ParseException {
+		File file = new File(filePath);
+		if (!file.exists()) {
+			return null;
+		}
+		
+		try (FileReader fr = new FileReader(file)) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(fr);
+			//Objeto SFTP
+			JSONObject sftp = (JSONObject) json.get("sftp");
+			String userSftp = (String) sftp.get("usuario");
+			String passwordSftp = (String) sftp.get("clave");
+			String urlSftp = (String) sftp.get("urlServidor");
+			int portSftp = Integer.parseInt((String) sftp.get("puerto"));
+			String destSftp = (String) sftp.get("destino");
+			//Objeto Aurora (DB)
+			JSONObject aurora = (JSONObject) json.get("aurora");
+			String userDb = (String) aurora.get("usuario");
+			String passwordDb = (String) aurora.get("clave");
+			String urlDb = (String) aurora.get("urlServidor");
+			int portDb = Integer.parseInt((String) aurora.get("puerto"));
+			SftpAndDbData connectionsData = new SftpAndDbData(userSftp, passwordSftp, urlSftp, portSftp, destSftp, userDb, passwordDb, urlDb, portDb);
+			return connectionsData;
 		}
 	}
 }
