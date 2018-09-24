@@ -80,16 +80,16 @@ public class CarvajalAutomationExe {
 						JOptionPane.showMessageDialog(panel, "Se presento un error", "Error",
 								JOptionPane.ERROR_MESSAGE);
 
-					} else {
-						JOptionPane.showMessageDialog(panel, "Proceso Finalizado con éxito", "Proceso Finalizado",
-								JOptionPane.INFORMATION_MESSAGE);
-						panel.getAccept().setEnabled(true);
-						panel.getSelectFile().setEnabled(true);
-						panel.getConfigFile().setEnabled(true);
-						panel.getSelectDBFile().setEnabled(true);
-						panel.getOutFilePath().setEnabled(true);
-						panel.getFilesPerDirectoryField().setEnabled(true);
 					}
+					JOptionPane.showMessageDialog(panel, "Proceso Finalizado con éxito", "Proceso Finalizado",
+							JOptionPane.INFORMATION_MESSAGE);
+
+					panel.getAccept().setEnabled(true);
+					panel.getSelectFile().setEnabled(true);
+					panel.getConfigFile().setEnabled(true);
+					panel.getSelectDBFile().setEnabled(true);
+					panel.getOutFilePath().setEnabled(true);
+					panel.getFilesPerDirectoryField().setEnabled(true);
 
 				} catch (IOException | ParseException | java.text.ParseException | ParserConfigurationException
 						| SAXException | HeadlessException | TransformerException e1) {
