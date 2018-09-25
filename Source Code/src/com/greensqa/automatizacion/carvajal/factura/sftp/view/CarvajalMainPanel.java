@@ -220,10 +220,14 @@ public class CarvajalMainPanel extends JPanel {
 		selectOption.setSelectedIndex(0);		
 		selectOptionLabel = new JLabel("Seleccione una Funcionalidad:");
 		acceptOption = new JButton("Aceptar"); 
+		image = new JLabel(
+				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
+
 		
 		selectOptionLabel.setSize(selectOptionLabel.getPreferredSize());
 		selectOption.setSize(selectOption.getPreferredSize());
 		acceptOption.setSize(acceptOption.getPreferredSize());
+		image.setSize(image.getPreferredSize());
 		
 		int x = 30, y = 30, d=20;
 		selectOptionLabel.setLocation(x, y);
@@ -231,12 +235,16 @@ public class CarvajalMainPanel extends JPanel {
 		x += selectOptionLabel.getWidth() + d; y = 25; 
 		selectOption.setLocation(x, y);
 		
-		x= 180; y= 75; 
+		x= 180; y= 95; 
 		acceptOption.setLocation(x, y);
+		
+		x= 250; y= 105; 
+		image.setLocation(x, y);
 		
 		this.add(selectOptionLabel);	
 		this.add(selectOption);
 		this.add(acceptOption); 
+		this.add(image); 
 	}
 
 	private void initializeComponentsFilesGeneration(int option) {
