@@ -240,7 +240,7 @@ public class CarvajalUtils {
 		}
 	}
 	
-	protected static SftpAndDbData loadConnectionsData(String filePath) throws FileNotFoundException, IOException, ParseException {
+	public static SftpAndDbData loadConnectionsData(String filePath) throws FileNotFoundException, IOException, ParseException {
 		File file = new File(filePath);
 		if (!file.exists()) {
 			return null;
@@ -261,7 +261,7 @@ public class CarvajalUtils {
 			String userDb = (String) aurora.get("usuario");
 			String passwordDb = (String) aurora.get("clave");
 			String urlDb = (String) aurora.get("urlServidor");
-			int portDb = Integer.parseInt((String) aurora.get("puerto"));
+			int portDb = Integer.parseInt((String) aurora.get("puerto"));			
 			SftpAndDbData connectionsData = new SftpAndDbData(userSftp, passwordSftp, urlSftp, portSftp, destSftp, userDb, passwordDb, urlDb, portDb);
 			return connectionsData;
 		}

@@ -32,13 +32,15 @@ public class SftpFilesSender {
 		File[] files = dir.listFiles();
 		JSch jsch = new JSch();
 		Session session = jsch.getSession(user, url, port);
+		session.setConfig("PreferredAuthentications", "password");
 		session.setConfig("StrictHostKeyChecking", "no");
 		session.setPassword(password);
 		session.connect();
 		
 		Channel channel = session.openChannel("sftp");
-		channel.connect();
+		
 		ChannelSftp sftpChannel = (ChannelSftp) channel;
+		sftpChannel.connect();
 		
 		for (int i = 0; i < files.length; i++) {
 			sftpChannel.put(files[i].getAbsolutePath(), dstPath);
