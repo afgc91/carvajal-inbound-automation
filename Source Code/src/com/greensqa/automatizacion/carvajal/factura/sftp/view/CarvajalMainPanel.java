@@ -371,7 +371,7 @@ public class CarvajalMainPanel extends JPanel {
 		selectSrcPath = new JButton("   Insumos a Enviar   ");
 		selectSrcPath.setToolTipText("Seleccionar la Carpeta con los documentos que serán enviados a CEN-F");
 		selectSrcPathLabel = new JLabel(); 
-		srcViewPathLabel = new JLabel("<<Seleccione Carpeta>>");
+		srcViewPathLabel = new JLabel("<<Seleccione Carpeta...>>");
 		send = new JButton("  Enviar ");
 		fileConnectionFC = new JFileChooser();	
 		selectSrcPathFC = new JFileChooser();	
@@ -435,7 +435,7 @@ public class CarvajalMainPanel extends JPanel {
 	public boolean isValidInputFileSend() {
 
 		boolean directoriesBD = !fileViewBDLabel.getText().equals(DIR_SELECTED_DEFAULT);
-		boolean directorySrcPath = !srcViewPathLabel.getText().equals("<<Seleccione carpeta...>>");
+		boolean directorySrcPath = !srcViewPathLabel.getText().equals("<<Seleccione Carpeta...>>");
 		return directoriesBD && directorySrcPath;
 	}
 

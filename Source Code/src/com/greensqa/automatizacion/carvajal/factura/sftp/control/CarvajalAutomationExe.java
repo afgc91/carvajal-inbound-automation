@@ -141,19 +141,19 @@ public class CarvajalAutomationExe {
 
 			}
 		});
-		
+
 		panel1.getSelectCompression().addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
-				boolean selectOptionZip = panel1.getSelectCompression().isSelected(); 
-				
-				if(selectOptionZip != false) {
+
+				boolean selectOptionZip = panel1.getSelectCompression().isSelected();
+
+				if (selectOptionZip != false) {
 					panel1.getFilesPerZipLabel().setVisible(true);
 					panel1.getFilesPerZipField().setVisible(true);
-				}				
+				}
 			}
 		});
 	}
@@ -292,6 +292,11 @@ public class CarvajalAutomationExe {
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
+				
+				panel2.getSend().setEnabled(false);
+				panel2.getSelectSrcPath().setEnabled(false);
+				panel2.getSelectDBFile().setEnabled(false);
+
 				SftpAndDbData sftpDbData = null;
 				File srcPath = directoryIn.getSelectedFile();
 				String inDirectoryPath = (srcPath.getAbsolutePath());
@@ -307,12 +312,15 @@ public class CarvajalAutomationExe {
 				if (sftpDbData != null) {
 					files = new SftpFilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
 							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp());
-				}
+				}				
 
 				try {
 					files.sendSftpFiles();
 					JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
 							JOptionPane.INFORMATION_MESSAGE);
+					panel2.getSend().setEnabled(true);
+					panel2.getSelectSrcPath().setEnabled(true);
+					panel2.getSelectDBFile().setEnabled(true);
 				} catch (JSchException e1) {
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Los Datos de conexión son Inválidos", "Datos Inválidos",
