@@ -281,9 +281,11 @@ public class FilesGenerator {
 				File f = new File(filePath);
 				f.createNewFile();
 
-				try (FileWriter fw = new FileWriter(f);
+				try (
+						FileWriter fw = new FileWriter(f);
 						BufferedWriter bw = new BufferedWriter(fw);
-						PrintWriter pw = new PrintWriter(bw)) {
+						PrintWriter pw = new PrintWriter(bw)) 			
+				{
 					for (int j = 0; j < fileLinesCopy.size(); j++) {
 						line = fileLinesCopy.get(j);
 						lineArray = line.split(",");
@@ -330,6 +332,7 @@ public class FilesGenerator {
 						if (j != fileLinesCopy.size() - 1) {
 							line += "\r\n";
 						}
+						
 						pw.write(line);
 						// System.out.println(line);
 					}
@@ -387,7 +390,7 @@ public class FilesGenerator {
 			CarvajalUtils.setXmlNode(doc, "DRF_5", startingRangeNum + "");
 			CarvajalUtils.setXmlNode(doc, "DRF_6", endingRangeNum + "");
 			CarvajalUtils.setXmlNode(doc, "QFA_1", nitSender);
-			CarvajalUtils.setXmlNode(doc, "AQF_2", nitReceiver);
+			CarvajalUtils.setXmlNode(doc, "AQF_1", nitReceiver);
 
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
