@@ -356,10 +356,11 @@ public class CarvajalAutomationExe {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
 					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(),
 							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
-					BusinessValidator bv = new BusinessValidator(conn.getConnetion(2));
 					File fileName = filesSending.getSelectedFile();
 					String srcPath = (fileName.getAbsolutePath());
 					File dir = new File(srcPath);
+					//Obtener padre de dir
+					BusinessValidator bv = new BusinessValidator(conn.getConnetion(2), dir.getParentFile().getAbsolutePath());
 					if (dir.exists()) {
 						File[] files = dir.listFiles();
 						for (int i = 0; i < files.length; i++) {
