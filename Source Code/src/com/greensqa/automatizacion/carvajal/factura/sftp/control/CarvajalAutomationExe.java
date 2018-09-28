@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -17,6 +18,8 @@ import javax.xml.transform.TransformerException;
 import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.BusinessValidator;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalPostgresConnection;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesGenerator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbData;
@@ -25,7 +28,6 @@ import com.greensqa.automatizacion.carvajal.factura.sftp.view.CarvajalFrame;
 import com.greensqa.automatizacion.carvajal.factura.sftp.view.CarvajalMainPanel;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import com.sun.javafx.scene.traversal.Algorithm;
 
 public class CarvajalAutomationExe {
 
@@ -46,10 +48,7 @@ public class CarvajalAutomationExe {
 		panel = new CarvajalMainPanel(2);
 		frame = new CarvajalFrame("Generador de Archivos FECO", panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		// sendingFile();
 		selectOption();
-
 	}
 
 	public static void selectOption() {
@@ -81,6 +80,7 @@ public class CarvajalAutomationExe {
 					frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					frame2.setSize(new Dimension(480, 280));
 					sendingFile();
+
 				}
 			}
 		});
@@ -292,7 +292,7 @@ public class CarvajalAutomationExe {
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
+
 				panel2.getSend().setEnabled(false);
 				panel2.getSelectSrcPath().setEnabled(false);
 				panel2.getSelectDBFile().setEnabled(false);
@@ -312,7 +312,7 @@ public class CarvajalAutomationExe {
 				if (sftpDbData != null) {
 					files = new SftpFilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
 							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp());
-				}				
+				}
 
 				try {
 					files.sendSftpFiles();
@@ -321,6 +321,8 @@ public class CarvajalAutomationExe {
 					panel2.getSend().setEnabled(true);
 					panel2.getSelectSrcPath().setEnabled(true);
 					panel2.getSelectDBFile().setEnabled(true);
+					panel2.getGenerateLog().setEnabled(true);
+					generateLog();
 				} catch (JSchException e1) {
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Los Datos de conexión son Inválidos", "Datos Inválidos",
@@ -336,4 +338,55 @@ public class CarvajalAutomationExe {
 
 	}
 
+	public static void generateLog() {
+
+		JFileChooser filesConnetion = panel2.getFileConnectionFC();
+		JFileChooser filesSending = panel2.getSelectSrcPathFC();
+
+		panel2.getGenerateLog().addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				File fileBDPath = filesConnetion.getSelectedFile();
+				String directoryBDPath = (fileBDPath.getAbsolutePath());
+				SftpAndDbData sftpDbData;
+
+				try {
+					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
+					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(),
+							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
+					BusinessValidator bv = new BusinessValidator(conn.getConnetion(2));
+					File fileName = filesSending.getSelectedFile();
+					String srcPath = (fileName.getAbsolutePath());
+					File dir = new File(srcPath);
+					if (dir.exists()) {
+						File[] files = dir.listFiles();
+						for (int i = 0; i < files.length; i++) {
+							bv.executeStatusQuery(files[i]);
+
+						}
+					}
+				} catch (IOException | ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ParserConfigurationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SAXException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+			}
+
+		});
+
+	}
 }

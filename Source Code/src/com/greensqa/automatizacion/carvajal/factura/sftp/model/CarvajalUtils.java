@@ -22,6 +22,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -155,7 +156,8 @@ public class CarvajalUtils {
 	 */
 	protected static boolean isValidTxt(String filePath) throws FileNotFoundException, IOException {
 		File file = new File(filePath);
-		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
+		try (FileReader fr = new FileReader(file);
+				BufferedReader br = new BufferedReader(fr)) {
 			String line = br.readLine();
 			if (line.contains("ENC")) {
 				return true;
@@ -265,5 +267,75 @@ public class CarvajalUtils {
 			SftpAndDbData connectionsData = new SftpAndDbData(userSftp, passwordSftp, urlSftp, portSftp, destSftp, userDb, passwordDb, urlDb, portDb);
 			return connectionsData;
 		}
+	}
+	
+	protected static String getFactNumber(String filePath) throws ParserConfigurationException, SAXException, IOException {
+		File f = new File(filePath);
+		if (!f.exists()) {
+			return null;
+		}
+		
+		String fileExt = getFileExtension(filePath);
+		
+		switch (fileExt) {
+			case "txt" : {
+				//Obtener número de factura de archivo plano.
+				return getFactNumFromTxtFile(f);
+			}
+			case "xml" : {
+				//Obtener nùmero de factura de archivo xml (idenificar si es UBL o XML estándar).
+				int docType = getXmlType(filePath);
+				if (docType == 0) {
+					return null;
+				}
+				
+				if (docType == 1) {
+					//Es XML estándar. Obtener número de factura.
+					return getFactNumFromXmlFile(f);
+				} else {
+					//Es UBL Dian. Obtener número de factura.
+					return getFactNumFromUblFile(f);
+				}
+			}
+		}
+		return null;
+	}
+	
+	private static String getFactNumFromTxtFile(File file) throws IOException {
+		//Pos 6 fila 1
+		try (FileReader fr = new FileReader(file);
+				BufferedReader br = new BufferedReader(fr)) {
+			String line = br.readLine();
+			if (line.contains("ENC")) {
+				return line.split(",")[6];
+			}
+		}
+		return null;
+	}
+	
+	private static String getFactNumFromXmlFile(File file) throws SAXException, IOException, ParserConfigurationException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		return doc.getElementsByTagName("ENC_6").item(0).getTextContent();
+	}
+	
+	private static String getFactNumFromUblFile(File file) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		NodeList feInvoiceChildren = doc.getElementsByTagName("fe:Invoice").item(0).getChildNodes();
+		String nodeName = "";
+		Node item = null;
+		for (int i = 0; i < feInvoiceChildren.getLength(); i++) {
+			item = feInvoiceChildren.item(i);
+			nodeName = item.getNodeName();
+			if (nodeName.equalsIgnoreCase("cbc:ID")) {
+				return item.getTextContent();
+			}
+		}
+		return null;
 	}
 }

@@ -195,7 +195,11 @@ public class CarvajalMainPanel extends JPanel {
 	 * Seleccionador de carpeta donde estan los archivos a enviar
 	 */
 	private JFileChooser selectSrcPathFC;	
-
+	
+	/**
+	 *Botón parar Generar LOG de envío de documentos
+	 */	
+	private JButton generateLog; 
 
 	public CarvajalMainPanel(int option) {
 		this.setLayout(null);
@@ -373,6 +377,7 @@ public class CarvajalMainPanel extends JPanel {
 		selectSrcPathLabel = new JLabel(); 
 		srcViewPathLabel = new JLabel("<<Seleccione Carpeta...>>");
 		send = new JButton("  Enviar ");
+		generateLog = new JButton("Generar LOG");
 		fileConnectionFC = new JFileChooser();	
 		selectSrcPathFC = new JFileChooser();	
 		image = new JLabel(
@@ -388,6 +393,7 @@ public class CarvajalMainPanel extends JPanel {
 		srcViewPathLabel.setSize(widthLabel,heightLabel);
 		image.setSize(image.getPreferredSize());		
 		send.setSize(send.getPreferredSize());
+		generateLog.setSize(generateLog.getPreferredSize());
 		
 		int x = 10, y = 20, d =20;
 		informationOption.setLocation(x,y);
@@ -404,8 +410,11 @@ public class CarvajalMainPanel extends JPanel {
 		x=+selectDBFile.getWidth()+50; y=123; 
 		fileViewBDLabel.setLocation(x,y);
 		
-		x=190; y=180;
+		x=170; y=180;
 		send.setLocation(x, y);
+		
+		x += send.getWidth()+d; y=180;
+		generateLog.setLocation(x, y);
 		
 		x = 320; y = 180;
 		image.setLocation(x, y);
@@ -419,9 +428,11 @@ public class CarvajalMainPanel extends JPanel {
 		this.add(fileViewBDLabel); 
 		this.add(image);
 		this.add(send);
+		this.add(generateLog);
 		
 		selectSrcPathLabel.setVisible(false);
 		fileBDLabel.setVisible(false);	
+		//generateLog.setEnabled(false);
 	}
 
 	public boolean isValidInput() {
@@ -837,5 +848,12 @@ public class CarvajalMainPanel extends JPanel {
 	public void setFilesPerZipField(JTextField filesPerZipField) {
 		this.filesPerZipField = filesPerZipField;
 	}
-	
+
+	public JButton getGenerateLog() {
+		return generateLog;
+	}
+
+	public void setGenerateLog(JButton generateLog) {
+		this.generateLog = generateLog;
+	}	
 }
