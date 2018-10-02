@@ -130,11 +130,11 @@ public class CarvajalAutomationExe {
 					panel1.getConfigFile().setEnabled(true);
 					panel1.getOutFilePath().setEnabled(true);
 					panel1.getFilesPerDirectoryField().setEnabled(true);
-					
-					boolean  selectCompressOption = panel1.getSelectCompression().isSelected();
-					
-					if(selectCompressOption == true) {
-					compressingFiles();
+
+					boolean selectCompressOption = panel1.getSelectCompression().isSelected();
+
+					if (selectCompressOption == true) {
+						compressingFiles();
 					}
 
 				} catch (IOException | ParseException | java.text.ParseException | ParserConfigurationException
@@ -225,7 +225,7 @@ public class CarvajalAutomationExe {
 				}
 			}
 		});
-		
+
 		panel1.getSelectCompression().addActionListener(new ActionListener() {
 
 			@Override
@@ -301,7 +301,7 @@ public class CarvajalAutomationExe {
 				}
 			}
 		});
-		
+
 		panel2.getBackMainPanel().addActionListener(new ActionListener() {
 
 			@Override
@@ -312,7 +312,7 @@ public class CarvajalAutomationExe {
 				starApp();
 			}
 		});
-	
+
 		panel2.getSend().addActionListener(new ActionListener() {
 
 			@Override
@@ -387,12 +387,12 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getTipoBD(),sftpDbData.getUrlDb(),
-							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
+					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getTipoBD(),
+							sftpDbData.getUrlDb(), sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcPath = (fileName.getAbsolutePath());
 					File dir = new File(srcPath);
-					
+
 					// Obtener padre de dir
 					BusinessValidator bv = new BusinessValidator(conn.getConnetion(sftpDbData.getTipoBD()),
 							dir.getParentFile().getAbsolutePath());
@@ -400,7 +400,6 @@ public class CarvajalAutomationExe {
 						File[] files = dir.listFiles();
 						for (int i = 0; i < files.length; i++) {
 							bv.executeStatusQuery(files[i]);
-
 						}
 					}
 				} catch (IOException | ParseException e1) {
@@ -433,7 +432,7 @@ public class CarvajalAutomationExe {
 		String directoryPath = filesPath.getAbsolutePath();
 		String desFile = filesPath.getParentFile().getAbsolutePath();
 		String nameFile = filesPath.getName();
-		String desFileZip = desFile + "\\"+nameFile+".zip";
+		String desFileZip = desFile + "\\" + nameFile + ".zip";
 
 		CarvajalcompressFiles compress = new CarvajalcompressFiles(directoryPath, desFileZip);
 		compress.compressFiles(filesPath);

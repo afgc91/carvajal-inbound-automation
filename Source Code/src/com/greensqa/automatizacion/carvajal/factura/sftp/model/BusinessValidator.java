@@ -23,18 +23,29 @@ public class BusinessValidator {
 	private String message;
 	private String directory;
 	ArrayList<String> xmlPdfFiles = new ArrayList<String>();
+	private boolean isLogged;
+	private String logFilePath;
 
 	public BusinessValidator(Connection con, String directory) {
-
+		this.setLogged(false);
 		this.con = con;
 		this.directory = directory;
+		this.logFilePath = null;
 	}
 
 	public void executeStatusQuery(File file)
 			throws SQLException, IOException, ParserConfigurationException, SAXException {
 
-		File log = getLogFile();
-		log.createNewFile();
+		File log = null;
+		
+		if (!isLogged) {
+			isLogged = true;
+			log = getLogFile();
+			log.createNewFile();
+			logFilePath = log.getAbsolutePath();
+		} else {
+			log = new File(logFilePath);
+		}
 
 		String docStatusQuery = "select * from estados_procesamiento where id_transaccion = "
 				+ "(select * from (select id " + "	from transacciones " + "	where nombre_archivo_original = ? "
@@ -92,7 +103,6 @@ public class BusinessValidator {
 				String nameFileAccept = "";
 				String codeRtaDian = "";
 				String infoRtaDian = "";
-				int factOk = 0;
 				boolean isAccept = false;
 				boolean isRtaDian = false;
 				boolean isFailed = false;
@@ -189,7 +199,6 @@ public class BusinessValidator {
 		}
 	}
 
-	@SuppressWarnings("null")
 	private File getLogFile() throws IOException {
 		String dirPath = directory + "\\Logs";
 		File dir = new File(dirPath);
@@ -244,6 +253,22 @@ public class BusinessValidator {
 
 	public void setDirectory(String directory) {
 		this.directory = directory;
+	}
+
+	public boolean isLogged() {
+		return isLogged;
+	}
+
+	public void setLogged(boolean isLogged) {
+		this.isLogged = isLogged;
+	}
+
+	public String getLogFilePath() {
+		return logFilePath;
+	}
+
+	public void setLogFilePath(String logFilePath) {
+		this.logFilePath = logFilePath;
 	}
 
 }
