@@ -25,19 +25,23 @@ public class BusinessValidator {
 	ArrayList<String> xmlPdfFiles = new ArrayList<String>();
 	private boolean isLogged;
 	private String logFilePath;
+	private int filesOk;
+	private int filesFailed;
 
 	public BusinessValidator(Connection con, String directory) {
 		this.setLogged(false);
 		this.con = con;
 		this.directory = directory;
 		this.logFilePath = null;
+		this.setFilesFailed(0);
+		this.setFilesOk(0);
 	}
 
 	public void executeStatusQuery(File file)
 			throws SQLException, IOException, ParserConfigurationException, SAXException {
 
 		File log = null;
-		
+
 		if (!isLogged) {
 			isLogged = true;
 			log = getLogFile();
@@ -139,8 +143,6 @@ public class BusinessValidator {
 				try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true);
 						BufferedWriter bw = new BufferedWriter(fw)) {
 					boolean failProcess = false;
-					int filesOk = 0;
-					int filesNok = 0;
 
 					bw.write("Número de Factura: " + factNum + "\r\n");
 					bw.write("Nit del Emisor: " + nitSender + "\r\n \r\n");
@@ -158,10 +160,12 @@ public class BusinessValidator {
 								failProcess = true;
 							}
 
-							if (processName.equalsIgnoreCase("DOCUMENT_PROCESSED") && status.equalsIgnoreCase("OK")) {
-								filesOk++;
-							} else {
-								filesNok++;
+							if (processName.equalsIgnoreCase("DOCUMENT_PROCESSED")) {
+								if (status.equalsIgnoreCase("OK")) {
+									filesOk += 1;
+								} else {
+									filesFailed += 1;
+								}
 							}
 						}
 					} else {
@@ -192,10 +196,17 @@ public class BusinessValidator {
 
 					bw.write("---------------------------------------------------------------------------------------"
 							+ "-------------------------------------------------------------\r\n");
-					bw.write("Cantidad de Archivos exitosos: " + filesOk + "\r\nCantidad de Archivos no exitosos: "
-							+ filesNok + "\r\n");
 				}
 			}
+		}
+	}
+
+	public void getSummary() throws IOException {
+		File file = new File(logFilePath);
+
+		try (FileWriter fw = new FileWriter(file); BufferedWriter bw = new BufferedWriter(fw)) {
+			bw.write("Cantidad de archivos procesados correctamente: " + filesOk
+					+ "\r\nCantidad de archivos procesados con errores: " + filesFailed);
 		}
 	}
 
@@ -269,6 +280,22 @@ public class BusinessValidator {
 
 	public void setLogFilePath(String logFilePath) {
 		this.logFilePath = logFilePath;
+	}
+
+	public int getFilesOk() {
+		return filesOk;
+	}
+
+	public void setFilesOk(int filesOk) {
+		this.filesOk = filesOk;
+	}
+
+	public int getFilesFailed() {
+		return filesFailed;
+	}
+
+	public void setFilesFailed(int filesFailed) {
+		this.filesFailed = filesFailed;
 	}
 
 }

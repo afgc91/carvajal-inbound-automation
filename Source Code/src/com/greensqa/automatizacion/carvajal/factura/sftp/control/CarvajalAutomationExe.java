@@ -401,6 +401,7 @@ public class CarvajalAutomationExe {
 						for (int i = 0; i < files.length; i++) {
 							bv.executeStatusQuery(files[i]);
 						}
+						bv.getSummary();
 					}
 				} catch (IOException | ParseException e1) {
 					// TODO Auto-generated catch block
