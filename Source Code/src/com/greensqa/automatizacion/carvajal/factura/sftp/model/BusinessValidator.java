@@ -128,11 +128,12 @@ public class BusinessValidator {
 
 				try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true);
 						BufferedWriter bw = new BufferedWriter(fw)) {
+					boolean failProcess = false;
 					int filesOk = 0;
 					int filesNok = 0;
 
 					bw.write("Número de Factura: " + factNum + "\r\n");
-					bw.write("Nit del Emisor: " + nitSender + "\r\n");
+					bw.write("Nit del Emisor: " + nitSender + "\r\n \r\n");
 
 					if (docStatusRs != null && docStatusRs.next()) {
 						while (docStatusRs.next()) {
@@ -141,10 +142,10 @@ public class BusinessValidator {
 							processName = docStatusRs.getString(3);
 							message = docStatusRs.getString(8);
 
-
 							if (status.equalsIgnoreCase("FAIL")) {
-								bw.write("Proceso: " + processName + "\r\nEstado: " + status + " Mensaje: " + message
-										+ "\r\n");
+								bw.write("Los siguientes procesos fallaron: \r\n" + "Proceso: " + processName
+										+ "\r\nEstado: " + status + " Mensaje: " + message + "\r\n");
+								failProcess = true;
 							}
 
 							if (processName.equalsIgnoreCase("DOCUMENT_PROCESSED") && status.equalsIgnoreCase("OK")) {
@@ -154,7 +155,11 @@ public class BusinessValidator {
 							}
 						}
 					} else {
-						bw.write("El archivo no ha sido enviado a CEN Financiero \r\n");
+						bw.write("El archivo no ha sido enviado a CEN Financiero. \r\n");
+					}
+
+					if (!failProcess) {
+						bw.write("El procesamiento del documento no generó errores. \r\n");
 					}
 
 					if (isFailed) {
@@ -163,21 +168,22 @@ public class BusinessValidator {
 						if (isAccept) {
 							bw.write("Nombre Archivo de Aceptación Cliente: " + nameFileAccept + "\r\n");
 						} else {
-							bw.write("El Documento no ha sido Aceptado \r\n");
+							bw.write("El Documento no ha sido Aceptado. \r\n");
 						}
 
 						if (isRtaDian) {
 							bw.write("La DIAN recibio el archivo, la respuesta generada es :" + codeRtaDian + "  "
 									+ infoRtaDian + "\r\n");
 						} else {
-							bw.write("La Dian no ha realizado acuse de recibido \r\n");
+							bw.write("La Dian no ha realizado acuse de recibido. \r\n");
 						}
 
 					}
 
 					bw.write("---------------------------------------------------------------------------------------"
 							+ "-------------------------------------------------------------\r\n");
-					bw.write("Cantidad de Archivos exitosos: " + filesOk + "\r\nCantidad de Archivos no exitosos: " + filesNok + "\r\n");
+					bw.write("Cantidad de Archivos exitosos: " + filesOk + "\r\nCantidad de Archivos no exitosos: "
+							+ filesNok + "\r\n");
 				}
 			}
 		}
