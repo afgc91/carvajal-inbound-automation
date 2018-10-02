@@ -21,6 +21,7 @@ import org.xml.sax.SAXException;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.BusinessValidator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalPostgresConnection;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalcompressFiles;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesGenerator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbData;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpFilesSender;
@@ -36,7 +37,6 @@ public class CarvajalAutomationExe {
 
 	public static void main(String[] args) {
 		starApp();
-
 	}
 
 	/**
@@ -130,6 +130,12 @@ public class CarvajalAutomationExe {
 					panel1.getConfigFile().setEnabled(true);
 					panel1.getOutFilePath().setEnabled(true);
 					panel1.getFilesPerDirectoryField().setEnabled(true);
+					
+					boolean  selectCompressOption = panel1.getSelectCompression().isSelected();
+					
+					if(selectCompressOption == true) {
+					compressingFiles();
+					}
 
 				} catch (IOException | ParseException | java.text.ParseException | ParserConfigurationException
 						| SAXException | HeadlessException | TransformerException e1) {
@@ -137,23 +143,11 @@ public class CarvajalAutomationExe {
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Se presentó un error " + e1.getMessage(), "Error",
 							JOptionPane.ERROR);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 
-			}
-		});
-
-		panel1.getSelectCompression().addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
-				boolean selectOptionZip = panel1.getSelectCompression().isSelected();
-
-				if (selectOptionZip != false) {
-					panel1.getFilesPerZipLabel().setVisible(true);
-					panel1.getFilesPerZipField().setVisible(true);
-				}
 			}
 		});
 	}
@@ -231,6 +225,33 @@ public class CarvajalAutomationExe {
 				}
 			}
 		});
+		
+		panel1.getSelectCompression().addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+
+				boolean selectOptionZip = panel1.getSelectCompression().isSelected();
+
+				if (selectOptionZip != false) {
+					panel1.getFilesPerZipLabel().setVisible(true);
+					panel1.getFilesPerZipField().setVisible(true);
+					return;
+				}
+			}
+		});
+
+		panel1.getBackMainPanel().addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Evento para regresar a la ventana principal
+
+				frame1.setVisible(false);
+				starApp();
+			}
+		});
 	}
 
 	public static void sendingFile() {
@@ -280,7 +301,18 @@ public class CarvajalAutomationExe {
 				}
 			}
 		});
+		
+		panel2.getBackMainPanel().addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Evento para regresar a la ventana principal
+
+				frame2.setVisible(false);
+				starApp();
+			}
+		});
+	
 		panel2.getSend().addActionListener(new ActionListener() {
 
 			@Override
@@ -318,11 +350,7 @@ public class CarvajalAutomationExe {
 					files.sendSftpFiles();
 					JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
 							JOptionPane.INFORMATION_MESSAGE);
-					panel2.getSend().setEnabled(true);
-					panel2.getSelectSrcPath().setEnabled(true);
-					panel2.getSelectDBFile().setEnabled(true);
-					panel2.getGenerateLog().setEnabled(true);
-					generateLog();
+
 				} catch (JSchException e1) {
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Los Datos de conexión son Inválidos", "Datos Inválidos",
@@ -333,6 +361,11 @@ public class CarvajalAutomationExe {
 					JOptionPane.showMessageDialog(null, "No se pudieron enviar los archivos seleccionados",
 							"Archivos No Enviados", JOptionPane.ERROR_MESSAGE);
 				}
+				generateLog();
+				panel2.getSend().setEnabled(true);
+				panel2.getSelectSrcPath().setEnabled(true);
+				panel2.getSelectDBFile().setEnabled(true);
+				panel2.getGenerateLog().setEnabled(true);
 			}
 		});
 
@@ -354,13 +387,15 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(),
+					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getTipoBD(),sftpDbData.getUrlDb(),
 							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcPath = (fileName.getAbsolutePath());
 					File dir = new File(srcPath);
-					//Obtener padre de dir
-					BusinessValidator bv = new BusinessValidator(conn.getConnetion(2), dir.getParentFile().getAbsolutePath());
+					
+					// Obtener padre de dir
+					BusinessValidator bv = new BusinessValidator(conn.getConnetion(sftpDbData.getTipoBD()),
+							dir.getParentFile().getAbsolutePath());
 					if (dir.exists()) {
 						File[] files = dir.listFiles();
 						for (int i = 0; i < files.length; i++) {
@@ -388,6 +423,20 @@ public class CarvajalAutomationExe {
 			}
 
 		});
+
+	}
+
+	public static void compressingFiles() throws Exception {
+
+		JFileChooser directory = panel1.getOutDirectoryFC();
+		File filesPath = directory.getSelectedFile();
+		String directoryPath = filesPath.getAbsolutePath();
+		String desFile = filesPath.getParentFile().getAbsolutePath();
+		String nameFile = filesPath.getName();
+		String desFileZip = desFile + "\\"+nameFile+".zip";
+
+		CarvajalcompressFiles compress = new CarvajalcompressFiles(directoryPath, desFileZip);
+		compress.compressFiles(filesPath);
 
 	}
 }

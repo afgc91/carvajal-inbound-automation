@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 public class CarvajalPostgresConnection {
 
+	private int tipoDB; 
 	private String url;
 	private String user;
 	private String password;
@@ -16,10 +17,12 @@ public class CarvajalPostgresConnection {
 	 * @param url      Dirección a la BD
 	 * @param user     usuario para conexión a la BD
 	 * @param password contraseña para conexión a la BD
+	 * @param string 
 	 */
 
-	public CarvajalPostgresConnection(String url, String user, String password) {
+	public CarvajalPostgresConnection(int tipoDB, String url, String user, String password) {
 
+		this.tipoDB = tipoDB; 
 		this.url = url;
 		this.user = user;
 		this.password = password;

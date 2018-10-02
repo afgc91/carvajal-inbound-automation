@@ -156,8 +156,7 @@ public class CarvajalUtils {
 	 */
 	protected static boolean isValidTxt(String filePath) throws FileNotFoundException, IOException {
 		File file = new File(filePath);
-		try (FileReader fr = new FileReader(file);
-				BufferedReader br = new BufferedReader(fr)) {
+		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 			String line = br.readLine();
 			if (line.contains("ENC")) {
 				return true;
@@ -230,9 +229,11 @@ public class CarvajalUtils {
 	}
 
 	/**
-	 * Modifica el primer tag del nodeList obtenido con el nombre de la etiqueta, con el valor enviado.
-	 * @param doc Documento XML.
-	 * @param tag Nombre del NodeList a buscar.
+	 * Modifica el primer tag del nodeList obtenido con el nombre de la etiqueta,
+	 * con el valor enviado.
+	 * 
+	 * @param doc   Documento XML.
+	 * @param tag   Nombre del NodeList a buscar.
 	 * @param value Valorque se le quiere colocar al primer tag del NodeList.
 	 */
 	protected static void setXmlNode(Document doc, String tag, String value) {
@@ -241,70 +242,74 @@ public class CarvajalUtils {
 			nodeList.item(0).setTextContent(value);
 		}
 	}
-	
-	public static SftpAndDbData loadConnectionsData(String filePath) throws FileNotFoundException, IOException, ParseException {
+
+	public static SftpAndDbData loadConnectionsData(String filePath)
+			throws FileNotFoundException, IOException, ParseException {
 		File file = new File(filePath);
 		if (!file.exists()) {
 			return null;
 		}
-		
+
 		try (FileReader fr = new FileReader(file)) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(fr);
-			//Objeto SFTP
+			// Objeto SFTP
 			JSONObject sftp = (JSONObject) json.get("sftp");
 			String userSftp = (String) sftp.get("usuario");
 			String passwordSftp = (String) sftp.get("clave");
 			String urlSftp = (String) sftp.get("urlServidor");
 			int portSftp = Integer.parseInt((String) sftp.get("puerto"));
 			String destSftp = (String) sftp.get("destino");
-			//Objeto Aurora (DB)
+			// Objeto Aurora (DB)
 			JSONObject aurora = (JSONObject) json.get("aurora");
+			int tipoDb = Integer.parseInt((String) aurora.get("tipoBD"));
 			String userDb = (String) aurora.get("usuario");
 			String passwordDb = (String) aurora.get("clave");
 			String urlDb = (String) aurora.get("urlServidor");
-			int portDb = Integer.parseInt((String) aurora.get("puerto"));			
-			SftpAndDbData connectionsData = new SftpAndDbData(userSftp, passwordSftp, urlSftp, portSftp, destSftp, userDb, passwordDb, urlDb, portDb);
+			int portDb = Integer.parseInt((String) aurora.get("puerto"));
+			SftpAndDbData connectionsData = new SftpAndDbData(userSftp, passwordSftp, urlSftp, portSftp, destSftp,
+					tipoDb, userDb, passwordDb, urlDb, portDb);
 			return connectionsData;
 		}
 	}
-	
-	protected static String getFactNumber(String filePath) throws ParserConfigurationException, SAXException, IOException {
+
+	protected static String getFactNumber(String filePath)
+			throws ParserConfigurationException, SAXException, IOException {
 		File f = new File(filePath);
 		if (!f.exists()) {
 			return null;
 		}
-		
+
 		String fileExt = getFileExtension(filePath);
-		
+
 		switch (fileExt) {
-			case "txt" : {
-				//Obtener número de factura de archivo plano.
-				return getFactNumFromTxtFile(f);
+		case "txt": {
+			// Obtener número de factura de archivo plano.
+			return getFactNumFromTxtFile(f);
+		}
+		case "xml": {
+			// Obtener nùmero de factura de archivo xml (idenificar si es UBL o XML
+			// estándar).
+			int docType = getXmlType(filePath);
+			if (docType == 0) {
+				return null;
 			}
-			case "xml" : {
-				//Obtener nùmero de factura de archivo xml (idenificar si es UBL o XML estándar).
-				int docType = getXmlType(filePath);
-				if (docType == 0) {
-					return null;
-				}
-				
-				if (docType == 1) {
-					//Es XML estándar. Obtener número de factura.
-					return getFactNumFromXmlFile(f);
-				} else {
-					//Es UBL Dian. Obtener número de factura.
-					return getFactNumFromUblFile(f);
-				}
+
+			if (docType == 1) {
+				// Es XML estándar. Obtener número de factura.
+				return getFactNumFromXmlFile(f);
+			} else {
+				// Es UBL Dian. Obtener número de factura.
+				return getFactNumFromUblFile(f);
 			}
+		}
 		}
 		return null;
 	}
-	
+
 	private static String getFactNumFromTxtFile(File file) throws IOException {
-		//Pos 6 fila 1
-		try (FileReader fr = new FileReader(file);
-				BufferedReader br = new BufferedReader(fr)) {
+		// Pos 6 fila 1
+		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 			String line = br.readLine();
 			if (line.contains("ENC")) {
 				return line.split(",")[6];
@@ -312,16 +317,18 @@ public class CarvajalUtils {
 		}
 		return null;
 	}
-	
-	private static String getFactNumFromXmlFile(File file) throws SAXException, IOException, ParserConfigurationException {
+
+	private static String getFactNumFromXmlFile(File file)
+			throws SAXException, IOException, ParserConfigurationException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(file);
 		doc.getDocumentElement().normalize();
 		return doc.getElementsByTagName("ENC_6").item(0).getTextContent();
 	}
-	
-	private static String getFactNumFromUblFile(File file) throws ParserConfigurationException, SAXException, IOException {
+
+	private static String getFactNumFromUblFile(File file)
+			throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(file);
@@ -338,4 +345,171 @@ public class CarvajalUtils {
 		}
 		return null;
 	}
+
+	protected static String getTypeId(String filePath) throws ParserConfigurationException, SAXException, IOException {
+		File f = new File(filePath);
+		if (!f.exists()) {
+			return null;
+		}
+
+		String fileExt = getFileExtension(filePath);
+
+		switch (fileExt) {
+		case "txt": {
+			// Obtener número de factura de archivo plano.
+			return getTypeIdTxtFile(f);
+		}
+		case "xml": {
+			// Obtener nùmero de factura de archivo xml (idenificar si es UBL o XML
+			// estándar).
+			int docType = getXmlType(filePath);
+			if (docType == 0) {
+				return null;
+			}
+
+			if (docType == 1) {
+				// Es XML estándar. Obtener número de factura.
+				return getTypeIdXmlFile(f);
+			} else {
+				// Es UBL Dian. Obtener número de factura.
+				return getTypeIdUblFile(f);
+			}
+		}
+		}
+		return null;
+	}
+
+	private static String getTypeIdTxtFile(File file) throws FileNotFoundException, IOException {
+		// Pos 9 fila 1
+		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
+			String line = br.readLine();
+			if (line.contains("ENC")) {
+				return line.split(",")[9];
+			}
+		}
+		return null;
+	}
+
+	private static String getTypeIdXmlFile(File file) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		return doc.getElementsByTagName("ENC_9").item(0).getTextContent();
+	}
+
+	private static String getTypeIdUblFile(File file) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		NodeList feInvoiceChildren = doc.getElementsByTagName("fe:Invoice").item(0).getChildNodes();
+		String nodeName = "";
+		Node item = null;
+		for (int i = 0; i < feInvoiceChildren.getLength(); i++) {
+			item = feInvoiceChildren.item(i);
+			nodeName = item.getNodeName();
+			if (nodeName.equalsIgnoreCase("cbc:InvoiceTypeCode")) {
+				return item.getTextContent();
+			}
+		}
+		return null;
+	}
+
+	protected static String getNitSender(String filePath)
+			throws ParserConfigurationException, SAXException, IOException {
+		File f = new File(filePath);
+		if (!f.exists()) {
+			return null;
+		}
+
+		String fileExt = getFileExtension(filePath);
+
+		switch (fileExt) {
+		case "txt": {
+			// Obtener número de factura de archivo plano.
+			return getSenderTxtFile(f);
+		}
+		case "xml": {
+			// Obtener nùmero de factura de archivo xml (idenificar si es UBL o XML
+			// estándar).
+			int docType = getXmlType(filePath);
+			if (docType == 0) {
+				return null;
+			}
+
+			if (docType == 1) {
+				// Es XML estándar. Obtener número de factura.
+				return getSenderXmlFile(f);
+			} else {
+				// Es UBL Dian. Obtener número de factura.
+				return getSenderUblFile(f);
+			}
+		}
+		}
+		return null;
+	}
+
+	private static String getSenderTxtFile(File file) throws FileNotFoundException, IOException {
+		// Pos 9 fila 1
+		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
+			String line = br.readLine();
+			if (line.contains("ENC")) {
+				return line.split(",")[2];
+			}
+		}
+		return null;
+	}
+
+	private static String getSenderXmlFile(File file) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		return doc.getElementsByTagName("ENC_2").item(0).getTextContent();
+	}
+
+	private static String getSenderUblFile(File file) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		NodeList feInvoiceChildren = doc.getElementsByTagName("fe:Invoice").item(0).getChildNodes();
+		NodeList feAccountingChildren = doc.getElementsByTagName("fe:AccountingSupplierParty").item(0).getChildNodes();
+		NodeList fePartyChildren = doc.getElementsByTagName("fe:Party").item(0).getChildNodes();
+		NodeList feIdSupplierChildren = doc.getElementsByTagName("cac:PartyIdentification").item(0).getChildNodes();
+		String nodeName = "";
+		String nodeName1 = "";
+		String nodeName2 = "";
+		String nodeName3 = "";
+		Node item = null;
+		Node item1 = null;
+		Node item2 = null;
+		Node item3 = null;
+		for (int i = 0; i < feInvoiceChildren.getLength(); i++) {
+			item = feInvoiceChildren.item(i);
+			nodeName = item.getNodeName();
+			if (nodeName.equalsIgnoreCase("fe:AccountingSupplierParty")) {
+				item1 = feAccountingChildren.item(1);
+				nodeName1 = item1.getNodeName();
+	
+				if (nodeName1.equalsIgnoreCase("fe:Party")) {
+					item2 = fePartyChildren.item(1);
+					nodeName2 = item2.getNodeName();
+	
+					if (nodeName2.equalsIgnoreCase("cac:PartyIdentification")) {
+						item3 = feIdSupplierChildren.item(1);
+						nodeName3 = item3.getNodeName();
+					
+						if (nodeName3.equalsIgnoreCase("cbc:ID")) {
+							return item3.getTextContent();
+						}
+					}
+				}
+				return null;
+			}
+		}
+		return null;
+	}
+
 }

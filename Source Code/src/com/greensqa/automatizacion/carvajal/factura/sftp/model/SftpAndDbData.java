@@ -9,18 +9,20 @@ public class SftpAndDbData {
 	private String destSftp;
 	
 	//Atributos conexión BD
+	private int tipoBD; 
 	private String userDb;
 	private String passwordDb;
 	private String urlDb;
 	private int portDb;
 	
-	public SftpAndDbData(String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp,
+	public SftpAndDbData(String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp, int tipoBD,
 			String userDb, String passwordDb, String urlDb, int portDb) {
 		this.userSftp = userSftp;
 		this.passwordSftp = passwordSftp;
 		this.urlSftp = urlSftp;
 		this.portSftp = portSftp;
 		this.destSftp = destSftp;
+		this.tipoBD = tipoBD; 
 		this.userDb = userDb;
 		this.passwordDb = passwordDb;
 		this.urlDb = urlDb;
@@ -97,5 +99,13 @@ public class SftpAndDbData {
 
 	public void setPortDb(int portDb) {
 		this.portDb = portDb;
+	}
+
+	public int getTipoBD() {
+		return tipoBD;
+	}
+
+	public void setTipoBD(int tipoBD) {
+		this.tipoBD = tipoBD;
 	}
 }
