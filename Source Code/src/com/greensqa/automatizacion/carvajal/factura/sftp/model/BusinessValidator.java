@@ -204,7 +204,8 @@ public class BusinessValidator {
 	public void getSummary() throws IOException {
 		File file = new File(logFilePath);
 
-		try (FileWriter fw = new FileWriter(file); BufferedWriter bw = new BufferedWriter(fw)) {
+		try (FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+				BufferedWriter bw = new BufferedWriter(fw)) {
 			bw.write("Cantidad de archivos procesados correctamente: " + filesOk
 					+ "\r\nCantidad de archivos procesados con errores: " + filesFailed);
 		}
