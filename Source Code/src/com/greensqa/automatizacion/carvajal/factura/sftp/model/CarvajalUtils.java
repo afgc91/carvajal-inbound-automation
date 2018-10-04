@@ -416,7 +416,7 @@ public class CarvajalUtils {
 		return null;
 	}
 
-	protected static String getNitSender(String filePath)
+	protected static String getNitSupplier(String filePath)
 			throws ParserConfigurationException, SAXException, IOException {
 		File f = new File(filePath);
 		if (!f.exists()) {
@@ -443,7 +443,7 @@ public class CarvajalUtils {
 				return getSenderXmlFile(f);
 			} else {
 				// Es UBL Dian. Obtener número de factura.
-				return getSenderUblFile(f);
+				return getNitSupplierUblFile(f);
 			}
 		}
 		}
@@ -469,46 +469,145 @@ public class CarvajalUtils {
 		return doc.getElementsByTagName("ENC_2").item(0).getTextContent();
 	}
 
-	private static String getSenderUblFile(File file) throws ParserConfigurationException, SAXException, IOException {
+	private static String getNitSupplierUblFile(File file)
+			throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(file);
 		doc.getDocumentElement().normalize();
 		NodeList feInvoiceChildren = doc.getElementsByTagName("fe:Invoice").item(0).getChildNodes();
-		NodeList feAccountingChildren = doc.getElementsByTagName("fe:AccountingSupplierParty").item(0).getChildNodes();
+		NodeList feSupplierChildren = doc.getElementsByTagName("fe:AccountingSupplierParty").item(0).getChildNodes();
 		NodeList fePartyChildren = doc.getElementsByTagName("fe:Party").item(0).getChildNodes();
 		NodeList feIdSupplierChildren = doc.getElementsByTagName("cac:PartyIdentification").item(0).getChildNodes();
+
 		String nodeName = "";
-		String nodeName1 = "";
-		String nodeName2 = "";
-		String nodeName3 = "";
 		Node item = null;
-		Node item1 = null;
-		Node item2 = null;
-		Node item3 = null;
 		for (int i = 0; i < feInvoiceChildren.getLength(); i++) {
 			item = feInvoiceChildren.item(i);
 			nodeName = item.getNodeName();
 			if (nodeName.equalsIgnoreCase("fe:AccountingSupplierParty")) {
-				item1 = feAccountingChildren.item(1);
-				nodeName1 = item1.getNodeName();
-	
-				if (nodeName1.equalsIgnoreCase("fe:Party")) {
-					item2 = fePartyChildren.item(1);
-					nodeName2 = item2.getNodeName();
-	
-					if (nodeName2.equalsIgnoreCase("cac:PartyIdentification")) {
-						item3 = feIdSupplierChildren.item(1);
-						nodeName3 = item3.getNodeName();
-					
-						if (nodeName3.equalsIgnoreCase("cbc:ID")) {
-							return item3.getTextContent();
+				for (int j = 0; j < feSupplierChildren.getLength(); j++) {
+					item = feSupplierChildren.item(j);
+					nodeName = item.getNodeName();
+					for (int k = 0; k < fePartyChildren.getLength(); k++) {
+						if (nodeName.equals("fe:Party")) {
+							for (int k2 = 0; k2 < fePartyChildren.getLength(); k2++) {
+								item = fePartyChildren.item(k2);
+								nodeName = item.getNodeName();
+								if (nodeName.equals("cac:PartyIdentification")) {
+									for (int k3 = 0; k3 < feIdSupplierChildren.getLength(); k3++) {
+										item = feIdSupplierChildren.item(k3);
+										nodeName = item.getNodeName();
+										if (nodeName.equals("cbc:ID")) {
+											return item.getTextContent();
+										}
+									}
+								}
+							}
 						}
 					}
 				}
-				return null;
 			}
 		}
+		return null;
+	}
+
+	protected static String getNitCustomer(String filePath)
+			throws ParserConfigurationException, SAXException, IOException {
+		File f1 = new File(filePath);
+		if (!f1.exists()) {
+			return null;
+		}
+
+		String fileExt = getFileExtension(filePath);
+
+		switch (fileExt) {
+		case "txt": {
+			// Obtener número de factura de archivo plano.
+			return getNitReceiverTxtFile(f1);
+		}
+		case "xml": {
+			// Obtener nùmero de factura de archivo xml (idenificar si es UBL o XML
+			// estándar).
+			int docType = getXmlType(filePath);
+			if (docType == 0) {
+				return null;
+			}
+
+			if (docType == 1) {
+				// Es XML estándar. Obtener número de factura.
+				return getNitReceiverXmlFile(f1);
+			} else {
+				// Es UBL Dian. Obtener número de factura.
+				return getNitCustomerUblFile(f1);
+			}
+		}
+		}
+		return null;
+	}
+
+	private static String getNitReceiverTxtFile(File file) throws FileNotFoundException, IOException {
+		// Pos 9 fila 1
+		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
+			String line = br.readLine();
+			if (line.contains("ENC")) {
+				return line.split(",")[3];
+			}
+		}
+		return null;
+	}
+
+	private static String getNitReceiverXmlFile(File file)
+			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		return doc.getElementsByTagName("ENC_3").item(0).getTextContent();
+	}
+
+	private static String getNitCustomerUblFile(File file)
+			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		NodeList feInvoiceChildren = doc.getElementsByTagName("fe:Invoice").item(0).getChildNodes();
+
+		String nodeName1 = "";
+		Node item1 = null;
+		for (int l = 0; l < feInvoiceChildren.getLength(); l++) {
+			item1 = feInvoiceChildren.item(l);
+			nodeName1 = item1.getNodeName();
+			// System.out.println(("fe:AccountingCustomerParty").equals(nodeName1));
+			NodeList feCustomerChildren = item1.getChildNodes();
+			if (nodeName1.equalsIgnoreCase("fe:AccountingCustomerParty")) {
+				for (int h = 0; h < feCustomerChildren.getLength(); h++) {
+					item1 = feCustomerChildren.item(h);
+					nodeName1 = item1.getNodeName();
+					// System.out.println(nodeName1);
+					NodeList feCustPartyChildren = item1.getChildNodes();
+					if (nodeName1.equals("fe:Party")) {
+						for (int n = 0; n < feCustPartyChildren.getLength(); n++) {
+							item1 = feCustPartyChildren.item(n);
+							nodeName1 = item1.getNodeName();
+							// System.out.println(nodeName1);
+							NodeList feIdChildren = item1.getChildNodes();
+							if (nodeName1.equals("cac:PartyIdentification")) {
+								for (int i = 0; i < feIdChildren.getLength(); i++) {
+									item1 = feIdChildren.item(i);
+									nodeName1 = item1.getNodeName();
+									if (nodeName1.equals("cbc:ID")) {
+										return item1.getTextContent();
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		return null;
 	}
 

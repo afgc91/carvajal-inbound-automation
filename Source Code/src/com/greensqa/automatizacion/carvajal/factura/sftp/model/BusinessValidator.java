@@ -84,8 +84,9 @@ public class BusinessValidator {
 				PreparedStatement docFactPs = con.prepareStatement(docFactQuery)) {
 
 			String factNum = CarvajalUtils.getFactNumber(file.getAbsolutePath());
-			String nitSender = CarvajalUtils.getNitSender(file.getAbsolutePath());
-			// String typeId = CarvajalUtils.getTypeId(file.getAbsolutePath());
+			String nitSender = CarvajalUtils.getNitSupplier(file.getAbsolutePath());
+			String nitReceiver = CarvajalUtils.getNitCustomer(file.getAbsolutePath());
+		
 
 			docStatusPs.setString(1, file.getName());
 			docXMLNamePs.setString(1, factNum);
@@ -145,7 +146,7 @@ public class BusinessValidator {
 					boolean failProcess = false;
 
 					bw.write("Número de Factura: " + factNum + "\r\n");
-					bw.write("Nit del Emisor: " + nitSender + "\r\n \r\n");
+					bw.write("Nit del Emisor: " + nitSender + "  Nit del Receptor:" + nitReceiver + "\r\n \r\n");
 
 					if (docStatusRs != null && docStatusRs.next()) {
 						while (docStatusRs.next()) {
@@ -160,10 +161,17 @@ public class BusinessValidator {
 								failProcess = true;
 							}
 
-							if (processName.equalsIgnoreCase("DOCUMENT_PROCESSED")) {
-								if (status.equalsIgnoreCase("OK")) {
+							if (("DOCUMENT_PROCESSED").equals(processName)) {
+								if (("OK").equals(status)) {
 									filesOk += 1;
-								} else {
+								}
+							}
+
+							if (("START").equals(processName) || ("RECEPTION").equals(processName)
+									|| ("TRANSFORMATION").equals(processName) || ("RENAME_FILE").equals(processName)
+									|| ("SIGN").equals(processName) || ("QR_CODE_STRING_CREATION").equals(processName)
+									|| ("DOCUMENT_PROCESSED").equals(processName)) {
+								if (("FAIL").equals(status)) {
 									filesFailed += 1;
 								}
 							}
@@ -204,8 +212,7 @@ public class BusinessValidator {
 	public void getSummary() throws IOException {
 		File file = new File(logFilePath);
 
-		try (FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
-				BufferedWriter bw = new BufferedWriter(fw)) {
+		try (FileWriter fw = new FileWriter(file.getAbsoluteFile(), true); BufferedWriter bw = new BufferedWriter(fw)) {
 			bw.write("Cantidad de archivos procesados correctamente: " + filesOk
 					+ "\r\nCantidad de archivos procesados con errores: " + filesFailed);
 		}

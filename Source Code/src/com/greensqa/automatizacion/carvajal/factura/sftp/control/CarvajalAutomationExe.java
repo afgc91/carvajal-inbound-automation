@@ -235,8 +235,8 @@ public class CarvajalAutomationExe {
 				boolean selectOptionZip = panel1.getSelectCompression().isSelected();
 
 				if (selectOptionZip != false) {
-					panel1.getFilesPerZipLabel().setVisible(true);
-					panel1.getFilesPerZipField().setVisible(true);
+					//panel1.getFilesPerZipLabel().setVisible(true);
+					//panel1.getFilesPerZipField().setVisible(true);
 					return;
 				}
 			}

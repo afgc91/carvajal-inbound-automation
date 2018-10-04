@@ -449,7 +449,7 @@ public class CarvajalMainPanel extends JPanel {
 		
 		selectSrcPathLabel.setVisible(false);
 		fileBDLabel.setVisible(false);	
-		//generateLog.setEnabled(false);
+		generateLog.setEnabled(false);
 	}
 
 	public boolean isValidInput() {
