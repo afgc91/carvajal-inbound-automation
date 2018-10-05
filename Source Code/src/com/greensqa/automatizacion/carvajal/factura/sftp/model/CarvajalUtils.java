@@ -384,7 +384,7 @@ public class CarvajalUtils {
 		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
 			String line = br.readLine();
 			if (line.contains("ENC")) {
-				return line.split(",")[9];
+				return line.split(",")[1];
 			}
 		}
 		return null;
@@ -395,7 +395,7 @@ public class CarvajalUtils {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(file);
 		doc.getDocumentElement().normalize();
-		return doc.getElementsByTagName("ENC_9").item(0).getTextContent();
+		return doc.getElementsByTagName("ENC_1").item(0).getTextContent();
 	}
 
 	private static String getTypeIdUblFile(File file) throws ParserConfigurationException, SAXException, IOException {
@@ -410,8 +410,19 @@ public class CarvajalUtils {
 			item = feInvoiceChildren.item(i);
 			nodeName = item.getNodeName();
 			if (nodeName.equalsIgnoreCase("cbc:InvoiceTypeCode")) {
-				return item.getTextContent();
+				String nameTypeId = item.getTextContent();
+				if (nameTypeId.equalsIgnoreCase("1")) {
+					return "Factura de Venta";
+				} else if (nameTypeId.equalsIgnoreCase("2")) {
+					return "Factura de Exportación";
+				} else if (nameTypeId.equalsIgnoreCase("3")) {
+					return "Factura de Contingencia";
+				} else if (nameTypeId.equalsIgnoreCase("9")) {
+					return "Nota"; 
+				}
+
 			}
+
 		}
 		return null;
 	}
@@ -476,31 +487,29 @@ public class CarvajalUtils {
 		Document doc = builder.parse(file);
 		doc.getDocumentElement().normalize();
 		NodeList feInvoiceChildren = doc.getElementsByTagName("fe:Invoice").item(0).getChildNodes();
-		NodeList feSupplierChildren = doc.getElementsByTagName("fe:AccountingSupplierParty").item(0).getChildNodes();
-		NodeList fePartyChildren = doc.getElementsByTagName("fe:Party").item(0).getChildNodes();
-		NodeList feIdSupplierChildren = doc.getElementsByTagName("cac:PartyIdentification").item(0).getChildNodes();
 
 		String nodeName = "";
 		Node item = null;
 		for (int i = 0; i < feInvoiceChildren.getLength(); i++) {
 			item = feInvoiceChildren.item(i);
 			nodeName = item.getNodeName();
+			NodeList feSupplierChildren = item.getChildNodes();
 			if (nodeName.equalsIgnoreCase("fe:AccountingSupplierParty")) {
 				for (int j = 0; j < feSupplierChildren.getLength(); j++) {
 					item = feSupplierChildren.item(j);
 					nodeName = item.getNodeName();
-					for (int k = 0; k < fePartyChildren.getLength(); k++) {
-						if (nodeName.equals("fe:Party")) {
-							for (int k2 = 0; k2 < fePartyChildren.getLength(); k2++) {
-								item = fePartyChildren.item(k2);
-								nodeName = item.getNodeName();
-								if (nodeName.equals("cac:PartyIdentification")) {
-									for (int k3 = 0; k3 < feIdSupplierChildren.getLength(); k3++) {
-										item = feIdSupplierChildren.item(k3);
-										nodeName = item.getNodeName();
-										if (nodeName.equals("cbc:ID")) {
-											return item.getTextContent();
-										}
+					NodeList fePartyChildren = item.getChildNodes();
+					if (nodeName.equals("fe:Party")) {
+						for (int k2 = 0; k2 < fePartyChildren.getLength(); k2++) {
+							item = fePartyChildren.item(k2);
+							nodeName = item.getNodeName();
+							NodeList feIdSupplierChildren = item.getChildNodes();
+							if (nodeName.equals("cac:PartyIdentification")) {
+								for (int k3 = 0; k3 < feIdSupplierChildren.getLength(); k3++) {
+									item = feIdSupplierChildren.item(k3);
+									nodeName = item.getNodeName();
+									if (nodeName.equals("cbc:ID")) {
+										return item.getTextContent();
 									}
 								}
 							}

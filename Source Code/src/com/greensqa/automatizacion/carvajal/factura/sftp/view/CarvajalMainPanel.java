@@ -8,6 +8,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
 public class CarvajalMainPanel extends JPanel {
@@ -39,7 +40,6 @@ public class CarvajalMainPanel extends JPanel {
 	
 
 	// Generar archivos
-	
 	
 	/**
 	 * Etiqueta para mostrar información referente a la funcionalidad generar archivos
@@ -153,6 +153,11 @@ public class CarvajalMainPanel extends JPanel {
 	private JButton backMainPanel;
 
 	// Envío de archivos vía SFTP
+	
+	/**
+	 * Barra de progreso 
+	 **/
+	private JProgressBar progressBar; 
 
 	/**
 	 * Botón para seleccionar los datos de conexión (base de datos y sftp).
@@ -392,6 +397,7 @@ public class CarvajalMainPanel extends JPanel {
 		generateLog = new JButton("Generar LOG");
 		fileConnectionFC = new JFileChooser();	
 		selectSrcPathFC = new JFileChooser();
+		progressBar = new JProgressBar(); 
 		image = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
 
@@ -407,6 +413,7 @@ public class CarvajalMainPanel extends JPanel {
 		backMainPanel.setSize(backMainPanel.getPreferredSize());
 		send.setSize(send.getPreferredSize());
 		generateLog.setSize(generateLog.getPreferredSize());
+		progressBar.setBounds(40, 40, 160, 30);
 		
 		int x = 10, y = 20, d =20;
 		informationOption.setLocation(x,y);
@@ -435,6 +442,8 @@ public class CarvajalMainPanel extends JPanel {
 		x = 320; y = 180;
 		image.setLocation(x, y);
 		
+		progressBar.setValue(0);
+		this.add(progressBar);
 		this.add(informationOption);
 		this.add(selectSrcPath);
 		this.add(selectSrcPathLabel);
@@ -450,6 +459,7 @@ public class CarvajalMainPanel extends JPanel {
 		selectSrcPathLabel.setVisible(false);
 		fileBDLabel.setVisible(false);	
 		generateLog.setEnabled(false);
+		progressBar.setVisible(false);
 	}
 
 	public boolean isValidInput() {
@@ -881,5 +891,12 @@ public class CarvajalMainPanel extends JPanel {
 	public void setBackMainPanel(JButton backMainPanel) {
 		this.backMainPanel = backMainPanel;
 	}
-	
+
+	public JProgressBar getProgressBar() {
+		return progressBar;
+	}
+
+	public void setProgressBar(JProgressBar progressBar) {
+		this.progressBar = progressBar;
+	}
 }

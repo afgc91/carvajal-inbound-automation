@@ -27,6 +27,9 @@ public class BusinessValidator {
 	private String logFilePath;
 	private int filesOk;
 	private int filesFailed;
+	private int startProcess;
+	private int total = 0;
+	private boolean isFinish = false;
 
 	public BusinessValidator(Connection con, String directory) {
 		this.setLogged(false);
@@ -84,9 +87,9 @@ public class BusinessValidator {
 				PreparedStatement docFactPs = con.prepareStatement(docFactQuery)) {
 
 			String factNum = CarvajalUtils.getFactNumber(file.getAbsolutePath());
+			String typeDoc = CarvajalUtils.getTypeId(file.getAbsolutePath());
 			String nitSender = CarvajalUtils.getNitSupplier(file.getAbsolutePath());
 			String nitReceiver = CarvajalUtils.getNitCustomer(file.getAbsolutePath());
-		
 
 			docStatusPs.setString(1, file.getName());
 			docXMLNamePs.setString(1, factNum);
@@ -145,15 +148,21 @@ public class BusinessValidator {
 						BufferedWriter bw = new BufferedWriter(fw)) {
 					boolean failProcess = false;
 
-					bw.write("Número de Factura: " + factNum + "\r\n");
+					bw.write("Número de Documento: " + factNum + " Tipo: " + typeDoc + "\r\n");
 					bw.write("Nit del Emisor: " + nitSender + "  Nit del Receptor:" + nitReceiver + "\r\n \r\n");
 
-					if (docStatusRs != null && docStatusRs.next()) {
+					if (docStatusRs != null) {
+						boolean validateDocumentProcessedOk = false;
+						boolean validateDocumentProcessedNok = false;
 						while (docStatusRs.next()) {
 
 							status = docStatusRs.getString(4);
 							processName = docStatusRs.getString(3);
 							message = docStatusRs.getString(8);
+							
+							if (("START").equals(processName)) {
+								startProcess += 1;
+							}
 
 							if (status.equalsIgnoreCase("FAIL")) {
 								bw.write("Los siguientes procesos fallaron: \r\n" + "Proceso: " + processName
@@ -161,19 +170,22 @@ public class BusinessValidator {
 								failProcess = true;
 							}
 
-							if (("DOCUMENT_PROCESSED").equals(processName)) {
-								if (("OK").equals(status)) {
-									filesOk += 1;
+							//Validar documento procesado OK.
+							if (!validateDocumentProcessedOk) {
+								if (("DOCUMENT_PROCESSED").equals(processName)) {
+									if (("OK").equals(status)) {
+										filesOk += 1;
+										validateDocumentProcessedOk = true;
+									}
 								}
 							}
-
-							if (("START").equals(processName) || ("RECEPTION").equals(processName)
-									|| ("TRANSFORMATION").equals(processName) || ("RENAME_FILE").equals(processName)
-									|| ("SIGN").equals(processName) || ("QR_CODE_STRING_CREATION").equals(processName)
-									|| ("DOCUMENT_PROCESSED").equals(processName)) {
-								if (("FAIL").equals(status)) {
+							
+							//Validar documento procesado NOK
+							if (!validateDocumentProcessedNok) {
+								if ("FAIL".equals(status)) {
 									filesFailed += 1;
-								}
+									validateDocumentProcessedNok = true;
+								}	
 							}
 						}
 					} else {
@@ -207,6 +219,25 @@ public class BusinessValidator {
 				}
 			}
 		}
+	}
+
+	public int getStartProcess() {
+		return startProcess;
+	}
+
+	// Contar la cantidad de archivos en la carpeta
+	public int getTotalFiles(File file) {
+		String[] arrArchivos = file.list();
+		total += arrArchivos.length;
+		File tmpFile;
+		for (int i = 0; i < arrArchivos.length; ++i) {
+			tmpFile = new File(file.getPath() + "/" + arrArchivos[i]);
+			if (tmpFile.isDirectory()) {
+				total += getTotalFiles(tmpFile);
+			}
+		}
+		System.out.println(total);
+		return total;
 	}
 
 	public void getSummary() throws IOException {
