@@ -73,7 +73,7 @@ public class TestCaseValidator {
 
 		docFactQuery = "select * from documentos where numero_documento = ? ";
 
-		logErrorQuery = "select * from estados_procesamiento where id_transaccion = " + "(select * from (select id "
+		logErrorQuery = "select * from log_errores where id_transaccion = " + "(select * from (select id "
 				+ "	from transacciones " + "	where nombre_archivo_original = ? "
 				+ "	order by fecha_creacion desc) where rownum = 1)" + "order by fecha_creacion";
 
@@ -81,55 +81,7 @@ public class TestCaseValidator {
 			JOptionPane.showMessageDialog(null, "No se pudo realizar la conexión", "Conexión nula",
 					JOptionPane.ERROR_MESSAGE);
 		}
-
-		try (PreparedStatement docStatusPs = con.prepareStatement(docStatusQuery);
-				PreparedStatement docXMLNamePs = con.prepareStatement(docNameXMLQuery);
-				PreparedStatement docPDFNamePs = con.prepareStatement(docNamePDFQuery);
-				PreparedStatement docRtaDianPs = con.prepareStatement(docNameRtaQuery)) {
-
-			// String file = new File(pathFile);
-			ArrayList<String> path = ReadExcel.getValueFieldPosition(file.getAbsolutePath(), 2);
-
-			for (int i = 0; i < path.size(); i++) {
-				File fileSend = new File(path.get(i));
-				factNum = CarvajalUtils.getFactNumber(path.get(i));
-				docStatusPs.setString(1, fileSend.getName());
-				docXMLNamePs.setString(1, factNum);
-				docPDFNamePs.setString(1, factNum);
-				docRtaDianPs.setString(1, factNum);
-
-				try (ResultSet docStatusRs = docStatusPs.executeQuery();
-						ResultSet docXMLNameRs = docXMLNamePs.executeQuery();
-						ResultSet docNamePDFRs = docPDFNamePs.executeQuery();
-						ResultSet docRtaDianRs = docRtaDianPs.executeQuery()) {
-
-					if (docStatusRs != null) {
-						while (docStatusRs.next()) {
-
-							status = docStatusRs.getString(4);
-							processName = docStatusRs.getString(3);
-							message = docStatusRs.getString(8);
-						}
-					}
-					if (docNamePDFRs.next()) {
-						namePDFFact = docNamePDFRs.getString(5);
-					}
-
-					if (docRtaDianRs.next()) {
-						codeRtaDian = docRtaDianRs.getString(4);
-						infoRtaDian = docRtaDianRs.getString(5);
-					}
-
-					if (docXMLNameRs != null) {
-						if (docXMLNameRs.next()) {
-							nameFileGovernment = docXMLNameRs.getString(13);
-							cufe = docXMLNameRs.getString(14);
-						}
-					}
-				}
 			}
-		}
-	}
 
 	public void testCase(String pathFileTest) throws SQLException, Exception {
 
@@ -140,49 +92,72 @@ public class TestCaseValidator {
 
 		File fileFhater = new File(pathFileTest);
 		String directory = fileFhater.getParent();
-		File log = Log.getLogFile(directory);
+		File log = CarvajalLogger.getLogFile(directory);
 
 		try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true); BufferedWriter bw = new BufferedWriter(fw)) {
 
-			ArrayList<String> testCase = ReadExcel.getValueFieldPosition(pathFileTest, 0);
-			ArrayList<String> documents = ReadExcel.getValueFieldPosition(pathFileTest, 2);
+			ArrayList<String> testCase = ExcelReader.getValueFieldPosition(pathFileTest, 0);
+			ArrayList<String> documents = ExcelReader.getValueFieldPosition(pathFileTest, 2);
 
 			for (int i = 0; i < testCase.size(); i++) {
 				File file = new File(documents.get(i));
-				if ((testCase.get(i)).equalsIgnoreCase("1.2") || (testCase.get(i)).equalsIgnoreCase("1.11")) {
-					factNum = CarvajalUtils.getFactNumber(file.getAbsolutePath());
-					String nameDocument = ((file.getName()).split("\\.")[0]);
-					if (nameFileGovernment.contains(nameDocument) && namePDFFact.contains(nameDocument)) {
-						bw.write("Factura No: " + factNum + "PDF: " + namePDFFact + " Estado : OK \r\n");
+				factNum = CarvajalUtils.getFactNumber(file.getAbsolutePath());
+				String nameDocument = ((file.getName()).split("\\.")[0]);
+				bw.write("Caso de prueba: " + testCase.get(i) + "\r\n \r\n");
+				if ((testCase.get(i)).equals("1.2") || (testCase.get(i)).equals("1.11")) {
+					if (nameFileGovernment.contains(nameDocument) && namePDFFact.contains(nameDocument)
+							&& ("DOCUMENT_PROCESSED").equals(processName) && ("OK").equals(status)) {
+						bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum + " PDF: "
+								+ namePDFFact + " Estado : OK \r\n");
 						statusOk++;
+						generateProcessFail(file.getAbsolutePath(), log);
+						bw.write(resultados);
 					} else {
-						bw.write("Factura No: " + factNum + " Estado : NOK \r\n");
+						bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum
+								+ " Estado : NOK \r\n");
 						statusNOk++;
+						generateProcessFail(file.getAbsolutePath(), log);
+						bw.write(resultados);
 					}
-				}
-				generateProcessFail(file.getAbsolutePath(), log);
-				bw.write(resultados);
-				bw.write("------------------------------------------------------------------------ \r\n");
-				fw.flush();
-			}
-			
-			for (int i = 0; i < testCase.size(); i++) {
-				File file = new File(documents.get(i));
-				if ((testCase.get(i).equalsIgnoreCase("1.8"))) {
+				} else if ((testCase.get(i).equals("1.8"))) {
 					generateLogError(file.getAbsolutePath(), log);
 					if (logError != null) {
-						if (logError.contains("[ERROR-VA3]")) {
-							bw.write("Factura No: " + factNum + namePDFFact + " Estado : OK \r\n");
+						if (logError.contains("[ERROR-VA3]:")) {
+							bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum + " PDF: "
+									+ namePDFFact + " Estado : OK \r\n");
 							bw.write(logError);
 						} else {
-							bw.write("Factura No: " + factNum + namePDFFact + " Estado : NOK \r\n"
+							bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum + " PDF: "
+									+ namePDFFact + " Estado : NOK \r\n"
 									+ "No se genero el Log de errores correspondiente");
-							bw.write(logError);
+							bw.write(logError + "\r\n");
+							System.out.println(logError + "\r\n");
 						}
 					} else {
-						bw.write("No se genero Log de errores");
-					}}
+						bw.write("No se genero Log de errores \r\n");
+					}
+				} else if ((testCase.get(i).equals("1.9"))) {
+					if (nameFileGovernment.contains(nameDocument) && namePDFFact.contains(nameDocument)
+							&& ("DOCUMENT_PROCESSED").equals(processName) && ("OK").equals(status)) {
+						bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum
+								+ " \r\nDocumento PDF : " + namePDFFact + "\r\nArchivo de gobierno: "
+								+ nameFileGovernment + " Estado : OK \r\n");
+						filesGenerates(file.getAbsolutePath(), log);
+						generateProcessFail(file.getAbsolutePath(), log);
+						bw.write(resultados);
+						statusOk++;
+					} else {
+						bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum
+								+ " Estado : NOK \r\n");
+						statusNOk++;
+						filesGenerates(file.getAbsolutePath(), log);
+						generateProcessFail(file.getAbsolutePath(), log);
+						bw.write(resultados);
+					}
 				}
+				bw.write("------------------------------------------------------------------------ \r\n");
+			}
+			fw.flush();
 		}
 	}
 
@@ -204,24 +179,63 @@ public class TestCaseValidator {
 						status = docStatusRs.getString(4);
 						processName = docStatusRs.getString(3);
 						message = docStatusRs.getString(8);
+
+						if (status.equalsIgnoreCase("FAIL")) {
+							resultados = ("Los siguientes procesos fallaron: \r\n" + "Proceso: " + processName
+									+ "\r\nEstado: " + status + " Mensaje: " + message + "\r\n");
+							failProcess = true;
+						}
+					}
+				} else {
+					resultados = ("El procesamiento del documento no generó errores. \r\n");
+				}
+			}
+		}
+	}
+
+	private void filesGenerates(String filePathTest, File log) throws SQLException, Exception {
+
+		try (PreparedStatement docStatusPs = con.prepareStatement(docStatusQuery);
+				PreparedStatement docXMLNamePs = con.prepareStatement(docNameXMLQuery);
+				PreparedStatement docPDFNamePs = con.prepareStatement(docNamePDFQuery);
+				PreparedStatement docRtaDianPs = con.prepareStatement(docNameRtaQuery)) {
+
+			File fileSend = new File(filePathTest);
+			factNum = CarvajalUtils.getFactNumber(fileSend.getAbsolutePath());
+			docXMLNamePs.setString(1, factNum);
+			docPDFNamePs.setString(1, factNum);
+			docRtaDianPs.setString(1, factNum);
+
+			try (ResultSet docXMLNameRs = docXMLNamePs.executeQuery();
+					ResultSet docNamePDFRs = docPDFNamePs.executeQuery();
+					ResultSet docRtaDianRs = docRtaDianPs.executeQuery()) {
+
+				if ((docXMLNameRs != null)) {
+					while (docNamePDFRs.next()) {
+						namePDFFact = docNamePDFRs.getString(5);
 					}
 				}
 
-				if (status.equalsIgnoreCase("FAIL")) {
-					resultados = ("Los siguientes procesos fallaron: \r\n" + "Proceso: " + processName + "\r\nEstado: "
-							+ status + " Mensaje: " + message + "\r\n");
-					failProcess = true;
-				} else
-					resultados = ("El procesamiento del documento no generó errores. \r\n");
+				if ((docXMLNameRs != null)) {
+					while (docRtaDianRs.next()) {
+						codeRtaDian = docRtaDianRs.getString(4);
+						infoRtaDian = docRtaDianRs.getString(5);
+					}
+				}
+
+				if (docXMLNameRs != null) {
+					while (docXMLNameRs.next()) {
+						nameFileGovernment = docXMLNameRs.getString(13);
+						cufe = docXMLNameRs.getString(14);
+					}
+				}
 			}
 		}
 	}
 
 	private void generateLogError(String filePathTest, File log) throws SQLException, Exception {
 
-		try (PreparedStatement logErrorPs = con.prepareStatement(logErrorQuery);
-				FileWriter fw = new FileWriter(log.getAbsoluteFile(), true);
-				BufferedWriter bw = new BufferedWriter(fw)) {
+		try (PreparedStatement logErrorPs = con.prepareStatement(logErrorQuery)) {
 
 			File fileSend = new File(filePathTest);
 			factNum = CarvajalUtils.getFactNumber(fileSend.getAbsolutePath());
@@ -231,7 +245,6 @@ public class TestCaseValidator {
 
 				if (logErrorRs != null) {
 					while (logErrorRs.next()) {
-
 						logError = logErrorRs.getString(5);
 					}
 				}

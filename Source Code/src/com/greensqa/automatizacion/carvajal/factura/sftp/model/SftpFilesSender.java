@@ -68,8 +68,8 @@ public class SftpFilesSender {
 
 		if (option == 2) {
 
-			listAccount = ReadExcel.getValueFieldPosition(srcPath, 1);
-			listFiles = ReadExcel.getValueFieldPosition(srcPath, 2);
+			listAccount = ExcelReader.getValueFieldPosition(srcPath, 1);
+			listFiles = ExcelReader.getValueFieldPosition(srcPath, 2);
 
 			JSch jsch = new JSch();
 			Session session = jsch.getSession(user, url, port);

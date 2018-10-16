@@ -28,7 +28,7 @@ import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalPostgresC
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalcompressFiles;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesGenerator;
-import com.greensqa.automatizacion.carvajal.factura.sftp.model.ReadExcel;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.ExcelReader;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbData;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpFilesSender;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.TestCaseValidator;

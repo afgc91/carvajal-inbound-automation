@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class ReadExcel {
+public class ExcelReader {
 
 //	public static void main(String[] a) throws Exception {
 //		Workbook wb2;

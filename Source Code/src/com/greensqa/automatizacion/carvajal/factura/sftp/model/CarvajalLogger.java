@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-public class Log {
+public class CarvajalLogger {
 
 	public static ArrayList<String> logList = new ArrayList<String>();
 	private static boolean isLogged;
@@ -44,29 +44,6 @@ public class Log {
 			log = new File(logFilePath);
 		}
 	}
-//
-//	public static void createLog(String nameFile) {
-//		try {
-//			File archivo = new File(nameFile);
-//			BufferedWriter bw = new BufferedWriter(new FileWriter(archivo));
-//			String enter = System.getProperty("line.separator");
-//			for (String log : logList) {
-//				bw.write(log+enter);
-//			}
-//
-//			bw.close();
-//
-//		} catch (IOException e) {
-//			JOptionPane.showMessageDialog(null, e.getMessage());
-//		}
-//		
-//		resetLog();
-//
-//	}
-//
-//	public static void resetLog() {
-//		logList = null;
-//	}
 
 	public boolean isLogged() {
 		return isLogged;
