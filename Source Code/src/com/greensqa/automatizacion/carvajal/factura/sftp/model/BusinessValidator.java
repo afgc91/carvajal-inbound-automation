@@ -2,6 +2,7 @@ package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,10 +10,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
 public class BusinessValidator {
@@ -27,6 +30,14 @@ public class BusinessValidator {
 	private String logFilePath;
 	private int filesOk;
 	private int filesFailed;
+	private String idTestCase;
+	private String stateTestCase = "";
+	private String nameFileGovernment = "";
+	private String cufe = "";
+	private String namePDFFact = "";
+	private String nameFileAccept = "";
+	private String codeRtaDian = "";
+	private String infoRtaDian = "";
 	private int startProcess;
 	private int total = 0;
 	private boolean isFinish = false;
@@ -40,8 +51,8 @@ public class BusinessValidator {
 		this.setFilesOk(0);
 	}
 
-	public void executeStatusQuery(File file)
-			throws SQLException, IOException, ParserConfigurationException, SAXException {
+	public void executeStatusQuery(File file, String pathConfi)
+			throws SQLException, IOException, ParserConfigurationException, SAXException, ParseException {
 
 		File log = null;
 
@@ -90,6 +101,7 @@ public class BusinessValidator {
 			String typeDoc = CarvajalUtils.getTypeId(file.getAbsolutePath());
 			String nitSender = CarvajalUtils.getNitSupplier(file.getAbsolutePath());
 			String nitReceiver = CarvajalUtils.getNitCustomer(file.getAbsolutePath());
+			String idTestCase = CarvajalUtils.loadConnectionsData(pathConfi).getTestCase();
 
 			docStatusPs.setString(1, file.getName());
 			docXMLNamePs.setString(1, factNum);
@@ -105,12 +117,6 @@ public class BusinessValidator {
 					ResultSet docRtaDianRs = docRtaDianPs.executeQuery();
 					ResultSet docFactExistRs = docFactPs.executeQuery()) {
 
-				String nameFileGovernment = "";
-				String cufe = "";
-				String namePDFFact = "";
-				String nameFileAccept = "";
-				String codeRtaDian = "";
-				String infoRtaDian = "";
 				boolean isAccept = false;
 				boolean isRtaDian = false;
 				boolean isFailed = false;
@@ -147,7 +153,7 @@ public class BusinessValidator {
 				try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true);
 						BufferedWriter bw = new BufferedWriter(fw)) {
 					boolean failProcess = false;
-
+					bw.write("Caso de Prueba: " + idTestCase + "\r\n");
 					bw.write("Número de Documento: " + factNum + " Tipo: " + typeDoc + "\r\n");
 					bw.write("Nit del Emisor: " + nitSender + "  Nit del Receptor:" + nitReceiver + "\r\n \r\n");
 
@@ -159,7 +165,7 @@ public class BusinessValidator {
 							status = docStatusRs.getString(4);
 							processName = docStatusRs.getString(3);
 							message = docStatusRs.getString(8);
-							
+
 							if (("START").equals(processName)) {
 								startProcess += 1;
 							}
@@ -170,7 +176,7 @@ public class BusinessValidator {
 								failProcess = true;
 							}
 
-							//Validar documento procesado OK.
+							// Validar documento procesado OK.
 							if (!validateDocumentProcessedOk) {
 								if (("DOCUMENT_PROCESSED").equals(processName)) {
 									if (("OK").equals(status)) {
@@ -179,13 +185,13 @@ public class BusinessValidator {
 									}
 								}
 							}
-							
-							//Validar documento procesado NOK
+
+							// Validar documento procesado NOK
 							if (!validateDocumentProcessedNok) {
 								if ("FAIL".equals(status)) {
 									filesFailed += 1;
 									validateDocumentProcessedNok = true;
-								}	
+								}
 							}
 						}
 					} else {
@@ -211,7 +217,7 @@ public class BusinessValidator {
 						} else {
 							bw.write("La Dian no ha realizado acuse de recibido. \r\n");
 						}
-
+						bw.write("Estado:" + validateTestCase(pathConfi, file)+ "\r\n");
 					}
 
 					bw.write("---------------------------------------------------------------------------------------"
@@ -219,6 +225,34 @@ public class BusinessValidator {
 				}
 			}
 		}
+	}
+
+	public String validateTestCase(String configPatth, File file)
+			throws FileNotFoundException, IOException, ParseException {
+
+		String nameFile = file.getName();
+//		System.out.println(nameFile);
+		String nameDocument = (nameFile.split("\\.")[0]);
+
+		idTestCase = CarvajalUtils.loadConnectionsData(configPatth).getTestCase();
+//		System.out.println(idTestCase);
+//		System.out.println(idTestCase.equalsIgnoreCase("1.2"));
+
+		if (idTestCase.equalsIgnoreCase("1.2") || idTestCase.equalsIgnoreCase("1.11")) {
+			if (nameFileGovernment.equalsIgnoreCase(nameDocument) && namePDFFact.equalsIgnoreCase(nameDocument)
+					&& nameFileAccept.equalsIgnoreCase(nameDocument)) {
+				stateTestCase = "OK";
+			} else {
+				stateTestCase = "NOK";
+			}
+		}
+
+		if (idTestCase.equalsIgnoreCase("1.8")) {
+			if ((nameDocument).equalsIgnoreCase(nameFile)) {
+			}
+		}
+//		System.out.println(stateTestCase);
+		return stateTestCase;
 	}
 
 	public int getStartProcess() {
