@@ -26,20 +26,20 @@ public class TestCaseValidator {
 	private String docStatusQuery;
 	private String docNameXMLQuery;
 	private String docNamePDFQuery;
-	private String docNameAcceptQuery;
+	private String docNameAcceptQuery;//TODO
 	private String docNameRtaQuery;
-	private String docFactQuery;
+	private String docFactQuery;//TODO
 	private String status;
 	private String processName;
 	private String message;
 	private String factNum;
 	private String nameFileGovernment = "";
-	private String cufe = "";
+	private String cufe = "";//TODO
 	private String namePDFFact = "";
-	private String nameFileAccept = "";
-	private String codeRtaDian = "";
-	private String infoRtaDian = "";
-	private boolean failProcess = false;
+	private String nameFileAccept = "";//TODO
+	private String codeRtaDian = "";//TODO
+	private String infoRtaDian = "";//TODO
+	private boolean failProcess = false;//TODO
 	private String resultados;
 	private String logErrorQuery;
 	private String logError;
@@ -92,7 +92,8 @@ public class TestCaseValidator {
 
 		File fileFhater = new File(pathFileTest);
 		String directory = fileFhater.getParent();
-		File log = CarvajalLogger.getLogFile(directory);
+		CarvajalFileLogger fileLogger = new CarvajalFileLogger();
+		File log = fileLogger.getLogFile(directory);
 
 		try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true); BufferedWriter bw = new BufferedWriter(fw)) {
 

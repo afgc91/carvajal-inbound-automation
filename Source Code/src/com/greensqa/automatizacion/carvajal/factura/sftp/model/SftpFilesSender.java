@@ -67,7 +67,7 @@ public class SftpFilesSender {
 		}
 
 		if (option == 2) {
-
+			
 			listAccount = ExcelReader.getValueFieldPosition(srcPath, 1);
 			listFiles = ExcelReader.getValueFieldPosition(srcPath, 2);
 

@@ -1,21 +1,20 @@
 package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
+public class CarvajalFileLogger {
 
-public class CarvajalLogger {
+	public ArrayList<String> logList;
+	private boolean isLogged;
+	private String logFilePath;
 
-	public static ArrayList<String> logList = new ArrayList<String>();
-	private static boolean isLogged;
-	private static String logFilePath;
-
-	public static File getLogFile(String directory) throws IOException {
+	public CarvajalFileLogger() {
+		this.logList = new ArrayList<>();
+	}
+	
+	public File getLogFile(String directory) throws IOException {
 		String dirPath = directory + "\\Logs";
 		File dir = new File(dirPath);
 		dir.mkdir();
@@ -47,10 +46,6 @@ public class CarvajalLogger {
 
 	public boolean isLogged() {
 		return isLogged;
-	}
-
-	public void setLogged(boolean isLogged) {
-		this.isLogged = isLogged;
 	}
 
 	public String getLogFilePath() {

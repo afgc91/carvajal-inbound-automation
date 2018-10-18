@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -17,9 +16,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
@@ -28,7 +24,6 @@ import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalPostgresC
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalcompressFiles;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesGenerator;
-import com.greensqa.automatizacion.carvajal.factura.sftp.model.ExcelReader;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbData;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpFilesSender;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.TestCaseValidator;
@@ -546,13 +541,12 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getTipoBD(),
-							sftpDbData.getUrlDb(), sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
+					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(), sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcPath = (fileName.getAbsolutePath());
-					String srcExcel = ("C:\\Users\\dvalencia\\Documents\\ProyectoFECO\\DatosPruebas\\data1.xlsx");
+					//String srcExcel = ("C:\\Users\\dvalencia\\Documents\\ProyectoFECO\\DatosPruebas\\data1.xlsx");
 					File dir = new File(srcPath);
-					File excel = new File(srcExcel);
+					//File excel = new File(srcExcel);
 
 					// Obtener padre de dir
 					BusinessValidator bv = new BusinessValidator(conn.getConnetion(sftpDbData.getTipoBD()),
@@ -604,8 +598,7 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getTipoBD(),
-							sftpDbData.getUrlDb(), sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
+					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(), sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcExcel = (fileName.getAbsolutePath());
 					File excel = new File(srcExcel);

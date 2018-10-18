@@ -66,7 +66,11 @@ public class CarvajalcompressFiles {
 		}
 	}
 
-	// Contar la cantidad de archivos en la carpeta
+	/**
+	 * Contar la cantidad de archivos en la carpeta
+	 * @param directory
+	 * @return
+	 */
 	private static int getTotalFiles(File directory) {
 		int total = 0;
 		String[] arrArchivos = directory.list();

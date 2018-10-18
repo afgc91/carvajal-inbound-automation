@@ -2,7 +2,6 @@ package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
@@ -10,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
@@ -56,7 +54,8 @@ public class BusinessValidator {
 
 		if (!isLogged) {
 			isLogged = true;
-			log = CarvajalLogger.getLogFile(directory);
+			CarvajalFileLogger fileLogger = new CarvajalFileLogger();
+			log = fileLogger.getLogFile(directory);
 			log.createNewFile();
 			logFilePath = log.getAbsolutePath();
 		} else {
