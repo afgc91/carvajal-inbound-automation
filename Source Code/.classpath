@@ -2,17 +2,5 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="postgresql-42.2.5.jar"/>
-	<classpathentry kind="lib" path="json-simple-1.1.jar"/>
-	<classpathentry kind="lib" path="jsch-0.1.54.jar"/>
-	<classpathentry kind="lib" path="ojdbc6.jar"/>
-	<classpathentry kind="lib" path="C:/Users/dvalencia/Downloads/poi-4.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/dvalencia/Downloads/poi-ooxml-4.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/dvalencia/Downloads/poi-ooxml-schemas-4.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/dvalencia/Downloads/commons-collections4-4.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/dvalencia/Downloads/commons-compress-1.18.jar"/>
-	<classpathentry kind="lib" path="C:/Users/dvalencia/Downloads/poi-scratchpad-3.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/dvalencia/Downloads/dom4j-1.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/dvalencia/Downloads/xmlbeans-3.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
