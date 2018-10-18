@@ -13,9 +13,13 @@ import java.lang.reflect.Array;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -27,7 +31,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 
 public class CarvajalUtils {
 
@@ -232,7 +235,6 @@ public class CarvajalUtils {
 			}
 		}
 	}
-
 	/**
 	 * Modifica el primer tag del nodeList obtenido con el nombre de la etiqueta,
 	 * con el valor enviado.
@@ -258,11 +260,6 @@ public class CarvajalUtils {
 		try (FileReader fr = new FileReader(file)) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(fr);
-			//Objeto Configuración caso de Prueba 
-			JSONObject confiTest = (JSONObject) json.get("test"); 
-			String testCase = (String) confiTest.get("casoDePrueba");
-			String channel = (String) confiTest.get("canal");
-			String account = (String) confiTest.get("cuenta"); 
 			// Objeto SFTP
 			JSONObject sftp = (JSONObject) json.get("sftp");
 			String userSftp = (String) sftp.get("usuario");
@@ -278,69 +275,11 @@ public class CarvajalUtils {
 			String urlDb = (String) aurora.get("urlServidor");
 			int portDb = Integer.parseInt((String) aurora.get("puerto"));
 
-			SftpAndDbData connectionsData = new SftpAndDbData(testCase, channel, account, userSftp, passwordSftp, urlSftp, portSftp, destSftp,
-					tipoDb, userDb, passwordDb, urlDb, portDb);
+			SftpAndDbData connectionsData = new SftpAndDbData(userSftp, passwordSftp,
+					urlSftp, portSftp, destSftp, tipoDb, userDb, passwordDb, urlDb, portDb);
 			return connectionsData;
 		}
 	}
-	
-
-//	public static int getUrlSend(String filePath) throws FileNotFoundException, IOException, ParseException {
-//		
-//		//final String url = loadConnectionsData(filePath).getUrlSftp();
-//		int channel = 0; 
-//		
-//		final String channelSftp = "\\Bsftp\\B"; 
-//		final String channelAs2 = "\\Bas2\\B"; 
-//
-//		final Pattern patternSftp = Pattern.compile(channelSftp);
-//		final Pattern patternAs2 = Pattern.compile(channelAs2); 
-//		final Matcher matcherSftp = patternSftp.matcher(filePath);
-//		final Matcher matcherAs2 = patternAs2.matcher(filePath); 
-//		
-//		if (matcherSftp.find()) { 
-//			channel = 1; 
-//		} else if (matcherAs2.find()){
-//			channel = 2; 
-//			}
-//		return channel;
-//  	}
-//
-//	public static Double getTestCase(String filePath)
-//			throws FileNotFoundException, IOException, ParseException, ParserConfigurationException, SAXException {
-//
-//		String url = loadConnectionsData(filePath).getUrlSftp(); 
-//		System.out.println(url);
-//		File file = new File(filePath);
-//		if (!file.exists()) {
-//			return null;
-//		}
-//
-//		Double idTestCase = null;
-//		String typeCodeDoc = getTypeId(filePath);
-//		String fileExt = getFileExtension(filePath);
-//		int channel = getUrlSend(filePath);
-////		int channel = 0;
-//		
-//		System.out.println(fileExt);
-//		System.out.println(typeCodeDoc);
-//		if (fileExt.equalsIgnoreCase("txt") && channel==1 && typeCodeDoc.equalsIgnoreCase("1")) {
-//			idTestCase = 1.2;
-//			System.out.println(1.2);
-//		} else {
-//			int docType = getXmlType(filePath);
-//			if (docType == 0) {
-//				return null;				
-//			} else if (docType == 1 && channel==1 && typeCodeDoc.equalsIgnoreCase("4")) {
-//				idTestCase = 1.17;
-//			} else if (docType == 2 && channel==1 && typeCodeDoc.equalsIgnoreCase("3")) {
-//				idTestCase = 1.14;
-//			} else if (docType == 2 && channel==2 && typeCodeDoc.equalsIgnoreCase("3")) {
-//				idTestCase = 1.11; 
-//			}
-//		}
-//		return idTestCase;
-//	}
 
 	protected static String getFactNumber(String filePath)
 			throws ParserConfigurationException, SAXException, IOException {

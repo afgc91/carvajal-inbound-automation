@@ -561,7 +561,6 @@ public class CarvajalAutomationExe {
 						File[] files = dir.listFiles();
 						for (int i = 0; i < files.length; i++) {
 							bv.executeStatusQuery(files[i], directoryBDPath);
-							bv.validateTestCase(directoryBDPath, files[i]);
 						}
 						bv.getSummary();
 					}

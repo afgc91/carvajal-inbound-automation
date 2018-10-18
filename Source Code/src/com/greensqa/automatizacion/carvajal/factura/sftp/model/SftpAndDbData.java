@@ -13,17 +13,10 @@ public class SftpAndDbData {
 	private String userDb;
 	private String passwordDb;
 	private String urlDb;
-	private String testCase; 
-	private String channel; 
-	private String account; 
 	private int portDb;
 	
-	public SftpAndDbData(String testCase, String channel, String account, String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp, int tipoBD,
-			String userDb, String passwordDb, String urlDb, int portDb) {
-		
-		this.testCase = testCase; 
-		this.channel = channel; 
-		this.account = account; 
+	public SftpAndDbData(String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp, int tipoBD,	String userDb, String passwordDb, String urlDb, int portDb) {
+
 		this.userSftp = userSftp;
 		this.passwordSftp = passwordSftp;
 		this.urlSftp = urlSftp;
@@ -115,29 +108,4 @@ public class SftpAndDbData {
 	public void setTipoBD(int tipoBD) {
 		this.tipoBD = tipoBD;
 	}
-
-	public String getTestCase() {
-		return testCase;
-	}
-
-	public void setTestCase(String testCase) {
-		this.testCase = testCase;
-	}
-
-	public String getChannel() {
-		return channel;
-	}
-
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
-
-	public String getAccount() {
-		return account;
-	}
-
-	public void setAccount(String account) {
-		this.account = account;
-	}
-	
 }

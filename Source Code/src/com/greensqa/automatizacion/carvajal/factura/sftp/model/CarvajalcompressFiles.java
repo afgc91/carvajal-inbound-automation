@@ -3,7 +3,9 @@ package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class CarvajalcompressFiles {
@@ -34,14 +36,14 @@ public class CarvajalcompressFiles {
 	private static void addFilesToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
 
 		File folder = new File(srcFile);
-		//Integer total = getTotalFiles(folder);
+		// Integer total = getTotalFiles(folder);
 
 		if (folder.isDirectory()) {
 			addDirectoryToZip(path, srcFile, zip);
 
 		} else {
 			byte[] buf = new byte[1024];
-			int len=0;
+			int len = 0;
 			@SuppressWarnings("resource")
 			FileInputStream in = new FileInputStream(srcFile);
 			zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
@@ -50,8 +52,8 @@ public class CarvajalcompressFiles {
 			}
 		}
 	}
-	
-	//Adicionar Archivos a la carpeta comprimida
+
+	// Adicionar Archivos a la carpeta comprimida
 	private static void addDirectoryToZip(String path, String srcDirectory, ZipOutputStream zip) throws Exception {
 		File folder = new File(srcDirectory);
 
@@ -64,7 +66,7 @@ public class CarvajalcompressFiles {
 		}
 	}
 
-	//Contar la cantidad de archivos en la carpeta
+	// Contar la cantidad de archivos en la carpeta
 	private static int getTotalFiles(File directory) {
 		int total = 0;
 		String[] arrArchivos = directory.list();
@@ -79,4 +81,41 @@ public class CarvajalcompressFiles {
 		return total;
 	}
 
+	public static String unZip(String pathZip) {
+		byte[] buffer = new byte[1024];
+		String pathFileZip = "";
+		try {
+			File file = new File(pathZip);
+			String pathDest = file.getParent();
+
+			File folder = new File(pathDest);
+			if (!folder.exists()) {
+				folder.mkdir();
+			}
+			try (ZipInputStream zis = new ZipInputStream(new FileInputStream(pathZip))) {
+				ZipEntry ze = zis.getNextEntry();
+
+				while (ze != null && !ze.isDirectory()) {
+					String fileName = ze.getName();
+					File archivoNuevo = new File(pathDest + File.separator + fileName);
+					pathFileZip = archivoNuevo.getAbsolutePath();
+					new File(archivoNuevo.getParent()).mkdirs();
+					try (FileOutputStream fos = new FileOutputStream(archivoNuevo)) {
+						int len;
+						while ((len = zis.read(buffer)) > 0) {
+							fos.write(buffer, 0, len);
+						}
+						ze = zis.getNextEntry();
+					}
+				}
+				zis.closeEntry();
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		return pathFileZip;
+
+	}
 }
+
+// Descomprimir Documento enviado en .zip a Cen Financiero

@@ -258,6 +258,8 @@ public class FilesGenerator {
 				line = br.readLine();
 				if (line == null) {
 					break;
+				} else {
+					line = line.replaceAll("[^\\p{Graph}\n\r\t ]", "");
 				}
 				fileLines.add(line);
 			}

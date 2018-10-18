@@ -30,8 +30,6 @@ public class BusinessValidator {
 	private String logFilePath;
 	private int filesOk;
 	private int filesFailed;
-	private String idTestCase;
-	private String stateTestCase = "";
 	private String nameFileGovernment = "";
 	private String cufe = "";
 	private String namePDFFact = "";
@@ -40,7 +38,7 @@ public class BusinessValidator {
 	private String infoRtaDian = "";
 	private int startProcess;
 	private int total = 0;
-	private boolean isFinish = false;
+
 
 	public BusinessValidator(Connection con, String directory) {
 		this.setLogged(false);
@@ -58,7 +56,7 @@ public class BusinessValidator {
 
 		if (!isLogged) {
 			isLogged = true;
-			log = getLogFile();
+			log = CarvajalLogger.getLogFile(directory);
 			log.createNewFile();
 			logFilePath = log.getAbsolutePath();
 		} else {
@@ -101,7 +99,6 @@ public class BusinessValidator {
 			String typeDoc = CarvajalUtils.getTypeId(file.getAbsolutePath());
 			String nitSender = CarvajalUtils.getNitSupplier(file.getAbsolutePath());
 			String nitReceiver = CarvajalUtils.getNitCustomer(file.getAbsolutePath());
-			String idTestCase = CarvajalUtils.loadConnectionsData(pathConfi).getTestCase();
 
 			docStatusPs.setString(1, file.getName());
 			docXMLNamePs.setString(1, factNum);
@@ -153,7 +150,6 @@ public class BusinessValidator {
 				try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true);
 						BufferedWriter bw = new BufferedWriter(fw)) {
 					boolean failProcess = false;
-					bw.write("Caso de Prueba: " + idTestCase + "\r\n");
 					bw.write("Número de Documento: " + factNum + " Tipo: " + typeDoc + "\r\n");
 					bw.write("Nit del Emisor: " + nitSender + "  Nit del Receptor:" + nitReceiver + "\r\n \r\n");
 
@@ -217,42 +213,15 @@ public class BusinessValidator {
 						} else {
 							bw.write("La Dian no ha realizado acuse de recibido. \r\n");
 						}
-						bw.write("Estado:" + validateTestCase(pathConfi, file)+ "\r\n");
 					}
 
 					bw.write("---------------------------------------------------------------------------------------"
 							+ "-------------------------------------------------------------\r\n");
+				
+				
 				}
 			}
 		}
-	}
-
-	public String validateTestCase(String configPatth, File file)
-			throws FileNotFoundException, IOException, ParseException {
-
-		String nameFile = file.getName();
-//		System.out.println(nameFile);
-		String nameDocument = (nameFile.split("\\.")[0]);
-
-		idTestCase = CarvajalUtils.loadConnectionsData(configPatth).getTestCase();
-//		System.out.println(idTestCase);
-//		System.out.println(idTestCase.equalsIgnoreCase("1.2"));
-
-		if (idTestCase.equalsIgnoreCase("1.2") || idTestCase.equalsIgnoreCase("1.11")) {
-			if (nameFileGovernment.equalsIgnoreCase(nameDocument) && namePDFFact.equalsIgnoreCase(nameDocument)
-					&& nameFileAccept.equalsIgnoreCase(nameDocument)) {
-				stateTestCase = "OK";
-			} else {
-				stateTestCase = "NOK";
-			}
-		}
-
-		if (idTestCase.equalsIgnoreCase("1.8")) {
-			if ((nameDocument).equalsIgnoreCase(nameFile)) {
-			}
-		}
-//		System.out.println(stateTestCase);
-		return stateTestCase;
 	}
 
 	public int getStartProcess() {
@@ -281,22 +250,6 @@ public class BusinessValidator {
 			bw.write("Cantidad de archivos procesados correctamente: " + filesOk
 					+ "\r\nCantidad de archivos procesados con errores: " + filesFailed);
 		}
-	}
-
-	private File getLogFile() throws IOException {
-		String dirPath = directory + "\\Logs";
-		File dir = new File(dirPath);
-		dir.mkdir();
-		File[] files = dir.listFiles();
-		String logFilePath = "";
-		if (files != null) {
-			logFilePath = dirPath + "\\log" + (files.length + 1) + ".txt";
-		} else {
-			logFilePath = dirPath + "\\log1.txt";
-		}
-		File log = new File(logFilePath);
-		log.canWrite();
-		return log;
 	}
 
 	public Connection getCon() {

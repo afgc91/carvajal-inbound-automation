@@ -81,7 +81,7 @@ public class TestCaseValidator {
 			JOptionPane.showMessageDialog(null, "No se pudo realizar la conexión", "Conexión nula",
 					JOptionPane.ERROR_MESSAGE);
 		}
-			}
+	}
 
 	public void testCase(String pathFileTest) throws SQLException, Exception {
 
@@ -119,45 +119,91 @@ public class TestCaseValidator {
 						generateProcessFail(file.getAbsolutePath(), log);
 						bw.write(resultados);
 					}
-				} else if ((testCase.get(i).equals("1.8"))) {
-					generateLogError(file.getAbsolutePath(), log);
-					if (logError != null) {
-						if (logError.contains("[ERROR-VA3]:")) {
-							bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum + " PDF: "
-									+ namePDFFact + " Estado : OK \r\n");
-							bw.write(logError);
-						} else {
-							bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum + " PDF: "
-									+ namePDFFact + " Estado : NOK \r\n"
-									+ "No se genero el Log de errores correspondiente");
-							bw.write(logError + "\r\n");
-							System.out.println(logError + "\r\n");
-						}
-					} else {
-						bw.write("No se genero Log de errores \r\n");
-					}
-				} else if ((testCase.get(i).equals("1.9"))) {
-					if (nameFileGovernment.contains(nameDocument) && namePDFFact.contains(nameDocument)
-							&& ("DOCUMENT_PROCESSED").equals(processName) && ("OK").equals(status)) {
+				} 
+				else if ((testCase.get(i).equals("1.3"))) {
+					File fileSend = new File(documents.get(i));
+					String nameFileSend = fileSend.getName();
+
+					if (("DOCUMENT_PROCESSED").equals(processName) && ("OK").equals(status)
+							&& nameFileGovernment.matches("face_[f,c,n,d][0-9]{10,11}[0-9A-Fa-f]{10}")
+							&& namePDFFact.matches("face_[f,c,n,d][0-9]{10,11}[0-9A-Fa-f]{10}")) {
 						bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum
-								+ " \r\nDocumento PDF : " + namePDFFact + "\r\nArchivo de gobierno: "
-								+ nameFileGovernment + " Estado : OK \r\n");
+								+ "\r\nNombre Comprobante en Zip: " + nameFileSend + " \r\nDocumento PDF : "
+								+ namePDFFact + "\r\nArchivo de gobierno: " + nameFileGovernment + " Estado : OK \r\n");
 						filesGenerates(file.getAbsolutePath(), log);
 						generateProcessFail(file.getAbsolutePath(), log);
 						bw.write(resultados);
 						statusOk++;
 					} else {
 						bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum
-								+ " Estado : NOK \r\n");
+								+ "\r\nNombre Comprobante en Zip: " + nameFileSend + "\r\n Estado : NOK \r\n");
 						statusNOk++;
 						filesGenerates(file.getAbsolutePath(), log);
 						generateProcessFail(file.getAbsolutePath(), log);
 						bw.write(resultados);
 					}
-				}
+				} 
+				else if ((testCase.get(i).equals("1.8"))) {
+					generateLogError(file.getAbsolutePath(), log);
+					if (logError != null) {
+						if (logError.contains("[ERROR-VA3]:")) {
+							bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum + " PDF: "
+									+ namePDFFact + " Estado : OK \r\n");
+							bw.write(logError);
+							statusOk++;
+						} else {
+							bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum + " PDF: "
+									+ namePDFFact + " Estado : NOK \r\n"
+									+ "No se genero el Log de errores correspondiente");
+							bw.write(logError + "\r\n");
+							statusNOk++;
+						}
+					} else {
+						bw.write("No se genero Log de errores \r\n");
+					}
+				} else if ((testCase.get(i).equals("1.9"))) {
+
+					String pathFile = CarvajalcompressFiles.unZip(documents.get(i));
+					String facNum = CarvajalUtils.getFactNumber(pathFile);
+					File fileInZip = new File(pathFile);
+					String nameFileSend = fileInZip.getName();
+
+					if (("DOCUMENT_PROCESSED").equals(processName) && ("OK").equals(status)
+							&& nameFileGovernment.matches("face_[f,c,n,d][0-9]{10,11}[0-9A-Fa-f]{10}")
+							&& namePDFFact.matches("face_[f,c,n,d][0-9]{10,11}[0-9A-Fa-f]{10}")) {
+						bw.write("Documento enviado: " + file.getName() + " Factura No: " + facNum
+								+ "\r\nNombre Comprobante en Zip: " + nameFileSend + " \r\nDocumento PDF : "
+								+ namePDFFact + "\r\nArchivo de gobierno: " + nameFileGovernment + " Estado : OK \r\n");
+						filesGenerates(file.getAbsolutePath(), log);
+						generateProcessFail(file.getAbsolutePath(), log);
+						bw.write(resultados);
+						statusOk++;
+					} else {
+						bw.write("Documento enviado: " + file.getName() + " Factura No: " + facNum
+								+ "\r\nNombre Comprobante en Zip: " + nameFileSend + "\r\n Estado : NOK \r\n");
+						statusNOk++;
+						filesGenerates(file.getAbsolutePath(), log);
+						generateProcessFail(file.getAbsolutePath(), log);
+						bw.write(resultados);
+					}
+				} else if ((testCase.get(i).equals("1.14")) || (testCase.get(i).equals("1.15")) || (testCase.get(i).equals("1.17"))){
+					if(("DOCUMENT_PROCESSED").equals(processName) && ("OK").equals(status)){
+						bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum
+								+ "\n Estado : OK \r\n");
+						generateProcessFail(file.getAbsolutePath(), log);
+						bw.write(resultados);
+						statusOk++;						
+					} else bw.write("Documento enviado: " + file.getName() + " Factura No: " + factNum
+							+ "\n Estado : NOK \r\n");
+					statusNOk++;
+					generateProcessFail(file.getAbsolutePath(), log);
+					bw.write(resultados);
+					}
 				bw.write("------------------------------------------------------------------------ \r\n");
 			}
 			fw.flush();
+			bw.write("Cantidad de archivos procesados correctamente: " + statusOk
+					+ "\r\nCantidad de archivos procesados con errores: " + statusNOk);
 		}
 	}
 
@@ -175,7 +221,6 @@ public class TestCaseValidator {
 
 				if (docStatusRs != null) {
 					while (docStatusRs.next()) {
-
 						status = docStatusRs.getString(4);
 						processName = docStatusRs.getString(3);
 						message = docStatusRs.getString(8);

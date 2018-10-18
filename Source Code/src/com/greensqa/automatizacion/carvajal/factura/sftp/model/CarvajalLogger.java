@@ -31,7 +31,7 @@ public class CarvajalLogger {
 		return log;
 	}
 
-	private static void generateLog(String directory) throws IOException {
+	private void generateLog(String directory) throws IOException {
 
 		File log = null;
 
