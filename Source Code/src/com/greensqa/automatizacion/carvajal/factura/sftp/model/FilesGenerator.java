@@ -407,6 +407,7 @@ public class FilesGenerator {
 				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
+			setGeneratedFiles(getGeneratedFiles() + 1);
 		}
 
 		return true;
@@ -544,6 +545,7 @@ public class FilesGenerator {
 				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
+			setGeneratedFiles(getGeneratedFiles() + 1);
 		}
 		return true;
 	}
