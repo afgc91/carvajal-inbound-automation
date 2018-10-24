@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -20,7 +21,6 @@ import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.BusinessValidator;
-import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalFilesSenderAWSBucket;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalPostgresConnection;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalcompressFiles;
@@ -29,13 +29,13 @@ import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbData;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpFilesSender;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.TestCaseValidator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.view.CarvajalFrame;
-import com.greensqa.automatizacion.carvajal.factura.sftp.view.CarvajalMainPanel;
+import com.greensqa.automatizacion.carvajal.factura.sftp.view.CarvajalPanel;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 public class CarvajalAutomationExe {
 
-	private static CarvajalMainPanel panel, panel1, panel2, panel3;
+	private static CarvajalPanel panel, panel1, panel2, panel3;
 	private static CarvajalFrame frame, frame1, frame2, frame3;
 
 	public static void main(String[] args) {
@@ -48,7 +48,7 @@ public class CarvajalAutomationExe {
 	 */
 
 	public static void starApp() {
-		panel = new CarvajalMainPanel(3);
+		panel = new CarvajalPanel(3);
 		frame = new CarvajalFrame("Generador de Archivos FECO", panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		selectOption();
@@ -64,41 +64,38 @@ public class CarvajalAutomationExe {
 				int option = panel.getSelectOption().getSelectedIndex();
 
 				if (option == 0) {
-
 					frame.setVisible(false);
-					panel1 = new CarvajalMainPanel(0);
+					panel1 = new CarvajalPanel(0);
 					frame1 = new CarvajalFrame("Generador de Archivos FECO", panel1);
 					frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-					frame1.setSize(new Dimension(535, 310));
+					frame1.setSize(new Dimension(535, 350));
 					listenEntryData();
-					listenOk();
-				}
-
-				if (option == 1) {
-
+					listenOkGenerateFiles();
+				} else if (option == 1) {
 					frame.setVisible(false);
 					panel.setVisible(false);
-					panel2 = new CarvajalMainPanel(1);
+					panel2 = new CarvajalPanel(1);
 					frame2 = new CarvajalFrame("Generador de Archivos FECO", panel2);
 					frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					frame2.setSize(new Dimension(480, 280));
-					sendingFile();
-
-				}
-				if (option == 2) {
+					sendFilesWithGenericLog();
+				} else if (option == 2) {
 					frame.setVisible(false);
 					panel.setVisible(false);
-					panel3 = new CarvajalMainPanel(2);
+					panel3 = new CarvajalPanel(2);
 					frame3 = new CarvajalFrame("Generador de Archivos FECO", panel3);
 					frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					frame3.setSize(new Dimension(480, 280));
-					sendingTestFile();
+					sendFilesWithTestCasesLog();
 				}
 			}
 		});
 	}
 
-	public static void listenOk() {
+	/**
+	 * Método que escucha el botón aceptar de la funcionalidad de generar archivos.
+	 */
+	public static void listenOkGenerateFiles() {
 		panel1.getAccept().addActionListener(new ActionListener() {
 
 			@Override
@@ -116,6 +113,7 @@ public class CarvajalAutomationExe {
 				panel1.getConfigFile().setEnabled(false);
 				panel1.getOutFilePath().setEnabled(false);
 				panel1.getFilesPerDirectoryField().setEnabled(false);
+				panel1.getBackMainPanel().setEnabled(false);
 
 				String directoriesInFilePath = panel1.getFileLabel().getText();
 				String directoriesConfiFilePath = panel1.getConfigFileLabel().getText();
@@ -124,32 +122,43 @@ public class CarvajalAutomationExe {
 				int filesPerDirectory = Integer.parseInt(panel1.getFilesPerDirectoryField().getText());
 
 				try {
-					FilesGenerator file = new FilesGenerator(directoriesInFilePath, directoriesConfiFilePath,
+					FilesGenerator fg = new FilesGenerator(directoriesInFilePath, directoriesConfiFilePath,
 							directoriesOutFilePath, filesPerDirectory);
+					
+					//Tarea pesada.
+					@SuppressWarnings("rawtypes")
+					final SwingWorker worker = new SwingWorker() {
 
-					if (!file.generateTestFiles()) {
+						@Override
+						protected Object doInBackground() throws Exception {
+							if (!fg.generateTestFiles()) {
 
-						JOptionPane.showMessageDialog(panel1, "Se presento un error", "Error",
-								JOptionPane.ERROR_MESSAGE);
+								JOptionPane.showMessageDialog(panel1, "Se presento un error", "Error",
+										JOptionPane.ERROR_MESSAGE);
 
-					}
-					JOptionPane.showMessageDialog(panel1, "Proceso Finalizado con éxito", "Proceso Finalizado",
-							JOptionPane.INFORMATION_MESSAGE);
+							}
+							JOptionPane.showMessageDialog(panel1, "Proceso Finalizado con éxito", "Proceso Finalizado",
+									JOptionPane.INFORMATION_MESSAGE);
 
-					panel1.getAccept().setEnabled(true);
-					panel1.getSelectFile().setEnabled(true);
-					panel1.getConfigFile().setEnabled(true);
-					panel1.getOutFilePath().setEnabled(true);
-					panel1.getFilesPerDirectoryField().setEnabled(true);
+							panel1.getAccept().setEnabled(true);
+							panel1.getSelectFile().setEnabled(true);
+							panel1.getConfigFile().setEnabled(true);
+							panel1.getOutFilePath().setEnabled(true);
+							panel1.getFilesPerDirectoryField().setEnabled(true);
+							panel1.getBackMainPanel().setEnabled(true);
 
-					boolean selectCompressOption = panel1.getSelectCompression().isSelected();
+							boolean selectCompressOption = panel1.getSelectCompression().isSelected();
 
-					if (selectCompressOption == true) {
-						compressingFiles();
-					}
-
-				} catch (IOException | ParseException | java.text.ParseException | ParserConfigurationException
-						| SAXException | HeadlessException | TransformerException e1) {
+							if (selectCompressOption == true) {
+								compressFiles();
+							}
+							return null;
+						}
+					};	
+					worker.execute();
+					ProgressBarThread thread = new ProgressBarThread(panel1, fg);
+					thread.start();
+				} catch (IOException | ParseException | java.text.ParseException | HeadlessException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Se presentó un error " + e1.getMessage(), "Error",
@@ -265,10 +274,10 @@ public class CarvajalAutomationExe {
 		});
 	}
 
-	public static void sendingFile() {
+	public static void sendFilesWithGenericLog() {
 
 		JFileChooser directoryIn = panel2.getSelectSrcPathFC();
-		JFileChooser fileConnection = panel2.getFileConnectionFC();
+		JFileChooser connectionFile = panel2.getConnectionFileFC();
 
 		panel2.getSelectSrcPath().addActionListener(new ActionListener() {
 
@@ -297,14 +306,14 @@ public class CarvajalAutomationExe {
 				// Botón para seleccionar el archivo de conexión a la BD
 
 				FileNameExtensionFilter Filter = new FileNameExtensionFilter("txt", "txt");
-				fileConnection.setFileFilter(Filter);
-				fileConnection.setCurrentDirectory(directoryIn.getCurrentDirectory());
+				connectionFile.setFileFilter(Filter);
+				connectionFile.setCurrentDirectory(directoryIn.getCurrentDirectory());
 
-				fileConnection.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				int option = fileConnection.showOpenDialog(panel2);
+				connectionFile.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				int option = connectionFile.showOpenDialog(panel2);
 
 				if (option == JFileChooser.APPROVE_OPTION) {
-					File fileName = fileConnection.getSelectedFile();
+					File fileName = connectionFile.getSelectedFile();
 					String connectionFilePath = (fileName.getAbsolutePath());
 					panel2.getFileBDLabel().setText(connectionFilePath);
 					String nameBDFile = fileName.getName();
@@ -398,10 +407,10 @@ public class CarvajalAutomationExe {
 
 	}
 
-	public static void sendingTestFile() {
+	public static void sendFilesWithTestCasesLog() {
 
 		JFileChooser directoryIn = panel3.getSelectSrcPathFC();
-		JFileChooser fileConnection = panel3.getFileConnectionFC();
+		JFileChooser fileConnection = panel3.getConnectionFileFC();
 
 		panel3.getSelectSrcPath().addActionListener(new ActionListener() {
 
@@ -532,7 +541,7 @@ public class CarvajalAutomationExe {
 
 	public static void generateLog() {
 
-		JFileChooser filesConnetion = panel2.getFileConnectionFC();
+		JFileChooser filesConnetion = panel2.getConnectionFileFC();
 		JFileChooser filesSending = panel2.getSelectSrcPathFC();
 
 		panel2.getGenerateLog().addActionListener(new ActionListener() {
@@ -591,7 +600,7 @@ public class CarvajalAutomationExe {
 
 	public static void validateTestCase() {
 
-		JFileChooser filesConnetion = panel3.getFileConnectionFC();
+		JFileChooser filesConnetion = panel3.getConnectionFileFC();
 		JFileChooser filesSending = panel3.getSelectSrcPathFC();
 
 		panel3.getGenerateLog().addActionListener(new ActionListener() {
@@ -631,7 +640,7 @@ public class CarvajalAutomationExe {
 		});
 	}
 
-	public static void compressingFiles() throws Exception {
+	public static void compressFiles() throws Exception {
 
 		JFileChooser directory = panel1.getOutDirectoryFC();
 		File filesPath = directory.getSelectedFile();

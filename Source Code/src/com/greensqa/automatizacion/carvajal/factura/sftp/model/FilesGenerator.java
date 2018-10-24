@@ -97,7 +97,13 @@ public class FilesGenerator {
 	/**
 	 * Datos de entrada del archivo de configuración.
 	 */
-	CarvajalStandardFactStructure standardFactStructure;
+	protected CarvajalStandardFactStructure standardFactStructure;
+
+	/**
+	 * Cantidad de archivos que se han generado hasta el momento. Se utiliza para
+	 * llenar la barra de progreso de generación de archivos.
+	 */
+	private int generatedFiles;
 
 	/**
 	 * Constructor de FilesGenerator para crear archivos distribuidos en varios
@@ -144,6 +150,7 @@ public class FilesGenerator {
 		this.directoryOut = directoryOut;
 		this.filesNum = filesNum;
 		this.standardFactStructure = CarvajalUtils.loadConfigFile(configFilePath, sdf);
+		this.setGeneratedFiles(0);
 	}
 
 	/**
@@ -258,9 +265,8 @@ public class FilesGenerator {
 				line = br.readLine();
 				if (line == null) {
 					break;
-				} else {
-					line = line.replaceAll("[^\\p{Graph}\n\r\t ]", "");
 				}
+				line = line.replaceAll("[^\\p{Graph}\n\r\t ]", "");
 				fileLines.add(line);
 			}
 
@@ -283,11 +289,9 @@ public class FilesGenerator {
 				File f = new File(filePath);
 				f.createNewFile();
 
-				try (
-						FileWriter fw = new FileWriter(f);
+				try (FileWriter fw = new FileWriter(f);
 						BufferedWriter bw = new BufferedWriter(fw);
-						PrintWriter pw = new PrintWriter(bw)) 			
-				{
+						PrintWriter pw = new PrintWriter(bw)) {
 					for (int j = 0; j < fileLinesCopy.size(); j++) {
 						line = fileLinesCopy.get(j);
 						lineArray = line.split(",");
@@ -334,13 +338,14 @@ public class FilesGenerator {
 						if (j != fileLinesCopy.size() - 1) {
 							line += "\r\n";
 						}
-						
+
 						pw.write(line);
 						// System.out.println(line);
 					}
 				}
 
 				index += 1;
+				setGeneratedFiles(getGeneratedFiles() + 1);
 			}
 		}
 		return true;
@@ -613,5 +618,13 @@ public class FilesGenerator {
 
 	public void setFilesNum(int filesNum) {
 		this.filesNum = filesNum;
+	}
+
+	public int getGeneratedFiles() {
+		return generatedFiles;
+	}
+
+	public void setGeneratedFiles(int generatedFiles) {
+		this.generatedFiles = generatedFiles;
 	}
 }

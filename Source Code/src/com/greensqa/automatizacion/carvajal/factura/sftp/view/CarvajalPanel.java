@@ -6,12 +6,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
-public class CarvajalMainPanel extends JPanel {
+public class CarvajalPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,7 +26,7 @@ public class CarvajalMainPanel extends JPanel {
 	/**
 	 * Seleccionar la opción a ejecutar (Generar Archivos o Enviar Archivos)
 	 **/
-	private JComboBox selectOption;
+	private JComboBox<String> selectOption;
 
 	/**
 	 * Botón para enviar la funcionalidad a ejecutar
@@ -157,11 +156,6 @@ public class CarvajalMainPanel extends JPanel {
 	// Envío de archivos vía SFTP
 
 	/**
-	 * Barra de progreso
-	 **/
-	private JProgressBar progressBar;
-
-	/**
 	 * Botón para seleccionar los datos de conexión (base de datos y sftp).
 	 */
 	private JButton selectDBFile;
@@ -181,7 +175,7 @@ public class CarvajalMainPanel extends JPanel {
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
-	private JFileChooser fileConnectionFC;
+	private JFileChooser connectionFileFC;
 
 	/**
 	 * Botón para el envío de los archivos a Cen Financiero
@@ -205,16 +199,21 @@ public class CarvajalMainPanel extends JPanel {
 	private JLabel srcViewPathLabel;
 
 	/**
-	 * Seleccionador de carpeta donde estan los archivos a enviar
+	 * Seleccionador de carpeta donde estan los archivos a enviar.
 	 */
 	private JFileChooser selectSrcPathFC;
 
 	/**
-	 * Botón parar Generar LOG de envío de documentos
+	 * Botón parar Generar LOG de envío de documentos.
 	 */
 	private JButton generateLog;
+	
+	/**
+	 * Barra de progreso para la generación de archivos.
+	 */
+	private JProgressBar progressBarFilesGeneration;
 
-	public CarvajalMainPanel(int option) {
+	public CarvajalPanel(int option) {
 		this.setLayout(null);
 		if (option == 3) {
 			initializeComponentsMain(3);
@@ -233,7 +232,6 @@ public class CarvajalMainPanel extends JPanel {
 	/**
 	 * Se crean y se ubican los elementos de la ventana
 	 **/
-
 	public void initializeComponentsMain(int option) {
 
 		String[] opciones = { "Generar Archivos", "Enviar Archivos", "Test" };
@@ -256,7 +254,7 @@ public class CarvajalMainPanel extends JPanel {
 		y = 25;
 		selectOption.setLocation(x, y);
 
-		x = 180;
+		x = 160;
 		y = 95;
 		acceptOption.setLocation(x, y);
 
@@ -297,6 +295,11 @@ public class CarvajalMainPanel extends JPanel {
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
 		accept = new JButton("Generar Archivos");
 		backMainPanel = new JButton("Volver");
+		progressBarFilesGeneration = new JProgressBar();
+		progressBarFilesGeneration.setMaximum(100);
+		progressBarFilesGeneration.setMinimum(0);
+		progressBarFilesGeneration.setValue(0);
+		progressBarFilesGeneration.setStringPainted(true);
 
 		int widthLabel = 300, heightLabel = 100;
 
@@ -318,12 +321,12 @@ public class CarvajalMainPanel extends JPanel {
 		accept.setSize(accept.getPreferredSize());
 		backMainPanel.setSize(backMainPanel.getPreferredSize());
 		image.setSize(image.getPreferredSize());
+		progressBarFilesGeneration.setSize(400, 20);
 
-		int x = 10, y = 10, d = 20;
+		int x = 30, y = 10, d = 20;
 		informationOptionGenerateFile.setLocation(x, y);
 
-		x = 30;
-		y = 50;
+		y += 40;
 		selectFile.setLocation(x, y);
 
 		x += selectFile.getWidth() + d;
@@ -331,7 +334,7 @@ public class CarvajalMainPanel extends JPanel {
 		fileViewLabel.setLocation(x, y);
 
 		x = 30;
-		y = 80;
+		y += 70;
 		configFile.setLocation(x, y);
 
 		x += configFile.getWidth() + d;
@@ -365,17 +368,20 @@ public class CarvajalMainPanel extends JPanel {
 		x += filesPerZipLabel.getWidth() + 1;
 		y = 152;
 		filesPerZipField.setLocation(x, y);
+		
+		x = 60;
+		y += 40;
+		progressBarFilesGeneration.setLocation(x, y);
 
 		x = 170;
-		y = 200;
+		y = 240;
 		backMainPanel.setLocation(x, y);
 
 		x += backMainPanel.getWidth() + d;
-		y = 200;
 		accept.setLocation(x, y);
 
 		x = 385;
-		y = 210;
+		y = 250;
 		image.setLocation(x, y);
 
 		this.add(informationOptionGenerateFile);
@@ -393,6 +399,7 @@ public class CarvajalMainPanel extends JPanel {
 		this.add(selectCompression);
 		this.add(filesPerZipLabel);
 		this.add(filesPerZipField);
+		this.add(progressBarFilesGeneration);
 		this.add(accept);
 		this.add(backMainPanel);
 		this.add(image);
@@ -418,9 +425,8 @@ public class CarvajalMainPanel extends JPanel {
 		backMainPanel = new JButton("Volver");
 		send = new JButton("  Enviar ");
 		generateLog = new JButton("Generar LOG");
-		fileConnectionFC = new JFileChooser();
+		connectionFileFC = new JFileChooser();
 		selectSrcPathFC = new JFileChooser();
-		progressBar = new JProgressBar();
 		image = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
 
@@ -436,7 +442,6 @@ public class CarvajalMainPanel extends JPanel {
 		backMainPanel.setSize(backMainPanel.getPreferredSize());
 		send.setSize(send.getPreferredSize());
 		generateLog.setSize(generateLog.getPreferredSize());
-		progressBar.setBounds(40, 40, 160, 30);
 
 		int x = 10, y = 20, d = 20;
 		informationOption.setLocation(x, y);
@@ -473,8 +478,6 @@ public class CarvajalMainPanel extends JPanel {
 		y = 180;
 		image.setLocation(x, y);
 
-		progressBar.setValue(0);
-		this.add(progressBar);
 		this.add(informationOption);
 		this.add(selectSrcPath);
 		this.add(selectSrcPathLabel);
@@ -490,7 +493,6 @@ public class CarvajalMainPanel extends JPanel {
 		selectSrcPathLabel.setVisible(false);
 		fileBDLabel.setVisible(false);
 		generateLog.setEnabled(false);
-		progressBar.setVisible(false);
 	}
 
 	public void initializeComponentsTestSending(int option) {
@@ -507,9 +509,8 @@ public class CarvajalMainPanel extends JPanel {
 		backMainPanel = new JButton("Volver");
 		send = new JButton("  Enviar ");
 		generateLog = new JButton("Generar LOG");
-		fileConnectionFC = new JFileChooser();
+		connectionFileFC = new JFileChooser();
 		selectSrcPathFC = new JFileChooser();
-		progressBar = new JProgressBar();
 		image = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
 
@@ -525,7 +526,6 @@ public class CarvajalMainPanel extends JPanel {
 		backMainPanel.setSize(backMainPanel.getPreferredSize());
 		send.setSize(send.getPreferredSize());
 		generateLog.setSize(generateLog.getPreferredSize());
-		progressBar.setBounds(40, 40, 160, 30);
 
 		int x = 10, y = 20, d = 20;
 		informationOption.setLocation(x, y);
@@ -562,8 +562,6 @@ public class CarvajalMainPanel extends JPanel {
 		y = 180;
 		image.setLocation(x, y);
 
-		progressBar.setValue(0);
-		this.add(progressBar);
 		this.add(informationOption);
 		this.add(selectSrcPath);
 		this.add(selectSrcPathLabel);
@@ -579,7 +577,6 @@ public class CarvajalMainPanel extends JPanel {
 		selectSrcPathLabel.setVisible(false);
 		fileBDLabel.setVisible(false);
 		generateLog.setEnabled(false);
-		progressBar.setVisible(false);
 	}
 
 	public boolean isValidInput() {
@@ -822,7 +819,6 @@ public class CarvajalMainPanel extends JPanel {
 	/**
 	 * Seleccionador de archivo de entrada plano o xml.
 	 */
-
 	public void setFileFC(JFileChooser fileFC) {
 		this.fileFC = fileFC;
 	}
@@ -830,7 +826,6 @@ public class CarvajalMainPanel extends JPanel {
 	/**
 	 * Seleccionador de archivo de configuración de los nuevos archivos.
 	 */
-
 	public JFileChooser getFileConfiFC() {
 		return fileConfiFC;
 	}
@@ -838,7 +833,6 @@ public class CarvajalMainPanel extends JPanel {
 	/**
 	 * Seleccionador de archivo de configuración de los nuevos archivos.
 	 */
-
 	public void setFileConfiFC(JFileChooser fileConfiFC) {
 		this.fileConfiFC = fileConfiFC;
 	}
@@ -846,23 +840,20 @@ public class CarvajalMainPanel extends JPanel {
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
-
-	public JFileChooser getFileConnectionFC() {
-		return fileConnectionFC;
+	public JFileChooser getConnectionFileFC() {
+		return connectionFileFC;
 	}
-
+	
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
-
-	public void setFileConnectionFC(JFileChooser fileConnectionFC) {
-		this.fileConnectionFC = fileConnectionFC;
+	public void setConnectionFileFC(JFileChooser connectionFileFC) {
+		this.connectionFileFC = connectionFileFC;
 	}
 
 	/**
 	 * Seleccionador de Carpeta de salida para los archivos generados.
 	 */
-
 	public JFileChooser getOutDirectoryFC() {
 		return outDirectoryFC;
 	}
@@ -870,7 +861,6 @@ public class CarvajalMainPanel extends JPanel {
 	/**
 	 * Seleccionador de Carpeta de salida para los archivos generados.
 	 */
-
 	public void setOutDirectoryFC(JFileChooser outDirectoryFC) {
 		this.outDirectoryFC = outDirectoryFC;
 	}
@@ -883,11 +873,11 @@ public class CarvajalMainPanel extends JPanel {
 		this.selectOptionLabel = selectOptionLabel;
 	}
 
-	public JComboBox getSelectOption() {
-		return selectOption;
+	public JComboBox<String> getSelectOption() {
+		return this.selectOption;
 	}
 
-	public void setSelectOption(JComboBox selectOption) {
+	public void setSelectOption(JComboBox<String> selectOption) {
 		this.selectOption = selectOption;
 	}
 
@@ -1019,11 +1009,11 @@ public class CarvajalMainPanel extends JPanel {
 		this.backMainPanel = backMainPanel;
 	}
 
-	public JProgressBar getProgressBar() {
-		return progressBar;
+	public JProgressBar getProgressBarFilesGeneration() {
+		return progressBarFilesGeneration;
 	}
 
-	public void setProgressBar(JProgressBar progressBar) {
-		this.progressBar = progressBar;
+	public void setProgressBarFilesGeneration(JProgressBar progressBarFilesGeneration) {
+		this.progressBarFilesGeneration = progressBarFilesGeneration;
 	}
 }

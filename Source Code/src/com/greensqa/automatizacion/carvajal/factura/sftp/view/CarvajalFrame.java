@@ -10,9 +10,9 @@ public class CarvajalFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
-	private CarvajalMainPanel panel;
+	private CarvajalPanel panel;
 
-	public CarvajalFrame(String name, CarvajalMainPanel panel) {
+	public CarvajalFrame(String name, CarvajalPanel panel) {
 		super(name);
 		this.setPanel(panel);
 		this.add(panel);
@@ -23,11 +23,11 @@ public class CarvajalFrame extends JFrame {
 
 	}
 
-	public CarvajalMainPanel getPanel() {
+	public CarvajalPanel getPanel() {
 		return panel;
 	}
 
-	public void setPanel(CarvajalMainPanel panel) {
+	public void setPanel(CarvajalPanel panel) {
 		this.panel = panel;
 	}
 
