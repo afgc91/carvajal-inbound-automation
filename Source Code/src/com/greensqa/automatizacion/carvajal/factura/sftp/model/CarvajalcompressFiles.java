@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -68,6 +69,7 @@ public class CarvajalcompressFiles {
 
 	/**
 	 * Contar la cantidad de archivos en la carpeta
+	 * 
 	 * @param directory
 	 * @return
 	 */
@@ -85,6 +87,8 @@ public class CarvajalcompressFiles {
 		return total;
 	}
 
+	// Descomprimir Documento enviado en .zip a Cen Financiero
+
 	public static String unZip(String pathZip) {
 		byte[] buffer = new byte[1024];
 		String pathFileZip = "";
@@ -98,28 +102,29 @@ public class CarvajalcompressFiles {
 			}
 			try (ZipInputStream zis = new ZipInputStream(new FileInputStream(pathZip))) {
 				ZipEntry ze = zis.getNextEntry();
-
-				while (ze != null && !ze.isDirectory()) {
+				String typeDocument = (ze.getName().split("\\.")[1]);
+				System.out.println(ze.getName() + "archivo zip");
+				
+				while ((ze != null)){
 					String fileName = ze.getName();
-					File archivoNuevo = new File(pathDest + File.separator + fileName);
-					pathFileZip = archivoNuevo.getAbsolutePath();
-					new File(archivoNuevo.getParent()).mkdirs();
-					try (FileOutputStream fos = new FileOutputStream(archivoNuevo)) {
-						int len;
-						while ((len = zis.read(buffer)) > 0) {
-							fos.write(buffer, 0, len);
-						}
-						ze = zis.getNextEntry();
-					}
-				}
+						File archivoNuevo = new File(pathDest + File.separator + fileName);
+						pathFileZip = archivoNuevo.getAbsolutePath();
+						new File(archivoNuevo.getParent()).mkdirs();
+						try (FileOutputStream fos = new FileOutputStream(archivoNuevo);
+								OutputStreamWriter sw = new OutputStreamWriter(fos)) {
+							int len;
+							while ((len = zis.read(buffer)) > 0) {
+								fos.write(buffer, 0, len);
+							}
+							ze = zis.getNextEntry();
+						}				
 				zis.closeEntry();
-			}
+			}}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+		System.out.println(pathFileZip);
 		return pathFileZip;
 
 	}
 }
-
-// Descomprimir Documento enviado en .zip a Cen Financiero

@@ -20,6 +20,7 @@ import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.BusinessValidator;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalFilesSenderAWSBucket;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalPostgresConnection;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalcompressFiles;
@@ -352,7 +353,9 @@ public class CarvajalAutomationExe {
 
 				if (sftpDbData != null) {
 					files = new SftpFilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
-							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp());
+							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp(),
+							sftpDbData.getKey(), sftpDbData.getSecretKey(), sftpDbData.getNameBucket(),
+							sftpDbData.getRegion());
 				}
 				try {
 					files.sendSftpFiles(1);
@@ -478,12 +481,14 @@ public class CarvajalAutomationExe {
 					sftpDbData = CarvajalUtils.loadConnectionsData(panel3.getFileBDLabel().getText());
 				} catch (IOException | ParseException e2) {
 					// TODO Auto-generated catch block
-					e2.printStackTrace();
+				JOptionPane.showMessageDialog(null, "El archivo de conexión no es válido", "Conexión fallida", JOptionPane.ERROR_MESSAGE);
 				}
 
 				if (sftpDbData != null) {
 					files = new SftpFilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
-							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp());
+							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp(),
+							sftpDbData.getKey(), sftpDbData.getSecretKey(), sftpDbData.getNameBucket(),
+							sftpDbData.getRegion());
 				}
 				try {
 					files.sendSftpFiles(2);
@@ -492,7 +497,7 @@ public class CarvajalAutomationExe {
 
 				} catch (JSchException e1) {
 					e1.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Los Datos de conexión son Inválidos", "Datos Inválidos",
+					JOptionPane.showMessageDialog(null, "No se logro establecer la conexión", "Conexión no establecida",
 							JOptionPane.ERROR_MESSAGE);
 				} catch (SftpException e1) {
 					// TODO Auto-generated catch block
@@ -541,12 +546,14 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(), sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
+					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(),
+							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcPath = (fileName.getAbsolutePath());
-					//String srcExcel = ("C:\\Users\\dvalencia\\Documents\\ProyectoFECO\\DatosPruebas\\data1.xlsx");
+					// String srcExcel =
+					// ("C:\\Users\\dvalencia\\Documents\\ProyectoFECO\\DatosPruebas\\data1.xlsx");
 					File dir = new File(srcPath);
-					//File excel = new File(srcExcel);
+					// File excel = new File(srcExcel);
 
 					// Obtener padre de dir
 					BusinessValidator bv = new BusinessValidator(conn.getConnetion(sftpDbData.getTipoBD()),
@@ -598,7 +605,8 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(), sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
+					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(),
+							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcExcel = (fileName.getAbsolutePath());
 					File excel = new File(srcExcel);

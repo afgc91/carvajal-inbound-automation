@@ -12,10 +12,10 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 public class CarvajalFilesSenderAWSBucket {
 	private String key;
 	private String secretKey;
-	private String bucketName;
+	private static String bucketName;
 	private String region;
 	private BasicAWSCredentials credentials;
-	private AmazonS3 s3Client;
+	private static AmazonS3 s3Client;
 
 	/**
 	 * Constructor de la clase CarvajalFilesSenderAWSBucket, la cual permite enviar

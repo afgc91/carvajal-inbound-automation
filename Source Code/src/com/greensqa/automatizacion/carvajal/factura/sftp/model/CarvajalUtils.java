@@ -268,9 +268,15 @@ public class CarvajalUtils {
 			String passwordDb = (String) aurora.get("clave");
 			String urlDb = (String) aurora.get("urlServidor");
 			int portDb = Integer.parseInt((String) aurora.get("puerto"));
+			//Objeto AWS 
+			JSONObject aws = (JSONObject) json.get("aws");
+			String key = (String) aws.get("clave");
+			String secretKey = (String) aws.get("claveSecreta");
+			String nameBucket = (String) aws.get("nombreBucket"); 
+			String region = (String) aws.get("region"); 
 
 			SftpAndDbData connectionsData = new SftpAndDbData(userSftp, passwordSftp,
-					urlSftp, portSftp, destSftp, tipoDb, userDb, passwordDb, urlDb, portDb);
+					urlSftp, portSftp, destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region);
 			return connectionsData;
 		}
 	}

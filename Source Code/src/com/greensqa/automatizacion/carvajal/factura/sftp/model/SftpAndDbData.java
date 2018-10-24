@@ -15,7 +15,14 @@ public class SftpAndDbData {
 	private String urlDb;
 	private int portDb;
 	
-	public SftpAndDbData(String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp, int tipoBD,	String userDb, String passwordDb, String urlDb, int portDb) {
+	//Atributos conexión AWS 
+	private String key; 
+	private String secretKey; 
+	private String nameBucket; 
+	private String region; 
+	
+	public SftpAndDbData(String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp, int tipoBD,	String userDb, String passwordDb, String urlDb, 
+			int portDb, String key, String secretKey, String nameBucket, String region) {
 
 		this.userSftp = userSftp;
 		this.passwordSftp = passwordSftp;
@@ -27,6 +34,10 @@ public class SftpAndDbData {
 		this.passwordDb = passwordDb;
 		this.urlDb = urlDb;
 		this.portDb = portDb;
+		this.key = key; 
+		this.secretKey = secretKey; 
+		this.nameBucket = nameBucket; 
+		this.region = region;
 	}
 
 	public String getUserSftp() {
@@ -107,5 +118,37 @@ public class SftpAndDbData {
 
 	public void setTipoBD(int tipoBD) {
 		this.tipoBD = tipoBD;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public String getSecretKey() {
+		return secretKey;
+	}
+
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
+	}
+
+	public String getNameBucket() {
+		return nameBucket;
+	}
+
+	public void setNameBucket(String nameBucket) {
+		this.nameBucket = nameBucket;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 }
