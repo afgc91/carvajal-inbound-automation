@@ -586,7 +586,6 @@ public class CarvajalUtils {
 		for (int l = 0; l < feInvoiceChildren.getLength(); l++) {
 			item1 = feInvoiceChildren.item(l);
 			nodeName1 = item1.getNodeName();
-			// System.out.println(("fe:AccountingCustomerParty").equals(nodeName1));
 			NodeList feCustomerChildren = item1.getChildNodes();
 			if (nodeName1.equalsIgnoreCase("fe:AccountingCustomerParty")) {
 				for (int h = 0; h < feCustomerChildren.getLength(); h++) {

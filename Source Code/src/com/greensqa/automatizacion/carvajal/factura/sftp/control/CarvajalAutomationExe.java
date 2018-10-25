@@ -76,7 +76,7 @@ public class CarvajalAutomationExe {
 					panel2 = new CarvajalPanel(1);
 					frame2 = new CarvajalFrame("Generador de Archivos FECO", panel2);
 					frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-					frame2.setSize(new Dimension(480, 280));
+					frame2.setSize(new Dimension(480, 330));
 					sendFilesWithGenericLog();
 				} else if (option == 2) {
 					frame.setVisible(false);
@@ -84,7 +84,7 @@ public class CarvajalAutomationExe {
 					panel3 = new CarvajalPanel(2);
 					frame3 = new CarvajalFrame("Generador de Archivos FECO", panel3);
 					frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-					frame3.setSize(new Dimension(480, 280));
+					frame3.setSize(new Dimension(480, 330));
 					sendFilesWithTestCasesLog();
 				}
 			}

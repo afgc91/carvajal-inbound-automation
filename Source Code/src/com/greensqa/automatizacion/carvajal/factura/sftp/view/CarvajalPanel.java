@@ -209,9 +209,9 @@ public class CarvajalPanel extends JPanel {
 	private JButton generateLog;
 	
 	/**
-	 * Barra de progreso para la generación de archivos.
+	 * Barra de progreso.
 	 */
-	private JProgressBar progressBarFilesGeneration;
+	private JProgressBar progressBar;
 
 	public CarvajalPanel(int option) {
 		this.setLayout(null);
@@ -295,11 +295,11 @@ public class CarvajalPanel extends JPanel {
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
 		accept = new JButton("Generar Archivos");
 		backMainPanel = new JButton("Volver");
-		progressBarFilesGeneration = new JProgressBar();
-		progressBarFilesGeneration.setMaximum(100);
-		progressBarFilesGeneration.setMinimum(0);
-		progressBarFilesGeneration.setValue(0);
-		progressBarFilesGeneration.setStringPainted(true);
+		progressBar = new JProgressBar();
+		progressBar.setMaximum(100);
+		progressBar.setMinimum(0);
+		progressBar.setValue(0);
+		progressBar.setStringPainted(true);
 
 		int widthLabel = 300, heightLabel = 100;
 
@@ -321,7 +321,7 @@ public class CarvajalPanel extends JPanel {
 		accept.setSize(accept.getPreferredSize());
 		backMainPanel.setSize(backMainPanel.getPreferredSize());
 		image.setSize(image.getPreferredSize());
-		progressBarFilesGeneration.setSize(400, 20);
+		progressBar.setSize(400, 20);
 
 		int x = 30, y = 10, d = 20;
 		informationOptionGenerateFile.setLocation(x, y);
@@ -371,7 +371,7 @@ public class CarvajalPanel extends JPanel {
 		
 		x = 60;
 		y += 40;
-		progressBarFilesGeneration.setLocation(x, y);
+		progressBar.setLocation(x, y);
 
 		x = 170;
 		y = 240;
@@ -399,7 +399,7 @@ public class CarvajalPanel extends JPanel {
 		this.add(selectCompression);
 		this.add(filesPerZipLabel);
 		this.add(filesPerZipField);
-		this.add(progressBarFilesGeneration);
+		this.add(progressBar);
 		this.add(accept);
 		this.add(backMainPanel);
 		this.add(image);
@@ -429,6 +429,11 @@ public class CarvajalPanel extends JPanel {
 		selectSrcPathFC = new JFileChooser();
 		image = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
+		progressBar = new JProgressBar();
+		progressBar.setMaximum(100);
+		progressBar.setMinimum(0);
+		progressBar.setValue(0);
+		progressBar.setStringPainted(true);
 
 		int widthLabel = 250, heightLabel = 14;
 		informationOption.setSize(informationOption.getPreferredSize());
@@ -442,40 +447,36 @@ public class CarvajalPanel extends JPanel {
 		backMainPanel.setSize(backMainPanel.getPreferredSize());
 		send.setSize(send.getPreferredSize());
 		generateLog.setSize(generateLog.getPreferredSize());
+		progressBar.setSize(400, 20);
 
 		int x = 10, y = 20, d = 20;
 		informationOption.setLocation(x, y);
 
-		x = 30;
-		y = 70;
+		x = 30; y = 70;
 		selectSrcPath.setLocation(x, y);
 
-		x += selectSrcPath.getWidth() + d;
-		y = 72;
+		x += selectSrcPath.getWidth() + d; y = 72;
 		srcViewPathLabel.setLocation(x, y);
 
-		x = 30;
-		y = 120;
+		x = 30; y = 120;
 		selectDBFile.setLocation(x, y);
 
-		x = +selectDBFile.getWidth() + 50;
-		y = 123;
+		x = +selectDBFile.getWidth() + 50; y = 123;
 		fileViewBDLabel.setLocation(x, y);
 
-		x = 120;
-		y = 180;
+		x = 35; y += 40;
+		progressBar.setLocation(x, y);
+		
+		x = 100; y = 210;
 		backMainPanel.setLocation(x, y);
 
 		x += backMainPanel.getWidth() + d;
-		y = 180;
 		send.setLocation(x, y);
 
 		x += send.getWidth() + d;
-		y = 180;
 		generateLog.setLocation(x, y);
 
 		x = 320;
-		y = 180;
 		image.setLocation(x, y);
 
 		this.add(informationOption);
@@ -489,6 +490,7 @@ public class CarvajalPanel extends JPanel {
 		this.add(backMainPanel);
 		this.add(send);
 		this.add(generateLog);
+		this.add(progressBar);
 
 		selectSrcPathLabel.setVisible(false);
 		fileBDLabel.setVisible(false);
@@ -1009,11 +1011,11 @@ public class CarvajalPanel extends JPanel {
 		this.backMainPanel = backMainPanel;
 	}
 
-	public JProgressBar getProgressBarFilesGeneration() {
-		return progressBarFilesGeneration;
+	public JProgressBar getProgressBar() {
+		return progressBar;
 	}
 
-	public void setProgressBarFilesGeneration(JProgressBar progressBarFilesGeneration) {
-		this.progressBarFilesGeneration = progressBarFilesGeneration;
+	public void setProgressBar(JProgressBar progressBarFilesGeneration) {
+		this.progressBar = progressBarFilesGeneration;
 	}
 }

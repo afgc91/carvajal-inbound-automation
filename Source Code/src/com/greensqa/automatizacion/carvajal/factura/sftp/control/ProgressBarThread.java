@@ -21,7 +21,7 @@ public class ProgressBarThread extends Thread {
 		case 1: {
 			while (fg.getGeneratedFiles() < fg.getFilesNum()) {
 				// Actualizar la barrita de progreso para generación de archivos.
-				panel.getProgressBarFilesGeneration().setValue((int) (fg.getGeneratedFiles() * 100 / fg.getFilesNum()));
+				panel.getProgressBar().setValue((int) (fg.getGeneratedFiles() * 100 / fg.getFilesNum()));
 				try {
 					Thread.sleep(5);
 				} catch (InterruptedException e) {
@@ -30,7 +30,7 @@ public class ProgressBarThread extends Thread {
 							JOptionPane.ERROR);
 				}
 			}
-			panel.getProgressBarFilesGeneration().setValue(100);
+			panel.getProgressBar().setValue(100);
 			break;
 		}
 		case 2:
