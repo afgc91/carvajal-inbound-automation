@@ -85,7 +85,7 @@ public class TestCaseValidator {
 
 		File fileFhater = new File(pathFileTest);
 		String directory = fileFhater.getParent();
-		CarvajalFileLogger fileLogger = new CarvajalFileLogger();
+		FileLogger fileLogger = new FileLogger();
 		File log = fileLogger.getLogFile(directory);
 
 		try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true); BufferedWriter bw = new BufferedWriter(fw)) {
@@ -196,7 +196,7 @@ public class TestCaseValidator {
 					}
 				} else if ((testCase.get(i).equals("1.3"))) {
 
-					String pathFile = CarvajalcompressFiles.unZip(documents.get(i));
+					String pathFile = FilesCompressor.unZip(documents.get(i));
 					factNum = CarvajalUtils.getFactNumber(pathFile);
 					File fileInZip = new File(pathFile);
 					String nameFileSend = fileInZip.getName();

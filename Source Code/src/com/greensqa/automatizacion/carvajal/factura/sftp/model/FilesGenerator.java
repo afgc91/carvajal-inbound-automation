@@ -97,7 +97,7 @@ public class FilesGenerator {
 	/**
 	 * Datos de entrada del archivo de configuración.
 	 */
-	protected CarvajalStandardFactStructure standardFactStructure;
+	protected StandardFactStructureElement standardFactStructure;
 
 	/**
 	 * Cantidad de archivos que se han generado hasta el momento. Se utiliza para

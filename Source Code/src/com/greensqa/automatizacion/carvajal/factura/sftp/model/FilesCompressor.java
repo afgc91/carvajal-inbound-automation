@@ -9,12 +9,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-public class CarvajalcompressFiles {
+public class FilesCompressor {
 
 	private String dstPath;
 	private String srcPath;
 
-	public CarvajalcompressFiles(String srcPath, String dstPath) {
+	public FilesCompressor(String srcPath, String dstPath) {
 
 		this.dstPath = dstPath;
 		this.srcPath = srcPath;

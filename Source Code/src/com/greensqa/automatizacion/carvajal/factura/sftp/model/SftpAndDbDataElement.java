@@ -1,6 +1,6 @@
 package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
-public class SftpAndDbData {
+public class SftpAndDbDataElement {
 	//Atributos SFTP
 	private String userSftp;
 	private String passwordSftp;
@@ -21,7 +21,7 @@ public class SftpAndDbData {
 	private String nameBucket; 
 	private String region; 
 	
-	public SftpAndDbData(String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp, int tipoBD,	String userDb, String passwordDb, String urlDb, 
+	public SftpAndDbDataElement(String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp, int tipoBD,	String userDb, String passwordDb, String urlDb, 
 			int portDb, String key, String secretKey, String nameBucket, String region) {
 
 		this.userSftp = userSftp;

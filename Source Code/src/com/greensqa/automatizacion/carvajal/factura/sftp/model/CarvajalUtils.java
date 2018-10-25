@@ -106,7 +106,7 @@ public class CarvajalUtils {
 	 * @throws                       java.text.ParseException En caso de error al
 	 *                               interpretar el JSON.
 	 */
-	protected static CarvajalStandardFactStructure loadConfigFile(String configFilePath, SimpleDateFormat sdf)
+	protected static StandardFactStructureElement loadConfigFile(String configFilePath, SimpleDateFormat sdf)
 			throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
 		File file = new File(configFilePath);
 		if (!file.exists()) {
@@ -128,7 +128,7 @@ public class CarvajalUtils {
 			String docTypeId = (String) json.get("idTipoDoc");
 			int docType = Integer.parseInt(json.get("tipoDoc") + "");
 
-			CarvajalStandardFactStructure fact = new CarvajalStandardFactStructure(factPrefix, factStartNum, nitSender,
+			StandardFactStructureElement fact = new StandardFactStructureElement(factPrefix, factStartNum, nitSender,
 					nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum,
 					docTypeId, docType);
 			return fact;
@@ -244,7 +244,7 @@ public class CarvajalUtils {
 		}
 	}
 
-	public static SftpAndDbData loadConnectionsData(String filePath)
+	public static SftpAndDbDataElement loadConnectionsData(String filePath)
 			throws FileNotFoundException, IOException, ParseException {
 		File file = new File(filePath);
 		if (!file.exists()) {
@@ -275,7 +275,7 @@ public class CarvajalUtils {
 			String nameBucket = (String) aws.get("nombreBucket"); 
 			String region = (String) aws.get("region"); 
 
-			SftpAndDbData connectionsData = new SftpAndDbData(userSftp, passwordSftp,
+			SftpAndDbDataElement connectionsData = new SftpAndDbDataElement(userSftp, passwordSftp,
 					urlSftp, portSftp, destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region);
 			return connectionsData;
 		}

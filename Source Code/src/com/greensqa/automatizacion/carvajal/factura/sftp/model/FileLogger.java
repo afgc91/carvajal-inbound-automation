@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class CarvajalFileLogger {
+public class FileLogger {
 
 	public ArrayList<String> logList;
 	private boolean isLogged;
 	private String logFilePath;
 
-	public CarvajalFileLogger() {
+	public FileLogger() {
 		this.logList = new ArrayList<>();
 	}
 	

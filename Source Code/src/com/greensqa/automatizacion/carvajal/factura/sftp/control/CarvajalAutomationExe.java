@@ -20,12 +20,12 @@ import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.BusinessValidator;
-import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalPostgresConnection;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.PostgresConnector;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
-import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalcompressFiles;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesCompressor;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesGenerator;
-import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbData;
-import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpFilesSender;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbDataElement;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesSender;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.TestCaseValidator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.view.CarvajalFrame;
 import com.greensqa.automatizacion.carvajal.factura.sftp.view.CarvajalPanel;
@@ -347,10 +347,10 @@ public class CarvajalAutomationExe {
 				panel2.getSelectSrcPath().setEnabled(false);
 				panel2.getSelectDBFile().setEnabled(false);
 
-				SftpAndDbData sftpDbData = null;
+				SftpAndDbDataElement sftpDbData = null;
 				File srcPath = directoryIn.getSelectedFile();
 				String inDirectoryPath = srcPath.getAbsolutePath();
-				SftpFilesSender files = null;
+				FilesSender files = null;
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(panel2.getFileBDLabel().getText());
@@ -360,7 +360,7 @@ public class CarvajalAutomationExe {
 				}
 
 				if (sftpDbData != null) {
-					files = new SftpFilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
+					files = new FilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
 							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp(),
 							sftpDbData.getKey(), sftpDbData.getSecretKey(), sftpDbData.getNameBucket(),
 							sftpDbData.getRegion());
@@ -480,10 +480,10 @@ public class CarvajalAutomationExe {
 				panel3.getSelectSrcPath().setEnabled(false);
 				panel3.getSelectDBFile().setEnabled(false);
 
-				SftpAndDbData sftpDbData = null;
+				SftpAndDbDataElement sftpDbData = null;
 				File srcPath = directoryIn.getSelectedFile();
 				String inDirectoryPath = srcPath.getAbsolutePath();
-				SftpFilesSender files = null;
+				FilesSender files = null;
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(panel3.getFileBDLabel().getText());
@@ -493,7 +493,7 @@ public class CarvajalAutomationExe {
 				}
 
 				if (sftpDbData != null) {
-					files = new SftpFilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
+					files = new FilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
 							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp(),
 							sftpDbData.getKey(), sftpDbData.getSecretKey(), sftpDbData.getNameBucket(),
 							sftpDbData.getRegion());
@@ -550,11 +550,11 @@ public class CarvajalAutomationExe {
 
 				File fileBDPath = filesConnetion.getSelectedFile();
 				String directoryBDPath = (fileBDPath.getAbsolutePath());
-				SftpAndDbData sftpDbData;
+				SftpAndDbDataElement sftpDbData;
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(),
+					PostgresConnector conn = new PostgresConnector(sftpDbData.getUrlDb(),
 							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcPath = (fileName.getAbsolutePath());
@@ -609,11 +609,11 @@ public class CarvajalAutomationExe {
 
 				File fileBDPath = filesConnetion.getSelectedFile();
 				String directoryBDPath = (fileBDPath.getAbsolutePath());
-				SftpAndDbData sftpDbData;
+				SftpAndDbDataElement sftpDbData;
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					CarvajalPostgresConnection conn = new CarvajalPostgresConnection(sftpDbData.getUrlDb(),
+					PostgresConnector conn = new PostgresConnector(sftpDbData.getUrlDb(),
 							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcExcel = (fileName.getAbsolutePath());
@@ -648,7 +648,7 @@ public class CarvajalAutomationExe {
 		String nameFile = filesPath.getName();
 		String desFileZip = desFile + "\\" + nameFile + ".zip";
 
-		CarvajalcompressFiles compress = new CarvajalcompressFiles(directoryPath, desFileZip);
+		FilesCompressor compress = new FilesCompressor(directoryPath, desFileZip);
 		compress.compressFiles(filesPath);
 
 	}

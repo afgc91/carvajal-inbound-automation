@@ -2,7 +2,7 @@ package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
 import java.sql.Date;
 
-public class CarvajalStandardFactStructure {
+public class StandardFactStructureElement {
 
 	private String factPrefix;
 	private long factStartNum;
@@ -30,7 +30,7 @@ public class CarvajalStandardFactStructure {
 	 * @param docTypeId Id del tipo de documento.
 	 * @param docType Tipo del documento.
 	 */
-	public CarvajalStandardFactStructure(String factPrefix, long factStartNum, String nitSender, String nitReceiver,
+	public StandardFactStructureElement(String factPrefix, long factStartNum, String nitSender, String nitReceiver,
 			long authNumber, Date startingRangeDate, Date endingRangeDate, long startingRangeNum, long endingRangeNum,
 			String docTypeId, int docType) {
 		this.factPrefix = factPrefix;

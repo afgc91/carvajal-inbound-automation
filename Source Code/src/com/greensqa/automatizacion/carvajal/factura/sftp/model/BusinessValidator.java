@@ -54,7 +54,7 @@ public class BusinessValidator {
 
 		if (!isLogged) {
 			isLogged = true;
-			CarvajalFileLogger fileLogger = new CarvajalFileLogger();
+			FileLogger fileLogger = new FileLogger();
 			log = fileLogger.getLogFile(directory);
 			log.createNewFile();
 			logFilePath = log.getAbsolutePath();

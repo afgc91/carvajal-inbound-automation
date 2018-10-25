@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class CarvajalPostgresConnection {
+public class PostgresConnector {
 
 	private String url;
 	private String user;
@@ -19,7 +19,7 @@ public class CarvajalPostgresConnection {
 	 * @param string 
 	 */
 
-	public CarvajalPostgresConnection(String url, String user, String password) {
+	public PostgresConnector(String url, String user, String password) {
 
 		this.url = url;
 		this.user = user;
