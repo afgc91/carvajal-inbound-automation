@@ -150,7 +150,7 @@ public class FilesGenerator {
 		this.directoryOut = directoryOut;
 		this.filesNum = filesNum;
 		this.standardFactStructure = CarvajalUtils.loadConfigFile(configFilePath, sdf);
-		this.setGeneratedFiles(0);
+		this.generatedFiles = 0;
 	}
 
 	/**
@@ -345,7 +345,7 @@ public class FilesGenerator {
 				}
 
 				index += 1;
-				setGeneratedFiles(getGeneratedFiles() + 1);
+				generatedFiles += 1;
 			}
 		}
 		return true;
@@ -407,7 +407,7 @@ public class FilesGenerator {
 				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
-			setGeneratedFiles(getGeneratedFiles() + 1);
+			generatedFiles += 1;;
 		}
 
 		return true;
@@ -545,7 +545,7 @@ public class FilesGenerator {
 				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
-			setGeneratedFiles(getGeneratedFiles() + 1);
+			generatedFiles += 1;;
 		}
 		return true;
 	}
@@ -624,9 +624,5 @@ public class FilesGenerator {
 
 	public int getGeneratedFiles() {
 		return generatedFiles;
-	}
-
-	public void setGeneratedFiles(int generatedFiles) {
-		this.generatedFiles = generatedFiles;
 	}
 }

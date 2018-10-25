@@ -366,7 +366,7 @@ public class CarvajalAutomationExe {
 							sftpDbData.getRegion());
 				}
 				try {
-					files.sendSftpFiles(1);
+					files.manageFilesSending(1);
 					JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
 							JOptionPane.INFORMATION_MESSAGE);
 
@@ -499,7 +499,7 @@ public class CarvajalAutomationExe {
 							sftpDbData.getRegion());
 				}
 				try {
-					files.sendSftpFiles(2);
+					files.manageFilesSending(2);
 					JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
 							JOptionPane.INFORMATION_MESSAGE);
 

@@ -3,8 +3,6 @@ package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,16 +30,17 @@ public class SftpFilesSender {
 	private String secretKey;
 	private String nameBucket;
 	private String region;
-	static File file = null;
-	static File[] files = null;
-	static String nameFile = "";
-	static String keyName = "";
-	static List<String> listAccount = new ArrayList<String>();
-	static List<String> listFiles = new ArrayList<String>();
-	static List<String> listTestCase = new ArrayList<String>();
-	static List<String> testCaseAws = new ArrayList<>();
-	static List<String> pathKeyName = new ArrayList<String>();
-	static List<String> pathFileTest = new ArrayList<String>();
+	private File file = null;
+	private String nameFile = "";
+	private String keyName = "";
+	private List<String> listAccount = new ArrayList<String>();
+	private List<String> listFiles = new ArrayList<String>();
+	private List<String> listTestCase = new ArrayList<String>();
+	private List<String> testCaseAws = new ArrayList<>();
+	private List<String> pathKeyName = new ArrayList<String>();
+	private List<String> pathFileTest = new ArrayList<String>();
+	private int filesToSend;
+	private int sentFiles;
 
 	public SftpFilesSender(String srcPath, String dstPath, String user, String password, String url, int port,
 			String key, String secretKey, String nameBucket, String region) {
@@ -57,13 +56,31 @@ public class SftpFilesSender {
 		this.region = region;
 	}
 
-	public void sendSftpFiles(int option) throws JSchException, SftpException, FileNotFoundException, IOException,
+	/**
+	 * Método que maneja el envío de los archivos.
+	 * 
+	 * @param option 1 para enviar los archivos por SFTP, según lo parametrizado en
+	 *               el archivo JSON de entrada. 2 para enviar los archivos según un
+	 *               archivo Excel con la configuración de los casos de prueba.
+	 * @throws JSchException                En caso de error en el establecimiento
+	 *                                      de la conexión SFTP.
+	 * @throws SftpException                En caso de error en el envío SFTP.
+	 * @throws FileNotFoundException        En caso de no encontrar el archivo.
+	 * @throws IOException                  En cas de error de entrada/salida.
+	 * @throws ParseException               En caso de error conviertiendo el
+	 *                                      archivo json.
+	 * @throws ParserConfigurationException En caso de error convirtiendo el archivo
+	 *                                      XML.
+	 * @throws SAXException                 En caso de error con el archivo XML.
+	 */
+	public void manageFilesSending(int option) throws JSchException, SftpException, FileNotFoundException, IOException,
 			ParseException, ParserConfigurationException, SAXException {
-
+		sentFiles = 0;
 		if (option == 1) {
-
+			//Envío de archivos de acuerdo con lo parametrizado en el JSON de entrada.
 			File dir = new File(srcPath);
 			File[] files = dir.listFiles();
+			filesToSend = files.length;
 			JSch jsch = new JSch();
 			Session session = jsch.getSession(user, url, port);
 			session.setConfig("PreferredAuthentications", "password");
@@ -78,21 +95,23 @@ public class SftpFilesSender {
 
 			for (int i = 0; i < files.length; i++) {
 				sftpChannel.put(files[i].getAbsolutePath(), dstPath);
+				sentFiles += 1;
 			}
 
 			sftpChannel.exit();
 			session.disconnect();
 
-		}
-//Opción para enviar archivos según archivo de configuración de casos de prueba por SFTP - AS2 y AWS
-		if (option == 2) {
+		} else if (option == 2) {
+			// Opción para enviar archivos según archivo de configuración de casos de prueba
+			// por SFTP - AS2 y AWS
 
 			if (isTestCaseAWS()) {
-				CarvajalFilesSenderAWSBucket filesAws = new CarvajalFilesSenderAWSBucket(key, secretKey, nameBucket,
+				sentFiles = testCaseAws.size() + listTestCase.size();
+				CarvajalFilesSenderAWSBucket awsFilesSender = new CarvajalFilesSenderAWSBucket(key, secretKey, nameBucket,
 						region);
 				for (int j = 0; j < testCaseAws.size(); j++) {
-					File fileSend = new File(pathFileTest.get(j));
-					filesAws.moveFileToS3Bucket(pathKeyName.get(j), fileSend);
+					File fileToSend = new File(pathFileTest.get(j));
+					awsFilesSender.moveFileToS3Bucket(pathKeyName.get(j), fileToSend);
 				}
 
 				for (int i = 0; i < listTestCase.size(); i++) {
@@ -119,7 +138,6 @@ public class SftpFilesSender {
 		sftpChannel.connect();
 
 		for (int j = 0; j < listFiles.size(); j++) {
-			System.out.println(listFiles.get(j) + " sfdsdf" + listAccount.get(j));
 			sftpChannel.put(listFiles.get(j), listAccount.get(j));
 		}
 		sftpChannel.exit();
@@ -234,12 +252,12 @@ public class SftpFilesSender {
 		this.region = region;
 	}
 
-	public static List<String> getListFiles() {
+	public List<String> getListFiles() {
 		return listFiles;
 	}
 
-	public static void setListFiles(List<String> listFiles) {
-		SftpFilesSender.listFiles = listFiles;
+	public void setListFiles(List<String> listFiles) {
+		this.listFiles = listFiles;
 	}
 
 	public String getDstPath() {
