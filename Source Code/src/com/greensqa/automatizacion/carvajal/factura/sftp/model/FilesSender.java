@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
-public class FilesSender {
+public class FilesSender implements Progressable {
 
 	private String srcPath;
 	private String dstPath;
@@ -35,8 +35,8 @@ public class FilesSender {
 	private ArrayList<String> testCaseAws = new ArrayList<>();
 	private ArrayList<String> pathKeyName = new ArrayList<String>();
 	private ArrayList<String> pathFileTest = new ArrayList<String>();
-	private int filesToSend;
-	private int sentFiles;
+	private int totalItems;
+	private int processedItems;
 
 	public FilesSender(String srcPath, String dstPath, String user, String password, String url, int port, String key,
 			String secretKey, String nameBucket, String region) {
@@ -71,35 +71,35 @@ public class FilesSender {
 	 */
 	public void manageFilesSending(int option) throws JSchException, SftpException, FileNotFoundException, IOException,
 			ParseException, ParserConfigurationException, SAXException {
-		sentFiles = 0;
+		processedItems = 0;
 		if (option == 1) {
 			// Envío de archivos de acuerdo con lo parametrizado en el JSON de entrada.
 			File dir = new File(srcPath);
 			File[] filesFromJson = dir.listFiles();
-			filesToSend = filesFromJson.length;
+			totalItems = filesFromJson.length;
 			SftpFilesSender sftpFilesSender = new SftpFilesSender(url, user, password, port);
 			for (int i = 0; i < filesFromJson.length; i++) {
 				sftpFilesSender.sendFileSftp(filesFromJson[i], dstPath);
-				sentFiles += 1;
+				processedItems += 1;
 			}
 			sftpFilesSender.endSftpSession();
 		} else if (option == 2) {
 			// Opción para enviar archivos según archivo de configuración de casos de prueba
 			// por SFTP - AS2 y AWS
-			filesToSend = filesFromXlsList.size();
+			totalItems = filesFromXlsList.size();
 			if (isTestCaseAWS()) {
-				filesToSend += testCaseAws.size();
+				totalItems += testCaseAws.size();
 				FilesSenderAWSBucket awsFilesSender = new FilesSenderAWSBucket(key, secretKey, nameBucket, region);
 				for (int j = 0; j < testCaseAws.size(); j++) {
 					File fileToSend = new File(pathFileTest.get(j));
 					awsFilesSender.moveFileToS3Bucket(pathKeyName.get(j), fileToSend);
-					sentFiles += 1;
+					processedItems += 1;
 				}
 			}
 			SftpFilesSender sftpFilesSender = new SftpFilesSender(url, user, password, port);
 			for (int j = 0; j < filesFromXlsList.size(); j++) {
 				sftpFilesSender.sendFileSftp(new File(filesFromXlsList.get(j)), accountsList.get(j));
-				sentFiles += 1;
+				processedItems += 1;
 			}
 			sftpFilesSender.endSftpSession();
 		}
@@ -225,11 +225,11 @@ public class FilesSender {
 		return dstPath;
 	}
 	
-	public int getSentFiles() {
-		return this.sentFiles;
+	public int getProcessedItems() {
+		return this.processedItems;
 	}
 	
-	public int getFilesToSend() {
-		return this.filesToSend;
+	public int getTotalItems() {
+		return this.totalItems;
 	}
 }

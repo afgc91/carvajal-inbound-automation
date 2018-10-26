@@ -77,7 +77,7 @@ public class CarvajalAutomationExe {
 					frame2 = new CarvajalFrame("Generador de Archivos FECO", panel2);
 					frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					frame2.setSize(new Dimension(480, 330));
-					sendFilesWithGenericLog();
+					listenSendFilesWithGenericLog();
 				} else if (option == 2) {
 					frame.setVisible(false);
 					panel.setVisible(false);
@@ -85,7 +85,7 @@ public class CarvajalAutomationExe {
 					frame3 = new CarvajalFrame("Generador de Archivos FECO", panel3);
 					frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					frame3.setSize(new Dimension(480, 330));
-					sendFilesWithTestCasesLog();
+					listenSendFilesWithTestCasesLog();
 				}
 			}
 		});
@@ -123,8 +123,8 @@ public class CarvajalAutomationExe {
 				try {
 					FilesGenerator fg = new FilesGenerator(directoriesInFilePath, directoriesConfiFilePath,
 							directoriesOutFilePath, filesPerDirectory);
-					
-					//Tarea pesada.
+
+					// Tarea pesada.
 					@SuppressWarnings("rawtypes")
 					final SwingWorker worker = new SwingWorker() {
 
@@ -153,7 +153,7 @@ public class CarvajalAutomationExe {
 							}
 							return null;
 						}
-					};	
+					};
 					worker.execute();
 					ProgressBarThread thread = new ProgressBarThread(panel1, fg);
 					thread.start();
@@ -273,7 +273,7 @@ public class CarvajalAutomationExe {
 		});
 	}
 
-	public static void sendFilesWithGenericLog() {
+	public static void listenSendFilesWithGenericLog() {
 
 		JFileChooser directoryIn = panel2.getSelectSrcPathFC();
 		JFileChooser connectionFile = panel2.getConnectionFileFC();
@@ -346,67 +346,70 @@ public class CarvajalAutomationExe {
 				panel2.getSend().setEnabled(false);
 				panel2.getSelectSrcPath().setEnabled(false);
 				panel2.getSelectDBFile().setEnabled(false);
+				panel2.getBackMainPanel().setEnabled(false);
 
-				SftpAndDbDataElement sftpDbData = null;
+				SftpAndDbDataElement sftpDbDataElement = null;
 				File srcPath = directoryIn.getSelectedFile();
 				String inDirectoryPath = srcPath.getAbsolutePath();
-				FilesSender files = null;
 
 				try {
-					sftpDbData = CarvajalUtils.loadConnectionsData(panel2.getFileBDLabel().getText());
+					sftpDbDataElement = CarvajalUtils.loadConnectionsData(panel2.getFileBDLabel().getText());
 				} catch (IOException | ParseException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
 
-				if (sftpDbData != null) {
-					files = new FilesSender(inDirectoryPath, sftpDbData.getDestSftp(), sftpDbData.getUserSftp(),
-							sftpDbData.getPasswordSftp(), sftpDbData.getUrlSftp(), sftpDbData.getPortSftp(),
-							sftpDbData.getKey(), sftpDbData.getSecretKey(), sftpDbData.getNameBucket(),
-							sftpDbData.getRegion());
-				}
-				try {
-					files.manageFilesSending(1);
-					JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
-							JOptionPane.INFORMATION_MESSAGE);
+				if (sftpDbDataElement != null) {
+					FilesSender fs = new FilesSender(inDirectoryPath, sftpDbDataElement.getDestSftp(),
+							sftpDbDataElement.getUserSftp(), sftpDbDataElement.getPasswordSftp(),
+							sftpDbDataElement.getUrlSftp(), sftpDbDataElement.getPortSftp(), sftpDbDataElement.getKey(),
+							sftpDbDataElement.getSecretKey(), sftpDbDataElement.getNameBucket(),
+							sftpDbDataElement.getRegion());
 
-				} catch (JSchException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Los Datos de conexión son Inválidos", "Datos Inválidos",
+					// Tarea pesada.
+					@SuppressWarnings("rawtypes")
+					final SwingWorker worker = new SwingWorker() {
+
+						@Override
+						protected Object doInBackground() throws Exception {
+							try {
+								fs.manageFilesSending(1);
+								JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
+										JOptionPane.INFORMATION_MESSAGE);
+								panel2.getGenerateLog().setEnabled(true);
+								listenGenerateLog();
+							} catch (JSchException | SftpException | IOException | ParseException
+									| ParserConfigurationException | SAXException e1) {
+								e1.printStackTrace();
+								JOptionPane.showMessageDialog(null,
+										"Se presentó un error. Revise los datos de conexión y\nsu conexión a la VPN.",
+										"Error", JOptionPane.ERROR_MESSAGE);
+							} finally {
+								panel2.getSend().setEnabled(true);
+								panel2.getSelectSrcPath().setEnabled(true);
+								panel2.getSelectDBFile().setEnabled(true);
+								panel2.getBackMainPanel().setEnabled(true);
+							}
+							return null;
+						}
+					};
+					worker.execute();
+					ProgressBarThread thread = new ProgressBarThread(panel2, fs);
+					thread.start();
+				} else {
+					JOptionPane.showMessageDialog(null, "El archivo de conexiones es inválido", "Error",
 							JOptionPane.ERROR_MESSAGE);
-				} catch (SftpException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(null, "No se pudieron enviar los archivos seleccionados",
-							"Archivos No Enviados", JOptionPane.ERROR_MESSAGE);
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ParserConfigurationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SAXException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					panel2.getSend().setEnabled(true);
+					panel2.getSelectSrcPath().setEnabled(true);
+					panel2.getSelectDBFile().setEnabled(true);
+					panel2.getBackMainPanel().setEnabled(true);
 				}
-
-				panel2.getSend().setEnabled(true);
-				panel2.getSelectSrcPath().setEnabled(true);
-				panel2.getSelectDBFile().setEnabled(true);
-				panel2.getGenerateLog().setEnabled(true);
-				generateLog();
 			}
 		});
 
 	}
 
-	public static void sendFilesWithTestCasesLog() {
+	public static void listenSendFilesWithTestCasesLog() {
 
 		JFileChooser directoryIn = panel3.getSelectSrcPathFC();
 		JFileChooser fileConnection = panel3.getConnectionFileFC();
@@ -489,7 +492,8 @@ public class CarvajalAutomationExe {
 					sftpDbData = CarvajalUtils.loadConnectionsData(panel3.getFileBDLabel().getText());
 				} catch (IOException | ParseException e2) {
 					// TODO Auto-generated catch block
-				JOptionPane.showMessageDialog(null, "El archivo de conexión no es válido", "Conexión fallida", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "El archivo de conexión no es válido", "Conexión fallida",
+							JOptionPane.ERROR_MESSAGE);
 				}
 
 				if (sftpDbData != null) {
@@ -538,7 +542,7 @@ public class CarvajalAutomationExe {
 		});
 	}
 
-	public static void generateLog() {
+	public static void listenGenerateLog() {
 
 		JFileChooser filesConnetion = panel2.getConnectionFileFC();
 		JFileChooser filesSending = panel2.getSelectSrcPathFC();
@@ -554,8 +558,8 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					PostgresConnector conn = new PostgresConnector(sftpDbData.getUrlDb(),
-							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
+					PostgresConnector conn = new PostgresConnector(sftpDbData.getUrlDb(), sftpDbData.getUserDb(),
+							sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcPath = (fileName.getAbsolutePath());
 					// String srcExcel =
@@ -613,8 +617,8 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					PostgresConnector conn = new PostgresConnector(sftpDbData.getUrlDb(),
-							sftpDbData.getUserDb(), sftpDbData.getPasswordDb());
+					PostgresConnector conn = new PostgresConnector(sftpDbData.getUrlDb(), sftpDbData.getUserDb(),
+							sftpDbData.getPasswordDb());
 					File fileName = filesSending.getSelectedFile();
 					String srcExcel = (fileName.getAbsolutePath());
 					File excel = new File(srcExcel);

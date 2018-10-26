@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  * @author Andrés Fernando Gasca
  *
  */
-public class FilesGenerator {
+public class FilesGenerator implements Progressable {
 
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -92,7 +92,7 @@ public class FilesGenerator {
 	/**
 	 * Cantidad de archivos a generar.
 	 */
-	private int filesNum;
+	private int totalItems;
 
 	/**
 	 * Datos de entrada del archivo de configuración.
@@ -103,7 +103,7 @@ public class FilesGenerator {
 	 * Cantidad de archivos que se han generado hasta el momento. Se utiliza para
 	 * llenar la barra de progreso de generación de archivos.
 	 */
-	private int generatedFiles;
+	private int processedItems;
 
 	/**
 	 * Constructor de FilesGenerator para crear archivos distribuidos en varios
@@ -148,9 +148,9 @@ public class FilesGenerator {
 		this.baseFilePath = baseFilePath;
 		this.configFilePath = configFilePath;
 		this.directoryOut = directoryOut;
-		this.filesNum = filesNum;
+		this.totalItems = filesNum;
 		this.standardFactStructure = CarvajalUtils.loadConfigFile(configFilePath, sdf);
-		this.generatedFiles = 0;
+		this.processedItems = 0;
 	}
 
 	/**
@@ -274,7 +274,7 @@ public class FilesGenerator {
 			String[] lineArray = null;
 			String tag = "";
 			String filePath = "";
-			for (int i = 0; i < this.filesNum; i++) {
+			for (int i = 0; i < this.totalItems; i++) {
 				fileLinesCopy = fileLines;
 				fact = prefix + index;
 
@@ -345,7 +345,7 @@ public class FilesGenerator {
 				}
 
 				index += 1;
-				generatedFiles += 1;
+				processedItems += 1;
 			}
 		}
 		return true;
@@ -364,7 +364,7 @@ public class FilesGenerator {
 
 		// Crear los archivos (inicialmente como copias idénticas al original y después
 		// cambiar el contenido de los tags que se deben modificar.
-		for (int i = 0; i < this.filesNum; i++) {
+		for (int i = 0; i < this.totalItems; i++) {
 			fact = prefix + index;
 			fileName = docType == 1 ? "FV" : docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "UNKNOWN";
 			if (fileName == "") {
@@ -407,7 +407,7 @@ public class FilesGenerator {
 				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
-			generatedFiles += 1;;
+			processedItems += 1;;
 		}
 
 		return true;
@@ -427,7 +427,7 @@ public class FilesGenerator {
 
 		// Crear los archivos (inicialmente como copias idénticas al original y después
 		// cambiar el contenido de los tags que se deben modificar.
-		for (int i = 0; i < this.filesNum; i++) {
+		for (int i = 0; i < this.totalItems; i++) {
 			fact = prefix + index;
 			fileName = docType == 1 ? "FV" : docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "UNKNOWN";
 			if (fileName == "") {
@@ -545,7 +545,7 @@ public class FilesGenerator {
 				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
-			generatedFiles += 1;;
+			processedItems += 1;;
 		}
 		return true;
 	}
@@ -614,15 +614,11 @@ public class FilesGenerator {
 		this.directoryOut = directoryOut;
 	}
 
-	public int getFilesNum() {
-		return filesNum;
+	public int getTotalItems() {
+		return totalItems;
 	}
 
-	public void setFilesNum(int filesNum) {
-		this.filesNum = filesNum;
-	}
-
-	public int getGeneratedFiles() {
-		return generatedFiles;
+	public int getProcessedItems() {
+		return processedItems;
 	}
 }
