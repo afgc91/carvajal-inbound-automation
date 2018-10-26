@@ -120,7 +120,8 @@ public class CarvajalUtils {
 			long factStartNum = Long.parseLong(json.get("factNumInicial") + "");
 			String nitSender = (String) json.get("nitEmisor");
 			String nitReceiver = (String) json.get("nitReceptor");
-			long authNumber = Long.parseLong(json.get("numAutorizacion") + "");
+			String strAuthNumber = json.get("numAutorizacion") + "";
+			long authNumber = strAuthNumber.equals("") ? 0 : Long.parseLong(strAuthNumber);
 			Date startingRangeDate = new Date(sdf.parse((json.get("fechaRangoInicial") + "")).getTime());
 			Date endingRangeDate = new Date(sdf.parse((json.get("fechaRangoFinal") + "")).getTime());
 			long startingRangeNum = Long.parseLong(json.get("numInicioRango") + "");
