@@ -28,10 +28,14 @@ public class ProgressBarThread extends Thread {
 	public void run() {
 		switch (type) {
 		case 1:
+			panel.getProgressBar().setValue(0);
 			updateProgressBar(fg);
+			panel.getProgressBar().setValue(100);
 			break;
 		case 2:
+			panel.getProgressBar().setValue(0);
 			updateProgressBar(fs);
+			panel.getProgressBar().setValue(100);
 			break;
 		}
 	}
@@ -41,7 +45,6 @@ public class ProgressBarThread extends Thread {
 	 * @param progressBarObj Objeto que implementa la Interface Progressable.
 	 */
 	private void updateProgressBar(Progressable progressBarObj) {
-		panel.getProgressBar().setValue(0);
 		while (progressBarObj.getProcessedItems() < progressBarObj.getTotalItems()) {
 			// Actualizar barra de progreso
 			panel.getProgressBar()
@@ -54,6 +57,9 @@ public class ProgressBarThread extends Thread {
 						JOptionPane.ERROR);
 			}
 		}
-		panel.getProgressBar().setValue(100);
+	}
+	
+	public void setType(int type) {
+		this.type = type;
 	}
 }

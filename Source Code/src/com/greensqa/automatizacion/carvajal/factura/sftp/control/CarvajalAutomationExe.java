@@ -34,8 +34,8 @@ import com.jcraft.jsch.SftpException;
 
 public class CarvajalAutomationExe {
 
-	private static CarvajalPanel panel, panel1, panel2, panel3;
-	private static CarvajalFrame frame, frame1, frame2, frame3;
+	private static CarvajalPanel panel, panel1, sendFilesWithGenericLogPanel, panel3;
+	private static CarvajalFrame frame, frame1, sendFilesWithGenericLogFrame, frame3;
 
 	public static void main(String[] args) {
 		starApp();
@@ -63,28 +63,29 @@ public class CarvajalAutomationExe {
 				int option = panel.getSelectOption().getSelectedIndex();
 
 				if (option == 0) {
-					frame.setVisible(false);
+					frame.setEnabled(false);
 					panel1 = new CarvajalPanel(0);
 					frame1 = new CarvajalFrame("Generador de Archivos FECO", panel1);
 					frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					frame1.setSize(new Dimension(535, 350));
+					frame1.setLocationRelativeTo(null);
 					listenEntryData();
 					listenOkGenerateFiles();
 				} else if (option == 1) {
-					frame.setVisible(false);
-					panel.setVisible(false);
-					panel2 = new CarvajalPanel(1);
-					frame2 = new CarvajalFrame("Generador de Archivos FECO", panel2);
-					frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-					frame2.setSize(new Dimension(480, 330));
+					frame.setEnabled(false);
+					sendFilesWithGenericLogPanel = new CarvajalPanel(1);
+					sendFilesWithGenericLogFrame = new CarvajalFrame("Generador de Archivos FECO", sendFilesWithGenericLogPanel);
+					sendFilesWithGenericLogFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					sendFilesWithGenericLogFrame.setSize(new Dimension(480, 330));
+					sendFilesWithGenericLogFrame.setLocationRelativeTo(null);
 					listenSendFilesWithGenericLog();
 				} else if (option == 2) {
-					frame.setVisible(false);
-					panel.setVisible(false);
+					frame.setEnabled(false);
 					panel3 = new CarvajalPanel(2);
 					frame3 = new CarvajalFrame("Generador de Archivos FECO", panel3);
 					frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					frame3.setSize(new Dimension(480, 330));
+					frame3.setLocationRelativeTo(null);
 					listenSendFilesWithTestCasesLog();
 				}
 			}
@@ -266,19 +267,18 @@ public class CarvajalAutomationExe {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Evento para regresar a la ventana principal
-
+				frame.setEnabled(true);
 				frame1.setVisible(false);
-				starApp();
 			}
 		});
 	}
 
 	public static void listenSendFilesWithGenericLog() {
 
-		JFileChooser directoryIn = panel2.getSelectSrcPathFC();
-		JFileChooser connectionFile = panel2.getConnectionFileFC();
+		JFileChooser directoryIn = sendFilesWithGenericLogPanel.getSelectSrcPathFC();
+		JFileChooser connectionFile = sendFilesWithGenericLogPanel.getConnectionFileFC();
 
-		panel2.getSelectSrcPath().addActionListener(new ActionListener() {
+		sendFilesWithGenericLogPanel.getSelectSrcPath().addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -286,19 +286,19 @@ public class CarvajalAutomationExe {
 				// enviar.
 
 				directoryIn.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				int option = directoryIn.showOpenDialog(panel2);
+				int option = directoryIn.showOpenDialog(sendFilesWithGenericLogPanel);
 				if (option == JFileChooser.APPROVE_OPTION) {
 
 					File fileName = directoryIn.getSelectedFile();
 					String outDirectoryPath = (fileName.getAbsolutePath());
-					panel2.getSelectSrcPathLabel().setText(outDirectoryPath);
+					sendFilesWithGenericLogPanel.getSelectSrcPathLabel().setText(outDirectoryPath);
 					String nameSrcPath = fileName.getName();
-					panel2.getSrcViewPathLabel().setText(nameSrcPath);
+					sendFilesWithGenericLogPanel.getSrcViewPathLabel().setText(nameSrcPath);
 				}
 			}
 		});
 
-		panel2.getSelectDBFile().addActionListener(new ActionListener() {
+		sendFilesWithGenericLogPanel.getSelectDBFile().addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -309,51 +309,51 @@ public class CarvajalAutomationExe {
 				connectionFile.setCurrentDirectory(directoryIn.getCurrentDirectory());
 
 				connectionFile.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				int option = connectionFile.showOpenDialog(panel2);
+				int option = connectionFile.showOpenDialog(sendFilesWithGenericLogPanel);
 
 				if (option == JFileChooser.APPROVE_OPTION) {
 					File fileName = connectionFile.getSelectedFile();
 					String connectionFilePath = (fileName.getAbsolutePath());
-					panel2.getFileBDLabel().setText(connectionFilePath);
+					sendFilesWithGenericLogPanel.getFileBDLabel().setText(connectionFilePath);
 					String nameBDFile = fileName.getName();
-					panel2.getFileViewBDLabel().setText(nameBDFile);
+					sendFilesWithGenericLogPanel.getFileViewBDLabel().setText(nameBDFile);
 				}
 			}
 		});
 
-		panel2.getBackMainPanel().addActionListener(new ActionListener() {
+		sendFilesWithGenericLogPanel.getBackMainPanel().addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Evento para regresar a la ventana principal
 
-				frame2.setVisible(false);
-				starApp();
+				frame.setEnabled(true);
+				sendFilesWithGenericLogFrame.setVisible(false);
 			}
 		});
 
-		panel2.getSend().addActionListener(new ActionListener() {
+		sendFilesWithGenericLogPanel.getSend().addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (!panel2.isValidInputFileSend()) {
+				if (!sendFilesWithGenericLogPanel.isValidInputFileSend()) {
 
 					JOptionPane.showMessageDialog(null, "Las entradas no son válidas", "Entradas Inválidas",
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				panel2.getSend().setEnabled(false);
-				panel2.getSelectSrcPath().setEnabled(false);
-				panel2.getSelectDBFile().setEnabled(false);
-				panel2.getBackMainPanel().setEnabled(false);
+				sendFilesWithGenericLogPanel.getSend().setEnabled(false);
+				sendFilesWithGenericLogPanel.getSelectSrcPath().setEnabled(false);
+				sendFilesWithGenericLogPanel.getSelectDBFile().setEnabled(false);
+				sendFilesWithGenericLogPanel.getBackMainPanel().setEnabled(false);
 
 				SftpAndDbDataElement sftpDbDataElement = null;
 				File srcPath = directoryIn.getSelectedFile();
 				String inDirectoryPath = srcPath.getAbsolutePath();
 
 				try {
-					sftpDbDataElement = CarvajalUtils.loadConnectionsData(panel2.getFileBDLabel().getText());
+					sftpDbDataElement = CarvajalUtils.loadConnectionsData(sendFilesWithGenericLogPanel.getFileBDLabel().getText());
 				} catch (IOException | ParseException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
@@ -376,7 +376,7 @@ public class CarvajalAutomationExe {
 								fs.manageFilesSending(1);
 								JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
 										JOptionPane.INFORMATION_MESSAGE);
-								panel2.getGenerateLog().setEnabled(true);
+								sendFilesWithGenericLogPanel.getGenerateLog().setEnabled(true);
 								listenGenerateLog();
 							} catch (JSchException | SftpException | IOException | ParseException
 									| ParserConfigurationException | SAXException e1) {
@@ -385,24 +385,24 @@ public class CarvajalAutomationExe {
 										"Se presentó un error. Revise los datos de conexión y\nsu conexión a la VPN.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 							} finally {
-								panel2.getSend().setEnabled(true);
-								panel2.getSelectSrcPath().setEnabled(true);
-								panel2.getSelectDBFile().setEnabled(true);
-								panel2.getBackMainPanel().setEnabled(true);
+								sendFilesWithGenericLogPanel.getSend().setEnabled(true);
+								sendFilesWithGenericLogPanel.getSelectSrcPath().setEnabled(true);
+								sendFilesWithGenericLogPanel.getSelectDBFile().setEnabled(true);
+								sendFilesWithGenericLogPanel.getBackMainPanel().setEnabled(true);
 							}
 							return null;
 						}
 					};
 					worker.execute();
-					ProgressBarThread thread = new ProgressBarThread(panel2, fs);
+					ProgressBarThread thread = new ProgressBarThread(sendFilesWithGenericLogPanel, fs);
 					thread.start();
 				} else {
 					JOptionPane.showMessageDialog(null, "El archivo de conexiones es inválido", "Error",
 							JOptionPane.ERROR_MESSAGE);
-					panel2.getSend().setEnabled(true);
-					panel2.getSelectSrcPath().setEnabled(true);
-					panel2.getSelectDBFile().setEnabled(true);
-					panel2.getBackMainPanel().setEnabled(true);
+					sendFilesWithGenericLogPanel.getSend().setEnabled(true);
+					sendFilesWithGenericLogPanel.getSelectSrcPath().setEnabled(true);
+					sendFilesWithGenericLogPanel.getSelectDBFile().setEnabled(true);
+					sendFilesWithGenericLogPanel.getBackMainPanel().setEnabled(true);
 				}
 			}
 		});
@@ -512,12 +512,10 @@ public class CarvajalAutomationExe {
 					JOptionPane.showMessageDialog(null, "No se logro establecer la conexión", "Conexión no establecida",
 							JOptionPane.ERROR_MESSAGE);
 				} catch (SftpException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, "No se pudieron enviar los archivos seleccionados",
 							"Archivos No Enviados", JOptionPane.ERROR_MESSAGE);
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -544,38 +542,56 @@ public class CarvajalAutomationExe {
 
 	public static void listenGenerateLog() {
 
-		JFileChooser filesConnetion = panel2.getConnectionFileFC();
-		JFileChooser filesSending = panel2.getSelectSrcPathFC();
+		JFileChooser filesConnetion = sendFilesWithGenericLogPanel.getConnectionFileFC();
+		JFileChooser sentFiles = sendFilesWithGenericLogPanel.getSelectSrcPathFC();
 
-		panel2.getGenerateLog().addActionListener(new ActionListener() {
+		sendFilesWithGenericLogPanel.getGenerateLog().addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				File fileBDPath = filesConnetion.getSelectedFile();
-				String directoryBDPath = (fileBDPath.getAbsolutePath());
-				SftpAndDbDataElement sftpDbData;
+				File bdPathFile = filesConnetion.getSelectedFile();
+				String directoryBDPath = (bdPathFile.getAbsolutePath());
+				SftpAndDbDataElement sftpAndDbDataElement;
 
 				try {
-					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					PostgresConnector conn = new PostgresConnector(sftpDbData.getUrlDb(), sftpDbData.getUserDb(),
-							sftpDbData.getPasswordDb());
-					File fileName = filesSending.getSelectedFile();
-					String srcPath = (fileName.getAbsolutePath());
-					// String srcExcel =
-					// ("C:\\Users\\dvalencia\\Documents\\ProyectoFECO\\DatosPruebas\\data1.xlsx");
-					File dir = new File(srcPath);
-					// File excel = new File(srcExcel);
+					sftpAndDbDataElement = CarvajalUtils.loadConnectionsData(directoryBDPath);
+					PostgresConnector conn = new PostgresConnector(sftpAndDbDataElement.getUrlDb(), sftpAndDbDataElement.getUserDb(),
+							sftpAndDbDataElement.getPasswordDb());
+					File dir = sentFiles.getSelectedFile();
 
 					// Obtener padre de dir
-					BusinessValidator bv = new BusinessValidator(conn.getConnetion(sftpDbData.getTipoBD()),
+					BusinessValidator bv = new BusinessValidator(conn.getConnetion(sftpAndDbDataElement.getTipoBD()),
 							dir.getParentFile().getAbsolutePath());
 					if (dir.exists()) {
 						File[] files = dir.listFiles();
-						for (int i = 0; i < files.length; i++) {
-							bv.executeStatusQuery(files[i], directoryBDPath);
-						}
-						bv.getSummary();
+						bv.setTotalItems(files.length);
+						bv.setProcessedItems(0);
+						
+						sendFilesWithGenericLogPanel.getSend().setEnabled(false);
+						sendFilesWithGenericLogPanel.getSelectSrcPath().setEnabled(false);
+						sendFilesWithGenericLogPanel.getSelectDBFile().setEnabled(false);
+						sendFilesWithGenericLogPanel.getBackMainPanel().setEnabled(false);
+						
+						//Tarea pesada.
+						@SuppressWarnings("rawtypes")
+						SwingWorker worker = new SwingWorker() {
+							@Override
+							protected Object doInBackground() throws Exception {
+								for (int i = 0; i < files.length; i++) {
+									bv.executeStatusQuery(files[i], directoryBDPath);
+									bv.setProcessedItems(bv.getProcessedItems() + 1);
+								}
+								bv.getSummary();
+								sendFilesWithGenericLogPanel.getSend().setEnabled(true);
+								sendFilesWithGenericLogPanel.getSelectSrcPath().setEnabled(true);
+								sendFilesWithGenericLogPanel.getSelectDBFile().setEnabled(true);
+								sendFilesWithGenericLogPanel.getBackMainPanel().setEnabled(true);
+								return null;
+							}	
+						};
+						worker.execute();
+						
 					}
 
 				} catch (IOException | ParseException e1) {
@@ -585,12 +601,6 @@ public class CarvajalAutomationExe {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ParserConfigurationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SAXException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (Exception e1) {

@@ -16,7 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
-public class BusinessValidator {
+public class BusinessValidator implements Progressable {
 
 	private Connection con;
 	private String status;
@@ -36,6 +36,8 @@ public class BusinessValidator {
 	private String infoRtaDian = "";
 	private int startProcess;
 	private int total = 0;
+	private int totalItems;
+	private int processedItems;
 
 
 	public BusinessValidator(Connection con, String directory) {
@@ -321,6 +323,26 @@ public class BusinessValidator {
 
 	public void setFilesFailed(int filesFailed) {
 		this.filesFailed = filesFailed;
+	}
+
+	@Override
+	public int getTotalItems() {
+		// TODO Auto-generated method stub
+		return totalItems;
+	}
+
+	@Override
+	public int getProcessedItems() {
+		// TODO Auto-generated method stub
+		return processedItems;
+	}
+	
+	public void setProcessedItems(int processedItems) {
+		this.processedItems = processedItems;
+	}
+	
+	public void setTotalItems(int totalItems) {
+		this.totalItems = totalItems;
 	}
 
 }
