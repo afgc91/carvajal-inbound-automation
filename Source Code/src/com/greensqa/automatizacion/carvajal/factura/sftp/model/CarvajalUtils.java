@@ -256,19 +256,19 @@ public class CarvajalUtils {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(fr);
 			// Objeto SFTP
-			JSONObject sftp = (JSONObject) json.get("sftp");
-			String userSftp = (String) sftp.get("usuario");
-			String passwordSftp = (String) sftp.get("clave");
-			String urlSftp = (String) sftp.get("urlServidor");
-			int portSftp = Integer.parseInt((String) sftp.get("puerto"));
-			String destSftp = (String) sftp.get("destino");
+			JSONObject channel = (JSONObject) json.get("canal");
+			String userSftp = (String) channel.get("usuario");
+			String passwordSftp = (String) channel.get("clave");
+			String urlSftp = (String) channel.get("urlServidor");
+			int portSftp = Integer.parseInt((String) channel.get("puerto"));
+			String destSftp = (String) channel.get("destino");
 			// Objeto Aurora (DB)
-			JSONObject aurora = (JSONObject) json.get("aurora");
-			int tipoDb = Integer.parseInt((String) aurora.get("tipoBD"));
-			String userDb = (String) aurora.get("usuario");
-			String passwordDb = (String) aurora.get("clave");
-			String urlDb = (String) aurora.get("urlServidor");
-			int portDb = Integer.parseInt((String) aurora.get("puerto"));
+			JSONObject dataBase = (JSONObject) json.get("baseDeDatos");
+			int tipoDb = Integer.parseInt((String) dataBase.get("tipoBD"));
+			String userDb = (String) dataBase.get("usuario");
+			String passwordDb = (String) dataBase.get("clave");
+			String urlDb = (String) dataBase.get("urlServidor");
+			int portDb = Integer.parseInt((String) dataBase.get("puerto"));
 			//Objeto AWS 
 			JSONObject aws = (JSONObject) json.get("aws");
 			String key = (String) aws.get("clave");
