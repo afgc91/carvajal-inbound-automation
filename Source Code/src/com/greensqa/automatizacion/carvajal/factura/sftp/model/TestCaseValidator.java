@@ -212,6 +212,7 @@ public class TestCaseValidator {
 				} else if ((testCase.get(i).equals("1.3"))) {
 
 					String pathFile = FilesCompressor.unZip(documents.get(i));
+					System.out.println("CASO DE PRUEBA " + pathFile);
 					factNum = CarvajalUtils.getFactNumber(pathFile);
 					File fileInZip = new File(pathFile);
 					typeDoc = CarvajalUtils.getTypeId(fileInZip.getAbsolutePath());

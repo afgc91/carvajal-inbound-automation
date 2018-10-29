@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -92,39 +93,38 @@ public class FilesCompressor {
 	public static String unZip(String pathZip) {
 		byte[] buffer = new byte[1024];
 		String pathFileZip = "";
+		ArrayList<String> pathFilesInZip = new ArrayList<String>();
 		try {
 			File file = new File(pathZip);
 			String pathDest = file.getParent();
-
 			File folder = new File(pathDest);
 			if (!folder.exists()) {
 				folder.mkdir();
 			}
 			try (ZipInputStream zis = new ZipInputStream(new FileInputStream(pathZip))) {
 				ZipEntry ze = zis.getNextEntry();
-				String typeDocument = (ze.getName().split("\\.")[1]);
-				System.out.println(ze.getName() + "archivo zip");
-				
-				while ((ze != null)){
-					String fileName = ze.getName();
-						File archivoNuevo = new File(pathDest + File.separator + fileName);
-						pathFileZip = archivoNuevo.getAbsolutePath();
-						new File(archivoNuevo.getParent()).mkdirs();
-						try (FileOutputStream fos = new FileOutputStream(archivoNuevo);
-								OutputStreamWriter sw = new OutputStreamWriter(fos)) {
-							int len;
-							while ((len = zis.read(buffer)) > 0) {
-								fos.write(buffer, 0, len);
-							}
-							ze = zis.getNextEntry();
-						}				
+				String fileName = "";
+				while (ze != null) {
+					fileName = ze.getName();
+					File archivoNuevo = new File(pathDest + File.separator + fileName);
+					pathFileZip = archivoNuevo.getAbsolutePath();
+					new File(archivoNuevo.getParent()).mkdirs();
+					try (FileOutputStream fos = new FileOutputStream(archivoNuevo)) {
+						int len;
+						while ((len = zis.read(buffer)) > 0) {
+							fos.write(buffer, 0, len);
+						}
+						ze = zis.getNextEntry();
+					}
+				}
+				if (fileName.contains(".txt")) {
+					pathFilesInZip.add(pathFileZip);
+				}
 				zis.closeEntry();
-			}}
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		System.out.println(pathFileZip);
-		return pathFileZip;
-
+		return pathFilesInZip.get(0);
 	}
 }
