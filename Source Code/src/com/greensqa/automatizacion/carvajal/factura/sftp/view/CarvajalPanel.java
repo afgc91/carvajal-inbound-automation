@@ -26,17 +26,17 @@ public class CarvajalPanel extends JPanel {
 	/**
 	 * Seleccionar la opción a ejecutar (Generar Archivos o Enviar Archivos)
 	 **/
-	private JComboBox<String> selectOption;
+	private JComboBox<String> optionSelect;
 
 	/**
 	 * Botón para enviar la funcionalidad a ejecutar
 	 **/
-	private JButton acceptOption;
+	private JButton acceptButton;
 
 	/**
 	 * Etiqueta para mostrar información acerca de la funcionalidad enviar archivos
 	 **/
-	private JLabel informationOption;
+	private JLabel optionLabel;
 
 	// Generar archivos
 
@@ -44,53 +44,53 @@ public class CarvajalPanel extends JPanel {
 	 * Etiqueta para mostrar información referente a la funcionalidad generar
 	 * archivos
 	 */
-	private JLabel informationOptionGenerateFile;
+	private JLabel generateFilesLabel;
 
 	/**
 	 * Etiqueta para enviar la ruta del archivo seleccionado Insumo en txt o xml.
 	 */
-	private JLabel fileLabel;
+	private JLabel filePathLabel;
 
 	/**
 	 * Etiqueta para mostrar el nombre del archivo seleccionado Insumo en txt o xml.
 	 */
-	private JLabel fileViewLabel;
+	private JLabel fileNameLabel;
 
 	/**
 	 * Botón para seleccionar Archivo de Entrada - Insumo en txt o xml.
 	 */
-	private JButton selectFile;
+	private JButton selectFileButton;
 
 	/**
 	 * Etiqueta para enviar la ruta del archivo de configuración seleccionado.
 	 **/
-	private JLabel configFileLabel;
+	private JLabel configFilePathLabel;
 
 	/**
 	 * Etiqueta para mostrar el nombre del archivo de configuración seleccionado.
 	 **/
-	private JLabel configViewFileLabel;
+	private JLabel configFileNameLabel;
 
 	/**
 	 * Botón para seleccionar el archivo de configuración de los archivos de salida.
 	 */
-	private JButton configFile;
+	private JButton configFileButton;
 
 	/**
 	 * Ruta de la carpeta en la cual se guardarán los archivos generados.
 	 **/
-	private JLabel outFilePathLabel;
+	private JLabel outFileDirPathLabel;
 
 	/**
 	 * Nombre de la carpeta en la cual se guardarán los archivos generados.
 	 **/
-	private JLabel outViewFilePathLabel;
+	private JLabel outFileDirNameLabel;
 
 	/**
 	 * Botón para seleccionar la ruta en la cual se guardaran los archivos
 	 * generados.
 	 **/
-	private JButton outFilePath;
+	private JButton outFileDirButton;
 
 	/**
 	 * Etiqueta de la cantidad de archivos por folder.
@@ -106,7 +106,7 @@ public class CarvajalPanel extends JPanel {
 	 * Campo para seleccionar si desea comprimir la carpeta con los archivos
 	 * generados
 	 */
-	private JCheckBox selectCompression;
+	private JCheckBox compressionCheck;
 
 	/**
 	 * Etiqueta para preguntar por la cantidad de archivos a comprimir por carpeta
@@ -119,29 +119,29 @@ public class CarvajalPanel extends JPanel {
 	private JTextField filesPerZipField;
 
 	/**
-	 * Imagen GreenSQA
+	 * Etiqueta de la imagen GreenSQA
 	 */
-	private JLabel image;
+	private JLabel imageLabel;
 
 	/**
 	 * Botón para inciar la Generación de Archivos
 	 */
-	private JButton accept;
+	private JButton generateFilesButton;
 
 	/**
 	 * Seleccionador de archivo de entrada plano o xml.
 	 */
-	private JFileChooser fileFC;
+	private JFileChooser fileChooser;
 
 	/**
 	 * Seleccionador de archivo de configuración de los nuevos archivos.
 	 */
-	private JFileChooser fileConfiFC;
+	private JFileChooser fileConfigChooser;
 
 	/**
 	 * Seleccionador de Carpeta de salida para los archivos generados.
 	 */
-	private JFileChooser outDirectoryFC;
+	private JFileChooser outDirectoryChooser;
 
 	/**
 	 * Texto mostrado cuando no se ha seleccionado ningún archivo
@@ -151,62 +151,62 @@ public class CarvajalPanel extends JPanel {
 	/**
 	 * Botón para volver a la ventana principal
 	 */
-	private JButton backMainPanel;
+	private JButton backButton;
 
 	// Envío de archivos vía SFTP
 
 	/**
 	 * Botón para seleccionar los datos de conexión (base de datos y sftp).
 	 */
-	private JButton selectDBFile;
+	private JButton selectDBFileButton;
 
 	/**
-	 * Etiqueta para enviar la ruta del nombre de archivo seleccionado con los datos
+	 * Etiqueta para enviar la ruta del archivo seleccionado con los datos
 	 * de conexión.
 	 */
-	private JLabel fileBDLabel;
+	private JLabel dbFilePathLabel;
 
 	/**
 	 * Etiqueta que muestra el nombre de archivo seleccionado con los datos de
 	 * conexión.
 	 */
-	private JLabel fileViewBDLabel;
+	private JLabel dbFileNameLabel;
 
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
-	private JFileChooser connectionFileFC;
+	private JFileChooser connectionFileChooser;
 
 	/**
 	 * Botón para el envío de los archivos a Cen Financiero
 	 **/
-	private JButton send;
+	private JButton sendButton;
 
 	/**
 	 * Seleccionar Archivos para enviar
 	 **/
-	private JButton selectSrcPath;
+	private JButton selectSrcPathButton;
 
 	/**
-	 * Etiqueta para enviar la ruta del seleccionada con los archivos a enviar
+	 * Etiqueta para enviar la ruta seleccionada con los archivos a enviar
 	 **/
-	private JLabel selectSrcPathLabel;
+	private JLabel selectSrcDirPathLabel;
 
 	/**
 	 * Etiqueta para mostrar el nombre de la carpeta seleccionada que contiene los
 	 * archivos a enviar.
 	 **/
-	private JLabel srcViewPathLabel;
+	private JLabel selectSrcDirNameLabel;
 
 	/**
 	 * Seleccionador de carpeta donde estan los archivos a enviar.
 	 */
-	private JFileChooser selectSrcPathFC;
+	private JFileChooser selectSrcDirChooser;
 
 	/**
 	 * Botón parar Generar LOG de envío de documentos.
 	 */
-	private JButton generateLog;
+	private JButton generateLogButton;
 	
 	/**
 	 * Barra de progreso.
@@ -235,66 +235,66 @@ public class CarvajalPanel extends JPanel {
 	public void initializeComponentsMain(int option) {
 
 		String[] opciones = { "Generar Archivos", "Enviar Archivos", "Test" };
-		selectOption = new JComboBox<>(opciones);
-		selectOption.setSelectedIndex(0);
+		optionSelect = new JComboBox<>(opciones);
+		optionSelect.setSelectedIndex(0);
 		selectOptionLabel = new JLabel("Seleccione una Funcionalidad:");
-		acceptOption = new JButton("Aceptar");
-		image = new JLabel(
+		acceptButton = new JButton("Aceptar");
+		imageLabel = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
 
 		selectOptionLabel.setSize(selectOptionLabel.getPreferredSize());
-		selectOption.setSize(selectOption.getPreferredSize());
-		acceptOption.setSize(acceptOption.getPreferredSize());
-		image.setSize(image.getPreferredSize());
+		optionSelect.setSize(optionSelect.getPreferredSize());
+		acceptButton.setSize(acceptButton.getPreferredSize());
+		imageLabel.setSize(imageLabel.getPreferredSize());
 
 		int x = 30, y = 30, d = 20;
 		selectOptionLabel.setLocation(x, y);
 
 		x += selectOptionLabel.getWidth() + d;
 		y = 25;
-		selectOption.setLocation(x, y);
+		optionSelect.setLocation(x, y);
 
 		x = 160;
 		y = 95;
-		acceptOption.setLocation(x, y);
+		acceptButton.setLocation(x, y);
 
 		x = 250;
 		y = 105;
-		image.setLocation(x, y);
+		imageLabel.setLocation(x, y);
 
 		this.add(selectOptionLabel);
-		this.add(selectOption);
-		this.add(acceptOption);
-		this.add(image);
+		this.add(optionSelect);
+		this.add(acceptButton);
+		this.add(imageLabel);
 	}
 
 	private void initializeComponentsFilesGeneration(int option) {
 
-		informationOptionGenerateFile = new JLabel("Generación de Archivos planos o xml según cantidad requerida:");
-		fileLabel = new JLabel();
-		fileViewLabel = new JLabel(DIR_SELECTED_DEFAULT);
-		selectFile = new JButton(" Documento Base ");
-		selectFile.setToolTipText("Seleccionar Insumo de entrada plano o xml");
-		configFileLabel = new JLabel();
-		configViewFileLabel = new JLabel(DIR_SELECTED_DEFAULT);
-		configFile = new JButton("  Configuración  ");
-		configFile.setToolTipText("Seleccionar el archivo con datos de configuración de los archivos de salida");
-		outFilePathLabel = new JLabel();
-		outViewFilePathLabel = new JLabel("<<Seleccione carpeta...>>");
-		outFilePath = new JButton("Carpeta de Salida");
-		outFilePath.setToolTipText("Seleccionar la ruta en la cual se guardaran los archivos generados");
-		selectCompression = new JCheckBox("Comprimir Archivos");
+		generateFilesLabel = new JLabel("Generación de Archivos planos o xml según cantidad requerida:");
+		filePathLabel = new JLabel();
+		fileNameLabel = new JLabel(DIR_SELECTED_DEFAULT);
+		selectFileButton = new JButton(" Documento Base ");
+		selectFileButton.setToolTipText("Seleccionar Insumo de entrada plano o xml");
+		configFilePathLabel = new JLabel();
+		configFileNameLabel = new JLabel(DIR_SELECTED_DEFAULT);
+		configFileButton = new JButton("  Configuración  ");
+		configFileButton.setToolTipText("Seleccionar el archivo con datos de configuración de los archivos de salida");
+		outFileDirPathLabel = new JLabel();
+		outFileDirNameLabel = new JLabel("<<Seleccione carpeta...>>");
+		outFileDirButton = new JButton("Carpeta de Salida");
+		outFileDirButton.setToolTipText("Seleccionar la ruta en la cual se guardaran los archivos generados");
+		compressionCheck = new JCheckBox("Comprimir Archivos");
 		filesPerDirectoryLabel = new JLabel("No. de Archivos a generar");
 		filesPerDirectoryField = new JTextField("");
 		filesPerZipLabel = new JLabel("Cantidad por Zip");
 		filesPerZipField = new JTextField("");
-		fileFC = new JFileChooser();
-		fileConfiFC = new JFileChooser();
-		outDirectoryFC = new JFileChooser();
-		image = new JLabel(
+		fileChooser = new JFileChooser();
+		fileConfigChooser = new JFileChooser();
+		outDirectoryChooser = new JFileChooser();
+		imageLabel = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
-		accept = new JButton("Generar Archivos");
-		backMainPanel = new JButton("Volver");
+		generateFilesButton = new JButton("Generar Archivos");
+		backButton = new JButton("Volver");
 		progressBar = new JProgressBar();
 		progressBar.setMaximum(100);
 		progressBar.setMinimum(0);
@@ -303,51 +303,51 @@ public class CarvajalPanel extends JPanel {
 
 		int widthLabel = 300, heightLabel = 100;
 
-		informationOptionGenerateFile.setSize(informationOptionGenerateFile.getPreferredSize());
-		fileLabel.setSize(widthLabel, heightLabel);
-		fileViewLabel.setSize(widthLabel, heightLabel);
-		configFileLabel.setSize(widthLabel, heightLabel);
-		configViewFileLabel.setSize(widthLabel, heightLabel);
-		outFilePathLabel.setSize(widthLabel, heightLabel);
-		outViewFilePathLabel.setSize(widthLabel, heightLabel);
+		generateFilesLabel.setSize(generateFilesLabel.getPreferredSize());
+		filePathLabel.setSize(widthLabel, heightLabel);
+		fileNameLabel.setSize(widthLabel, heightLabel);
+		configFilePathLabel.setSize(widthLabel, heightLabel);
+		configFileNameLabel.setSize(widthLabel, heightLabel);
+		outFileDirPathLabel.setSize(widthLabel, heightLabel);
+		outFileDirNameLabel.setSize(widthLabel, heightLabel);
 		filesPerDirectoryLabel.setSize(widthLabel, heightLabel);
-		selectFile.setSize(selectFile.getPreferredSize());
-		configFile.setSize(selectFile.getPreferredSize());
-		outFilePath.setSize(selectFile.getPreferredSize());
+		selectFileButton.setSize(selectFileButton.getPreferredSize());
+		configFileButton.setSize(selectFileButton.getPreferredSize());
+		outFileDirButton.setSize(selectFileButton.getPreferredSize());
 		filesPerDirectoryField.setSize(40, 20);
-		selectCompression.setSize(140, 50);
+		compressionCheck.setSize(140, 50);
 		filesPerZipLabel.setSize(100, heightLabel);
 		filesPerZipField.setSize(40, 20);
-		accept.setSize(accept.getPreferredSize());
-		backMainPanel.setSize(backMainPanel.getPreferredSize());
-		image.setSize(image.getPreferredSize());
+		generateFilesButton.setSize(generateFilesButton.getPreferredSize());
+		backButton.setSize(backButton.getPreferredSize());
+		imageLabel.setSize(imageLabel.getPreferredSize());
 		progressBar.setSize(400, 20);
 
 		int x = 30, y = 10, d = 20;
-		informationOptionGenerateFile.setLocation(x, y);
+		generateFilesLabel.setLocation(x, y);
 
 		y += 40;
-		selectFile.setLocation(x, y);
+		selectFileButton.setLocation(x, y);
 
-		x += selectFile.getWidth() + d;
+		x += selectFileButton.getWidth() + d;
 		y = 10;
-		fileViewLabel.setLocation(x, y);
+		fileNameLabel.setLocation(x, y);
 
 		x = 30;
 		y += 70;
-		configFile.setLocation(x, y);
+		configFileButton.setLocation(x, y);
 
-		x += configFile.getWidth() + d;
+		x += configFileButton.getWidth() + d;
 		y = 43;
-		configViewFileLabel.setLocation(x, y);
+		configFileNameLabel.setLocation(x, y);
 
 		x = 30;
 		y = 110;
-		outFilePath.setLocation(x, y);
+		outFileDirButton.setLocation(x, y);
 
-		x += outFilePath.getWidth() + d;
+		x += outFileDirButton.getWidth() + d;
 		y = 75;
-		outViewFilePathLabel.setLocation(x, y);
+		outFileDirNameLabel.setLocation(x, y);
 
 		x = 30;
 		y = 115;
@@ -359,9 +359,9 @@ public class CarvajalPanel extends JPanel {
 
 		x += filesPerDirectoryField.getWidth() + 10;
 		y = 138;
-		selectCompression.setLocation(x, y);
+		compressionCheck.setLocation(x, y);
 
-		x += selectCompression.getWidth() + 5;
+		x += compressionCheck.getWidth() + 5;
 		y = 112;
 		filesPerZipLabel.setLocation(x, y);
 
@@ -375,59 +375,59 @@ public class CarvajalPanel extends JPanel {
 
 		x = 170;
 		y = 240;
-		backMainPanel.setLocation(x, y);
+		backButton.setLocation(x, y);
 
-		x += backMainPanel.getWidth() + d;
-		accept.setLocation(x, y);
+		x += backButton.getWidth() + d;
+		generateFilesButton.setLocation(x, y);
 
 		x = 385;
 		y = 250;
-		image.setLocation(x, y);
+		imageLabel.setLocation(x, y);
 
-		this.add(informationOptionGenerateFile);
-		this.add(selectFile);
-		this.add(fileLabel);
-		this.add(fileViewLabel);
-		this.add(configFile);
-		this.add(configViewFileLabel);
-		this.add(configFileLabel);
-		this.add(outViewFilePathLabel);
-		this.add(outFilePath);
-		this.add(outFilePathLabel);
+		this.add(generateFilesLabel);
+		this.add(selectFileButton);
+		this.add(filePathLabel);
+		this.add(fileNameLabel);
+		this.add(configFileButton);
+		this.add(configFileNameLabel);
+		this.add(configFilePathLabel);
+		this.add(outFileDirNameLabel);
+		this.add(outFileDirButton);
+		this.add(outFileDirPathLabel);
 		this.add(filesPerDirectoryLabel);
 		this.add(filesPerDirectoryField);
-		this.add(selectCompression);
+		this.add(compressionCheck);
 		this.add(filesPerZipLabel);
 		this.add(filesPerZipField);
 		this.add(progressBar);
-		this.add(accept);
-		this.add(backMainPanel);
-		this.add(image);
+		this.add(generateFilesButton);
+		this.add(backButton);
+		this.add(imageLabel);
 
-		fileLabel.setVisible(false);
-		configFileLabel.setVisible(false);
-		outFilePathLabel.setVisible(false);
+		filePathLabel.setVisible(false);
+		configFilePathLabel.setVisible(false);
+		outFileDirPathLabel.setVisible(false);
 		filesPerZipLabel.setVisible(false);
 		filesPerZipField.setVisible(false);
 	}
 
 	public void initializeComponentsSftpSending(int option) {
 
-		informationOption = new JLabel("Envío de documentos por medio de SFTP a CEN Financiero");
-		selectDBFile = new JButton("Archivo de Conexión");
-		fileBDLabel = new JLabel();
-		fileViewBDLabel = new JLabel(DIR_SELECTED_DEFAULT);
-		selectDBFile.setToolTipText("Seleccionar Archivo con Datos de conexión a la BD y al servidor SFTP");
-		selectSrcPath = new JButton("   Insumos a Enviar   ");
-		selectSrcPath.setToolTipText("Seleccionar la Carpeta con los documentos que serán enviados a CEN-F");
-		selectSrcPathLabel = new JLabel();
-		srcViewPathLabel = new JLabel("<<Seleccione Carpeta...>>");
-		backMainPanel = new JButton("Volver");
-		send = new JButton("  Enviar ");
-		generateLog = new JButton("Generar LOG");
-		connectionFileFC = new JFileChooser();
-		selectSrcPathFC = new JFileChooser();
-		image = new JLabel(
+		optionLabel = new JLabel("Envío de documentos por medio de SFTP a CEN Financiero");
+		selectDBFileButton = new JButton("Archivo de Conexión");
+		dbFilePathLabel = new JLabel();
+		dbFileNameLabel = new JLabel(DIR_SELECTED_DEFAULT);
+		selectDBFileButton.setToolTipText("Seleccionar Archivo con Datos de conexión a la BD y al servidor SFTP");
+		selectSrcPathButton = new JButton("   Insumos a Enviar   ");
+		selectSrcPathButton.setToolTipText("Seleccionar la Carpeta con los documentos que serán enviados a CEN-F");
+		selectSrcDirPathLabel = new JLabel();
+		selectSrcDirNameLabel = new JLabel("<<Seleccione Carpeta...>>");
+		backButton = new JButton("Volver");
+		sendButton = new JButton("  Enviar ");
+		generateLogButton = new JButton("Generar LOG");
+		connectionFileChooser = new JFileChooser();
+		selectSrcDirChooser = new JFileChooser();
+		imageLabel = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
 		progressBar = new JProgressBar();
 		progressBar.setMaximum(100);
@@ -436,170 +436,170 @@ public class CarvajalPanel extends JPanel {
 		progressBar.setStringPainted(true);
 
 		int widthLabel = 250, heightLabel = 14;
-		informationOption.setSize(informationOption.getPreferredSize());
-		fileBDLabel.setSize(fileBDLabel.getPreferredSize());
-		fileViewBDLabel.setSize(widthLabel, heightLabel);
-		selectDBFile.setSize(selectDBFile.getPreferredSize());
-		selectSrcPath.setSize(selectSrcPath.getPreferredSize());
-		selectSrcPathLabel.setSize(selectSrcPathLabel.getPreferredSize());
-		srcViewPathLabel.setSize(widthLabel, heightLabel);
-		image.setSize(image.getPreferredSize());
-		backMainPanel.setSize(backMainPanel.getPreferredSize());
-		send.setSize(send.getPreferredSize());
-		generateLog.setSize(generateLog.getPreferredSize());
+		optionLabel.setSize(optionLabel.getPreferredSize());
+		dbFilePathLabel.setSize(dbFilePathLabel.getPreferredSize());
+		dbFileNameLabel.setSize(widthLabel, heightLabel);
+		selectDBFileButton.setSize(selectDBFileButton.getPreferredSize());
+		selectSrcPathButton.setSize(selectSrcPathButton.getPreferredSize());
+		selectSrcDirPathLabel.setSize(selectSrcDirPathLabel.getPreferredSize());
+		selectSrcDirNameLabel.setSize(widthLabel, heightLabel);
+		imageLabel.setSize(imageLabel.getPreferredSize());
+		backButton.setSize(backButton.getPreferredSize());
+		sendButton.setSize(sendButton.getPreferredSize());
+		generateLogButton.setSize(generateLogButton.getPreferredSize());
 		progressBar.setSize(400, 20);
 
 		int x = 10, y = 20, d = 20;
-		informationOption.setLocation(x, y);
+		optionLabel.setLocation(x, y);
 
 		x = 30; y = 70;
-		selectSrcPath.setLocation(x, y);
+		selectSrcPathButton.setLocation(x, y);
 
-		x += selectSrcPath.getWidth() + d; y = 72;
-		srcViewPathLabel.setLocation(x, y);
+		x += selectSrcPathButton.getWidth() + d; y = 72;
+		selectSrcDirNameLabel.setLocation(x, y);
 
 		x = 30; y = 120;
-		selectDBFile.setLocation(x, y);
+		selectDBFileButton.setLocation(x, y);
 
-		x = +selectDBFile.getWidth() + 50; y = 123;
-		fileViewBDLabel.setLocation(x, y);
+		x = +selectDBFileButton.getWidth() + 50; y = 123;
+		dbFileNameLabel.setLocation(x, y);
 
 		x = 35; y += 40;
 		progressBar.setLocation(x, y);
 		
 		x = 100; y = 210;
-		backMainPanel.setLocation(x, y);
+		backButton.setLocation(x, y);
 
-		x += backMainPanel.getWidth() + d;
-		send.setLocation(x, y);
+		x += backButton.getWidth() + d;
+		sendButton.setLocation(x, y);
 
-		x += send.getWidth() + d;
-		generateLog.setLocation(x, y);
+		x += sendButton.getWidth() + d;
+		generateLogButton.setLocation(x, y);
 
 		x = 320;
-		image.setLocation(x, y);
+		imageLabel.setLocation(x, y);
 
-		this.add(informationOption);
-		this.add(selectSrcPath);
-		this.add(selectSrcPathLabel);
-		this.add(srcViewPathLabel);
-		this.add(selectDBFile);
-		this.add(fileBDLabel);
-		this.add(fileViewBDLabel);
-		this.add(image);
-		this.add(backMainPanel);
-		this.add(send);
-		this.add(generateLog);
+		this.add(optionLabel);
+		this.add(selectSrcPathButton);
+		this.add(selectSrcDirPathLabel);
+		this.add(selectSrcDirNameLabel);
+		this.add(selectDBFileButton);
+		this.add(dbFilePathLabel);
+		this.add(dbFileNameLabel);
+		this.add(imageLabel);
+		this.add(backButton);
+		this.add(sendButton);
+		this.add(generateLogButton);
 		this.add(progressBar);
 
-		selectSrcPathLabel.setVisible(false);
-		fileBDLabel.setVisible(false);
-		generateLog.setEnabled(false);
+		selectSrcDirPathLabel.setVisible(false);
+		dbFilePathLabel.setVisible(false);
+		generateLogButton.setEnabled(false);
 	}
 
 	public void initializeComponentsTestSending(int option) {
 
-		informationOption = new JLabel("Verificación casos de prueba: ");
-		selectDBFile = new JButton("Archivo de Conexión");
-		fileBDLabel = new JLabel();
-		fileViewBDLabel = new JLabel(DIR_SELECTED_DEFAULT);
-		selectDBFile.setToolTipText("Seleccionar Archivo con Datos de conexión a la BD y al servidor SFTP");
-		selectSrcPath = new JButton("   Casos de Prueba   ");
-		selectSrcPath.setToolTipText("Seleccionar el archivo con los casos de prueba a verificar");
-		selectSrcPathLabel = new JLabel();
-		srcViewPathLabel = new JLabel("<<Seleccione Archivo...>>");
-		backMainPanel = new JButton("Volver");
-		send = new JButton("  Enviar ");
-		generateLog = new JButton("Generar LOG");
-		connectionFileFC = new JFileChooser();
-		selectSrcPathFC = new JFileChooser();
-		image = new JLabel(
+		optionLabel = new JLabel("Verificación casos de prueba: ");
+		selectDBFileButton = new JButton("Archivo de Conexión");
+		dbFilePathLabel = new JLabel();
+		dbFileNameLabel = new JLabel(DIR_SELECTED_DEFAULT);
+		selectDBFileButton.setToolTipText("Seleccionar Archivo con Datos de conexión a la BD y al servidor SFTP");
+		selectSrcPathButton = new JButton("   Casos de Prueba   ");
+		selectSrcPathButton.setToolTipText("Seleccionar el archivo con los casos de prueba a verificar");
+		selectSrcDirPathLabel = new JLabel();
+		selectSrcDirNameLabel = new JLabel("<<Seleccione Archivo...>>");
+		backButton = new JButton("Volver");
+		sendButton = new JButton("  Enviar ");
+		generateLogButton = new JButton("Generar LOG");
+		connectionFileChooser = new JFileChooser();
+		selectSrcDirChooser = new JFileChooser();
+		imageLabel = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
 
 		int widthLabel = 250, heightLabel = 14;
-		informationOption.setSize(informationOption.getPreferredSize());
-		fileBDLabel.setSize(fileBDLabel.getPreferredSize());
-		fileViewBDLabel.setSize(widthLabel, heightLabel);
-		selectDBFile.setSize(selectDBFile.getPreferredSize());
-		selectSrcPath.setSize(selectSrcPath.getPreferredSize());
-		selectSrcPathLabel.setSize(selectSrcPathLabel.getPreferredSize());
-		srcViewPathLabel.setSize(widthLabel, heightLabel);
-		image.setSize(image.getPreferredSize());
-		backMainPanel.setSize(backMainPanel.getPreferredSize());
-		send.setSize(send.getPreferredSize());
-		generateLog.setSize(generateLog.getPreferredSize());
+		optionLabel.setSize(optionLabel.getPreferredSize());
+		dbFilePathLabel.setSize(dbFilePathLabel.getPreferredSize());
+		dbFileNameLabel.setSize(widthLabel, heightLabel);
+		selectDBFileButton.setSize(selectDBFileButton.getPreferredSize());
+		selectSrcPathButton.setSize(selectSrcPathButton.getPreferredSize());
+		selectSrcDirPathLabel.setSize(selectSrcDirPathLabel.getPreferredSize());
+		selectSrcDirNameLabel.setSize(widthLabel, heightLabel);
+		imageLabel.setSize(imageLabel.getPreferredSize());
+		backButton.setSize(backButton.getPreferredSize());
+		sendButton.setSize(sendButton.getPreferredSize());
+		generateLogButton.setSize(generateLogButton.getPreferredSize());
 
 		int x = 10, y = 20, d = 20;
-		informationOption.setLocation(x, y);
+		optionLabel.setLocation(x, y);
 
 		x = 30;
 		y = 70;
-		selectSrcPath.setLocation(x, y);
+		selectSrcPathButton.setLocation(x, y);
 
-		x += selectSrcPath.getWidth() + d;
+		x += selectSrcPathButton.getWidth() + d;
 		y = 72;
-		srcViewPathLabel.setLocation(x, y);
+		selectSrcDirNameLabel.setLocation(x, y);
 
 		x = 30;
 		y = 120;
-		selectDBFile.setLocation(x, y);
+		selectDBFileButton.setLocation(x, y);
 
-		x = +selectDBFile.getWidth() + 50;
+		x = +selectDBFileButton.getWidth() + 50;
 		y = 123;
-		fileViewBDLabel.setLocation(x, y);
+		dbFileNameLabel.setLocation(x, y);
 
 		x = 120;
 		y = 180;
-		backMainPanel.setLocation(x, y);
+		backButton.setLocation(x, y);
 
-		x += backMainPanel.getWidth() + d;
+		x += backButton.getWidth() + d;
 		y = 180;
-		send.setLocation(x, y);
+		sendButton.setLocation(x, y);
 
-		x += send.getWidth() + d;
+		x += sendButton.getWidth() + d;
 		y = 180;
-		generateLog.setLocation(x, y);
+		generateLogButton.setLocation(x, y);
 
 		x = 320;
 		y = 180;
-		image.setLocation(x, y);
+		imageLabel.setLocation(x, y);
 
-		this.add(informationOption);
-		this.add(selectSrcPath);
-		this.add(selectSrcPathLabel);
-		this.add(srcViewPathLabel);
-		this.add(selectDBFile);
-		this.add(fileBDLabel);
-		this.add(fileViewBDLabel);
-		this.add(image);
-		this.add(backMainPanel);
-		this.add(send);
-		this.add(generateLog);
+		this.add(optionLabel);
+		this.add(selectSrcPathButton);
+		this.add(selectSrcDirPathLabel);
+		this.add(selectSrcDirNameLabel);
+		this.add(selectDBFileButton);
+		this.add(dbFilePathLabel);
+		this.add(dbFileNameLabel);
+		this.add(imageLabel);
+		this.add(backButton);
+		this.add(sendButton);
+		this.add(generateLogButton);
 
-		selectSrcPathLabel.setVisible(false);
-		fileBDLabel.setVisible(false);
-		generateLog.setEnabled(false);
+		selectSrcDirPathLabel.setVisible(false);
+		dbFilePathLabel.setVisible(false);
+		generateLogButton.setEnabled(false);
 	}
 
 	public boolean isValidInput() {
-		boolean directoriesInFile = !fileViewLabel.getText().equals(DIR_SELECTED_DEFAULT);
-		boolean directoriesConfi = !configViewFileLabel.getText().equals(DIR_SELECTED_DEFAULT);
-		boolean directoryOutPath = !outViewFilePathLabel.getText().equals("<<Seleccione carpeta...>>");
+		boolean directoriesInFile = !fileNameLabel.getText().equals(DIR_SELECTED_DEFAULT);
+		boolean directoriesConfi = !configFileNameLabel.getText().equals(DIR_SELECTED_DEFAULT);
+		boolean directoryOutPath = !outFileDirNameLabel.getText().equals("<<Seleccione carpeta...>>");
 		boolean filesPerDirectoy = filesPerDirectoryField.getText().matches("\\d+");
 		return directoriesInFile && directoriesConfi && directoryOutPath && filesPerDirectoy;
 	}
 
 	public boolean isValidInputFileSend() {
 
-		boolean directoriesBD = !fileViewBDLabel.getText().equals(DIR_SELECTED_DEFAULT);
-		boolean directorySrcPath = !srcViewPathLabel.getText().equals("<<Seleccione Carpeta...>>");
+		boolean directoriesBD = !dbFileNameLabel.getText().equals(DIR_SELECTED_DEFAULT);
+		boolean directorySrcPath = !selectSrcDirNameLabel.getText().equals("<<Seleccione Carpeta...>>");
 		return directoriesBD && directorySrcPath;
 	}
 
 	public boolean isValidInputTestSend() {
 
-		boolean directoriesBD = !fileViewBDLabel.getText().equals(DIR_SELECTED_DEFAULT);
-		boolean directorySrcPath = !srcViewPathLabel.getText().equals("<<Seleccione Archivo...>>");
+		boolean directoriesBD = !dbFileNameLabel.getText().equals(DIR_SELECTED_DEFAULT);
+		boolean directorySrcPath = !selectSrcDirNameLabel.getText().equals("<<Seleccione Archivo...>>");
 		return directoriesBD && directorySrcPath;
 	}
 
@@ -607,62 +607,62 @@ public class CarvajalPanel extends JPanel {
 	 * Etiqueta para mostrar el archivo seleccionado Insumo en txt o xml.
 	 */
 
-	public JLabel getFileLabel() {
-		return fileLabel;
+	public JLabel getFilePathLabel() {
+		return filePathLabel;
 	}
 
 	/**
 	 * Etiqueta para mostrar el archivo seleccionado Insumo en txt o xml.
 	 */
 
-	public void setFileLabel(JLabel fileLabel) {
-		this.fileLabel = fileLabel;
+	public void setFilePathLabel(JLabel filePathLabel) {
+		this.filePathLabel = filePathLabel;
 	}
 
 	/**
 	 * Botón para seleccionar Archivo de Entrada - Insumo en txt o xml.
 	 */
 
-	public JButton getSelectFile() {
-		return selectFile;
+	public JButton getSelectFileButton() {
+		return selectFileButton;
 	}
 
 	/**
 	 * Botón para seleccionar Archivo de Entrada - Insumo en txt o xml.
 	 */
 
-	public void setSelectFile(JButton selectFile) {
-		this.selectFile = selectFile;
+	public void setSelectFileButton(JButton selectFileButton) {
+		this.selectFileButton = selectFileButton;
 	}
 
 	/**
-	 * Botón para inciar la Generación de Archivos
+	 * Botón para inciar la Generación de Archivos.
 	 */
-	public JButton getAccept() {
-		return accept;
+	public JButton getGenerateFilesButton() {
+		return generateFilesButton;
 	}
 
 	/**
-	 * Botón para inciar la Generación de Archivos
+	 * Botón para inciar la Generación de Archivos.
 	 */
 
-	public void setAccept(JButton accept) {
-		this.accept = accept;
+	public void setGenerateFilesButton(JButton generateFilesButton) {
+		this.generateFilesButton = generateFilesButton;
 	}
 
 	/**
-	 * Botón para enviar los archivos generados a Send Financiero
+	 * Botón para enviar los archivos generados a CEN Financiero.
 	 **/
-	public JButton getSend() {
-		return send;
+	public JButton getSendButton() {
+		return sendButton;
 	}
 
 	/**
-	 * Botón para enviar los archivos generados a Send Financiero
+	 * Botón para enviar los archivos generados a CEN Financiero.
 	 **/
 
-	public void setSend(JButton send) {
-		this.send = send;
+	public void setSendButton(JButton sendButton) {
+		this.sendButton = sendButton;
 	}
 
 	public static String getDirSelectedDefault() {
@@ -702,95 +702,95 @@ public class CarvajalPanel extends JPanel {
 	/**
 	 * Logo GreenSQA
 	 **/
-	public JLabel getImage() {
-		return image;
+	public JLabel getImageLabel() {
+		return imageLabel;
 	}
 
 	/**
 	 * Logo GreenSQA
 	 **/
 
-	public void setImage(JLabel image) {
-		this.image = image;
+	public void setImageLabel(JLabel imageLabel) {
+		this.imageLabel = imageLabel;
 	}
 
 	/**
 	 * Botón para seleccionar el archivo con los datos de conexión a la BD.
 	 */
 
-	public JButton getSelectDBFile() {
-		return selectDBFile;
+	public JButton getSelectDBFileButton() {
+		return selectDBFileButton;
 	}
 
 	/**
 	 * Botón para seleccionar el archivo con los datos de conexión a la BD.
 	 */
 
-	public void setSelectDBFile(JButton selectDBFile) {
-		this.selectDBFile = selectDBFile;
+	public void setSelectDBFileButton(JButton selectDBFileButton) {
+		this.selectDBFileButton = selectDBFileButton;
 	}
 
 	/**
 	 * Etiqueta de la cantidad de archivos por folder.
 	 */
 
-	public JLabel getFileBDLabel() {
-		return fileBDLabel;
+	public JLabel getDbFilePathLabel() {
+		return dbFilePathLabel;
 	}
 
 	/**
 	 * Etiqueta de la cantidad de archivos por folder.
 	 */
 
-	public void setFileBDLabel(JLabel fileBDLabel) {
-		this.fileBDLabel = fileBDLabel;
+	public void setDbFilePathLabel(JLabel dbFilePathLabel) {
+		this.dbFilePathLabel = dbFilePathLabel;
 	}
 
 	/**
 	 * Etiqueta para mostrar el archivo de configuración seleccionado.
 	 **/
 
-	public JLabel getConfigFileLabel() {
-		return configFileLabel;
+	public JLabel getConfigFilePathLabel() {
+		return configFilePathLabel;
 	}
 
 	/**
 	 * Etiqueta para mostrar el archivo de configuración seleccionado.
 	 **/
 
-	public void setConfigFileLabel(JLabel configFileLabel) {
-		this.configFileLabel = configFileLabel;
+	public void setConfigFilePathLabel(JLabel configFileLabel) {
+		this.configFilePathLabel = configFileLabel;
 	}
 
 	/**
 	 * Botón para seleccionar el archivo de configuración de los archivos de salida.
 	 */
-	public JButton getConfigFile() {
-		return configFile;
+	public JButton getConfigFileButton() {
+		return configFileButton;
 	}
 
 	/**
 	 * Botón para seleccionar el archivo de configuración de los archivos de salida.
 	 */
 
-	public void setConfigFile(JButton configFile) {
-		this.configFile = configFile;
+	public void setConfigFileButton(JButton configFileButton) {
+		this.configFileButton = configFileButton;
 	}
 
 	/**
 	 * Etiqueta para mostrar la ruta seleccionada.
 	 **/
 
-	public JLabel getOutFilePathLabel() {
-		return outFilePathLabel;
+	public JLabel getOutFileDirPathLabel() {
+		return outFileDirPathLabel;
 	}
 
 	/**
 	 * Etiqueta para mostrar la ruta seleccionada.
 	 **/
 
-	public void setOutFilePathLabel(JLabel outFilePathLabel) {
-		this.outFilePathLabel = outFilePathLabel;
+	public void setOutFileDirPathLabel(JLabel outFileDirPathLabel) {
+		this.outFileDirPathLabel = outFileDirPathLabel;
 	}
 
 	/**
@@ -798,8 +798,8 @@ public class CarvajalPanel extends JPanel {
 	 * generados.
 	 **/
 
-	public JButton getOutFilePath() {
-		return outFilePath;
+	public JButton getOutFileDirButton() {
+		return outFileDirButton;
 	}
 
 	/**
@@ -807,64 +807,64 @@ public class CarvajalPanel extends JPanel {
 	 * generados.
 	 **/
 
-	public void setOutFilePath(JButton outFilePath) {
-		this.outFilePath = outFilePath;
+	public void setOutFileDirButton(JButton outFileDirButton) {
+		this.outFileDirButton = outFileDirButton;
 	}
 
 	/**
 	 * Seleccionador de archivo de entrada plano o xml.
 	 */
-	public JFileChooser getFileFC() {
-		return fileFC;
+	public JFileChooser getFileChooser() {
+		return fileChooser;
 	}
 
 	/**
 	 * Seleccionador de archivo de entrada plano o xml.
 	 */
-	public void setFileFC(JFileChooser fileFC) {
-		this.fileFC = fileFC;
+	public void setFileChooser(JFileChooser fileChooser) {
+		this.fileChooser = fileChooser;
 	}
 
 	/**
 	 * Seleccionador de archivo de configuración de los nuevos archivos.
 	 */
-	public JFileChooser getFileConfiFC() {
-		return fileConfiFC;
+	public JFileChooser getFileConfigChooser() {
+		return fileConfigChooser;
 	}
 
 	/**
 	 * Seleccionador de archivo de configuración de los nuevos archivos.
 	 */
-	public void setFileConfiFC(JFileChooser fileConfiFC) {
-		this.fileConfiFC = fileConfiFC;
+	public void setFileConfigChooser(JFileChooser fileConfigChooser) {
+		this.fileConfigChooser = fileConfigChooser;
 	}
 
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
-	public JFileChooser getConnectionFileFC() {
-		return connectionFileFC;
+	public JFileChooser getConnectionFileChooser() {
+		return connectionFileChooser;
 	}
 	
 	/**
 	 * Seleccionador de archivo para conexión a la BD.
 	 */
-	public void setConnectionFileFC(JFileChooser connectionFileFC) {
-		this.connectionFileFC = connectionFileFC;
+	public void setConnectionFileChooser(JFileChooser connectionFileChooser) {
+		this.connectionFileChooser = connectionFileChooser;
 	}
 
 	/**
 	 * Seleccionador de Carpeta de salida para los archivos generados.
 	 */
-	public JFileChooser getOutDirectoryFC() {
-		return outDirectoryFC;
+	public JFileChooser getOutDirectoryChooser() {
+		return outDirectoryChooser;
 	}
 
 	/**
 	 * Seleccionador de Carpeta de salida para los archivos generados.
 	 */
-	public void setOutDirectoryFC(JFileChooser outDirectoryFC) {
-		this.outDirectoryFC = outDirectoryFC;
+	public void setOutDirectoryChooser(JFileChooser outDirectoryChooser) {
+		this.outDirectoryChooser = outDirectoryChooser;
 	}
 
 	public JLabel getSelectOptionLabel() {
@@ -875,108 +875,108 @@ public class CarvajalPanel extends JPanel {
 		this.selectOptionLabel = selectOptionLabel;
 	}
 
-	public JComboBox<String> getSelectOption() {
-		return this.selectOption;
+	public JComboBox<String> getOptionSelect() {
+		return this.optionSelect;
 	}
 
-	public void setSelectOption(JComboBox<String> selectOption) {
-		this.selectOption = selectOption;
+	public void setOptionSelect(JComboBox<String> optionSelect) {
+		this.optionSelect = optionSelect;
 	}
 
-	public JButton getAcceptOption() {
-		return acceptOption;
+	public JButton getAcceptButton() {
+		return acceptButton;
 	}
 
-	public void setAcceptOption(JButton acceptOption) {
-		this.acceptOption = acceptOption;
+	public void setAcceptButton(JButton acceptButton) {
+		this.acceptButton = acceptButton;
 	}
 
-	public JLabel getInformationOption() {
-		return informationOption;
+	public JLabel getOptionLabel() {
+		return optionLabel;
 	}
 
-	public void setInformationOption(JLabel informationOption) {
-		this.informationOption = informationOption;
+	public void setOptionLabel(JLabel optionLabel) {
+		this.optionLabel = optionLabel;
 	}
 
-	public JLabel getInformationOptionGenerateFile() {
-		return informationOptionGenerateFile;
+	public JLabel getGenerateFilesLabel() {
+		return generateFilesLabel;
 	}
 
-	public void setInformationOptionGenerateFile(JLabel informationOptionGenerateFile) {
-		this.informationOptionGenerateFile = informationOptionGenerateFile;
+	public void setGenerateFilesLabel(JLabel informationOptionGenerateFile) {
+		this.generateFilesLabel = informationOptionGenerateFile;
 	}
 
-	public JButton getSelectSrcPath() {
-		return selectSrcPath;
+	public JButton getSelectSrcPathButton() {
+		return selectSrcPathButton;
 	}
 
-	public void setSelectSrcPath(JButton selectSrcPath) {
-		this.selectSrcPath = selectSrcPath;
+	public void setSelectSrcPathButton(JButton selectSrcPathButton) {
+		this.selectSrcPathButton = selectSrcPathButton;
 	}
 
-	public JLabel getSelectSrcPathLabel() {
-		return selectSrcPathLabel;
+	public JLabel getSelectSrcDirPathLabel() {
+		return selectSrcDirPathLabel;
 	}
 
-	public void setSelectSrcPathLabel(JLabel selectSrcPathLabel) {
-		this.selectSrcPathLabel = selectSrcPathLabel;
+	public void setSelectSrcDirPathLabel(JLabel selectSrcDirPathLabel) {
+		this.selectSrcDirPathLabel = selectSrcDirPathLabel;
 	}
 
-	public JFileChooser getSelectSrcPathFC() {
-		return selectSrcPathFC;
+	public JFileChooser getSelectSrcDirChooser() {
+		return selectSrcDirChooser;
 	}
 
-	public void setSelectSrcPathFC(JFileChooser selectSrcPathFC) {
-		this.selectSrcPathFC = selectSrcPathFC;
+	public void setSelectSrcDirChooser(JFileChooser selectSrcDirChooser) {
+		this.selectSrcDirChooser = selectSrcDirChooser;
 	}
 
-	public JCheckBox getSelectCompression() {
-		return selectCompression;
+	public JCheckBox getCompressionCheck() {
+		return compressionCheck;
 	}
 
-	public void setSelectCompression(JCheckBox selectCompression) {
-		this.selectCompression = selectCompression;
+	public void setCompressionCheck(JCheckBox compressionCheck) {
+		this.compressionCheck = compressionCheck;
 	}
 
-	public JLabel getFileViewLabel() {
-		return fileViewLabel;
+	public JLabel getFileNameLabel() {
+		return fileNameLabel;
 	}
 
-	public void setFileViewLabel(JLabel fileViewLabel) {
-		this.fileViewLabel = fileViewLabel;
+	public void setFileNameLabel(JLabel fileNameLabel) {
+		this.fileNameLabel = fileNameLabel;
 	}
 
-	public JLabel getConfigViewFileLabel() {
-		return configViewFileLabel;
+	public JLabel getConfigFileNameLabel() {
+		return configFileNameLabel;
 	}
 
-	public void setConfigViewFileLabel(JLabel configViewFileLabel) {
-		this.configViewFileLabel = configViewFileLabel;
+	public void setConfigFileNameLabel(JLabel configFileNameLabel) {
+		this.configFileNameLabel = configFileNameLabel;
 	}
 
-	public JLabel getOutViewFilePathLabel() {
-		return outViewFilePathLabel;
+	public JLabel getOutFileDirNameLabel() {
+		return outFileDirNameLabel;
 	}
 
-	public void setOutViewFilePathLabel(JLabel outViewFilePathLabel) {
-		this.outViewFilePathLabel = outViewFilePathLabel;
+	public void setOutFileDirNameLabel(JLabel outFileDirNameLabel) {
+		this.outFileDirNameLabel = outFileDirNameLabel;
 	}
 
-	public JLabel getFileViewBDLabel() {
-		return fileViewBDLabel;
+	public JLabel getDbFileNameLabel() {
+		return dbFileNameLabel;
 	}
 
-	public void setFileViewBDLabel(JLabel fileViewBDLabel) {
-		this.fileViewBDLabel = fileViewBDLabel;
+	public void setDbFileNameLabel(JLabel dbFileNameLabel) {
+		this.dbFileNameLabel = dbFileNameLabel;
 	}
 
-	public JLabel getSrcViewPathLabel() {
-		return srcViewPathLabel;
+	public JLabel getSelectSrcDirNameLabel() {
+		return selectSrcDirNameLabel;
 	}
 
-	public void setSrcViewPathLabel(JLabel srcViewPathLabel) {
-		this.srcViewPathLabel = srcViewPathLabel;
+	public void setSelectSrcDirNameLabel(JLabel srcViewPathLabel) {
+		this.selectSrcDirNameLabel = srcViewPathLabel;
 	}
 
 	public JLabel getFilesPerZipLabel() {
@@ -995,20 +995,20 @@ public class CarvajalPanel extends JPanel {
 		this.filesPerZipField = filesPerZipField;
 	}
 
-	public JButton getGenerateLog() {
-		return generateLog;
+	public JButton getGenerateLogButton() {
+		return generateLogButton;
 	}
 
-	public void setGenerateLog(JButton generateLog) {
-		this.generateLog = generateLog;
+	public void setGenerateLogButton(JButton generateLogButton) {
+		this.generateLogButton = generateLogButton;
 	}
 
-	public JButton getBackMainPanel() {
-		return backMainPanel;
+	public JButton getBackButton() {
+		return backButton;
 	}
 
-	public void setBackMainPanel(JButton backMainPanel) {
-		this.backMainPanel = backMainPanel;
+	public void setBackButton(JButton backButton) {
+		this.backButton = backButton;
 	}
 
 	public JProgressBar getProgressBar() {
