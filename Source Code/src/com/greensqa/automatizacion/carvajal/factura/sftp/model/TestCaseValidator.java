@@ -133,8 +133,7 @@ public class TestCaseValidator {
 						statusNOk++;
 						bw.write(resultados);
 					}
-				} else if ((testCase.get(i).equals("1.1")) || (testCase.get(i).equals("1.5"))
-						|| (testCase.get(i).equals("1.6")) || (testCase.get(i).equals("1.7"))) {
+				} else if ((testCase.get(i).equals("1.1")) || (testCase.get(i).equals("1.6")) || (testCase.get(i).equals("1.7"))) {
 					File fileSend = new File(documents.get(i));
 					String nameFileSend = fileSend.getName();
 					bw.write( "Tipo: " + typeDoc +"  " +"Nit del Emisor: " + nitSender + "  Nit del Receptor:" + nitReceiver + "\r\n \r\n");
@@ -209,7 +208,7 @@ public class TestCaseValidator {
 						statusNOk++;
 						bw.write(resultados);
 					}
-				} else if ((testCase.get(i).equals("1.3"))) {
+				} else if ((testCase.get(i).equals("1.3")) || (testCase.get(i).equals("1.5"))) {
 
 					String pathFile = FilesCompressor.unZip(documents.get(i));
 					System.out.println("CASO DE PRUEBA " + pathFile);
