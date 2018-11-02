@@ -2,6 +2,7 @@ package com.greensqa.automatizacion.carvajal.factura.sftp.control;
 
 import javax.swing.JOptionPane;
 
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.BusinessValidator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesGenerator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesSender;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.Progressable;
@@ -11,6 +12,7 @@ public class ProgressBarThread extends Thread {
 	private CarvajalPanel panel;
 	private FilesGenerator fg;
 	private FilesSender fs;
+	private BusinessValidator bv;
 	private int type;
 
 	public ProgressBarThread(CarvajalPanel panel, FilesGenerator fg) {
@@ -24,6 +26,12 @@ public class ProgressBarThread extends Thread {
 		this.fs = fs;
 		this.type = 2;
 	}
+	
+	public ProgressBarThread(CarvajalPanel panel, BusinessValidator bv) {
+		this.panel = panel;
+		this.bv = bv;
+		this.type = 3;
+	}
 
 	public void run() {
 		switch (type) {
@@ -35,6 +43,11 @@ public class ProgressBarThread extends Thread {
 		case 2:
 			panel.getProgressBar().setValue(0);
 			updateProgressBar(fs);
+			panel.getProgressBar().setValue(100);
+			break;
+		case 3:
+			panel.getProgressBar().setValue(0);
+			updateProgressBar(bv);
 			panel.getProgressBar().setValue(100);
 			break;
 		}

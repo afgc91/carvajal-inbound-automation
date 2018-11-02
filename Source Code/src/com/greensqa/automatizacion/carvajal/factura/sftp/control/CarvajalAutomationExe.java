@@ -36,8 +36,10 @@ import com.jcraft.jsch.SftpException;
 
 public class CarvajalAutomationExe {
 
-	private static CarvajalPanel mainPanel, filesGenerationPanel, sendFilesWithGenericLogPanel, sendFilesWithValidationsPanel;
-	private static CarvajalFrame mainFrame, filesGenerationFrame, sendFilesWithGenericLogFrame, sendFilesWithValidationsFrame;
+	private static CarvajalPanel mainPanel, filesGenerationPanel, sendFilesWithGenericLogPanel,
+			sendFilesWithValidationsPanel;
+	private static CarvajalFrame mainFrame, filesGenerationFrame, sendFilesWithGenericLogFrame,
+			sendFilesWithValidationsFrame;
 
 	public static void main(String[] args) {
 		starApp();
@@ -76,7 +78,8 @@ public class CarvajalAutomationExe {
 				} else if (option == 1) {
 					mainFrame.setEnabled(false);
 					sendFilesWithGenericLogPanel = new CarvajalPanel(1);
-					sendFilesWithGenericLogFrame = new CarvajalFrame("Generador de Archivos FECO", sendFilesWithGenericLogPanel);
+					sendFilesWithGenericLogFrame = new CarvajalFrame("Generador de Archivos FECO",
+							sendFilesWithGenericLogPanel);
 					sendFilesWithGenericLogFrame.setSize(new Dimension(480, 330));
 					sendFilesWithGenericLogFrame.setLocationRelativeTo(null);
 					listenSendFilesWithGenericLog();
@@ -85,7 +88,8 @@ public class CarvajalAutomationExe {
 				} else if (option == 2) {
 					mainFrame.setEnabled(false);
 					sendFilesWithValidationsPanel = new CarvajalPanel(2);
-					sendFilesWithValidationsFrame = new CarvajalFrame("Generador de Archivos FECO", sendFilesWithValidationsPanel);
+					sendFilesWithValidationsFrame = new CarvajalFrame("Generador de Archivos FECO",
+							sendFilesWithValidationsPanel);
 					sendFilesWithValidationsFrame.setSize(new Dimension(480, 330));
 					sendFilesWithValidationsFrame.setLocationRelativeTo(null);
 					listenSendFilesWithTestCasesLog();
@@ -140,8 +144,8 @@ public class CarvajalAutomationExe {
 										JOptionPane.ERROR_MESSAGE);
 
 							}
-							JOptionPane.showMessageDialog(filesGenerationPanel, "Proceso Finalizado con éxito", "Proceso Finalizado",
-									JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(filesGenerationPanel, "Proceso Finalizado con éxito",
+									"Proceso Finalizado", JOptionPane.INFORMATION_MESSAGE);
 
 							filesGenerationPanel.getGenerateFilesButton().setEnabled(true);
 							filesGenerationPanel.getSelectFileButton().setEnabled(true);
@@ -150,7 +154,8 @@ public class CarvajalAutomationExe {
 							filesGenerationPanel.getFilesPerDirectoryField().setEnabled(true);
 							filesGenerationPanel.getBackButton().setEnabled(true);
 
-							boolean compressionCheckIsSelected = filesGenerationPanel.getCompressionCheck().isSelected();
+							boolean compressionCheckIsSelected = filesGenerationPanel.getCompressionCheck()
+									.isSelected();
 
 							if (compressionCheckIsSelected) {
 								compressFiles();
@@ -356,7 +361,8 @@ public class CarvajalAutomationExe {
 				String inDirectoryPath = srcPath.getAbsolutePath();
 
 				try {
-					sftpDbDataElement = CarvajalUtils.loadConnectionsData(sendFilesWithGenericLogPanel.getDbFilePathLabel().getText());
+					sftpDbDataElement = CarvajalUtils
+							.loadConnectionsData(sendFilesWithGenericLogPanel.getDbFilePathLabel().getText());
 				} catch (IOException | ParseException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
@@ -380,7 +386,7 @@ public class CarvajalAutomationExe {
 								JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
 										JOptionPane.INFORMATION_MESSAGE);
 								sendFilesWithGenericLogPanel.getGenerateLogButton().setEnabled(true);
-								//listenGenerateLog();
+								// listenGenerateLog();
 							} catch (JSchException | SftpException | IOException | ParseException
 									| ParserConfigurationException | SAXException e1) {
 								e1.printStackTrace();
@@ -426,24 +432,26 @@ public class CarvajalAutomationExe {
 
 				try {
 					sftpAndDbDataElement = CarvajalUtils.loadConnectionsData(connectionFilePath);
-					PostgresConnector connector = new PostgresConnector(sftpAndDbDataElement.getUrlDb(), sftpAndDbDataElement.getUserDb(),
-							sftpAndDbDataElement.getPasswordDb());
+					PostgresConnector connector = new PostgresConnector(sftpAndDbDataElement.getUrlDb(),
+							sftpAndDbDataElement.getUserDb(), sftpAndDbDataElement.getPasswordDb());
 					File dir = selectSrcDirChooser.getSelectedFile();
 
 					// Obtener padre de dir
-					BusinessValidator bv = new BusinessValidator(connector.getConnetion(sftpAndDbDataElement.getTipoBD()),
+					BusinessValidator bv = new BusinessValidator(
+							connector.getConnetion(sftpAndDbDataElement.getTipoBD()),
 							dir.getParentFile().getAbsolutePath());
 					if (dir.exists()) {
 						File[] files = dir.listFiles();
 						bv.setTotalItems(files.length);
 						bv.setProcessedItems(0);
-						
+
 						sendFilesWithGenericLogPanel.getSendButton().setEnabled(false);
 						sendFilesWithGenericLogPanel.getSelectSrcPathButton().setEnabled(false);
 						sendFilesWithGenericLogPanel.getSelectDBFileButton().setEnabled(false);
 						sendFilesWithGenericLogPanel.getBackButton().setEnabled(false);
-						
-						//Tarea pesada.
+						sendFilesWithGenericLogPanel.getGenerateLogButton().setEnabled(false);
+
+						// Tarea pesada.
 						@SuppressWarnings("rawtypes")
 						SwingWorker worker = new SwingWorker() {
 							@Override
@@ -457,11 +465,15 @@ public class CarvajalAutomationExe {
 								sendFilesWithGenericLogPanel.getSelectSrcPathButton().setEnabled(true);
 								sendFilesWithGenericLogPanel.getSelectDBFileButton().setEnabled(true);
 								sendFilesWithGenericLogPanel.getBackButton().setEnabled(true);
+								sendFilesWithGenericLogPanel.getGenerateLogButton().setEnabled(true);
+								JOptionPane.showMessageDialog(null, "Logs generados satisfactoriamente",
+										"Operación realizada", JOptionPane.INFORMATION_MESSAGE);
 								return null;
-							}	
+							}
 						};
 						worker.execute();
-						
+						ProgressBarThread thread = new ProgressBarThread(sendFilesWithGenericLogPanel, bv);
+						thread.start();
 					}
 
 				} catch (IOException | ParseException e1) {
@@ -561,7 +573,8 @@ public class CarvajalAutomationExe {
 				FilesSender files = null;
 
 				try {
-					sftpDbData = CarvajalUtils.loadConnectionsData(sendFilesWithValidationsPanel.getDbFilePathLabel().getText());
+					sftpDbData = CarvajalUtils
+							.loadConnectionsData(sendFilesWithValidationsPanel.getDbFilePathLabel().getText());
 				} catch (IOException | ParseException e2) {
 					// TODO Auto-generated catch block
 					JOptionPane.showMessageDialog(null, "El archivo de conexión no es válido", "Conexión fallida",
@@ -667,11 +680,12 @@ public class CarvajalAutomationExe {
 		compress.compressFiles(filesPath);
 
 	}
-	
+
 	/**
 	 * Devuelve el control a la ventana principal y cierra la secundaria.
+	 * 
 	 * @param frame Ventana que debe cerrarse.
-	 * @param main Ventana principal.
+	 * @param main  Ventana principal.
 	 */
 	public static void closeWindow(CarvajalFrame frame, CarvajalFrame main) {
 		frame.addWindowListener(new WindowAdapter() {
