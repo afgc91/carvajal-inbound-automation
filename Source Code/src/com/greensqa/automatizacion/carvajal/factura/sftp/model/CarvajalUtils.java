@@ -275,9 +275,12 @@ public class CarvajalUtils {
 			String secretKey = (String) aws.get("claveSecreta");
 			String nameBucket = (String) aws.get("nombreBucket"); 
 			String region = (String) aws.get("region"); 
+			//Objeto Archivo CUFE 
+			JSONObject cufe = (JSONObject) json.get("rutaArchivoConfigCufe"); 
+			String path = (String) cufe.get("ruta"); 
 
 			SftpAndDbDataElement connectionsData = new SftpAndDbDataElement(userSftp, passwordSftp,
-					urlSftp, portSftp, destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region);
+					urlSftp, portSftp, destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region, path);
 			return connectionsData;
 		}
 	}
@@ -617,5 +620,14 @@ public class CarvajalUtils {
 
 		return null;
 	}
-
+	public static String getAuthorizationFromUblFile(File file)
+			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(file);
+		doc.getDocumentElement().normalize();
+		Node prefixNode = doc.getElementsByTagName("sts:InvoiceAuthorization").item(0);
+		String prefix = prefixNode.getTextContent();
+		return prefix;
+	}	
 }

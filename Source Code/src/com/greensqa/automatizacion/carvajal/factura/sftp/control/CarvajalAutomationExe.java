@@ -438,6 +438,7 @@ public class CarvajalAutomationExe {
 					// Obtener padre de dir
 					BusinessValidator bv = new BusinessValidator(
 							connector.getConnetion(sftpAndDbDataElement.getTipoBD()),
+							//CarvajalUtils.loadConnectionsData(connectionFilePath).getPath(),
 							dir.getParentFile().getAbsolutePath());
 					if (dir.exists()) {
 						File[] files = dir.listFiles();
