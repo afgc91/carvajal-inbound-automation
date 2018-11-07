@@ -618,7 +618,6 @@ public class CarvajalAutomationExe {
 				sendFilesWithValidationsPanel.getSelectSrcPathButton().setEnabled(true);
 				sendFilesWithValidationsPanel.getSelectDBFileButton().setEnabled(true);
 				sendFilesWithValidationsPanel.getGenerateLogButton().setEnabled(true);
-				//validateTestCase();
 			}
 		});
 		
@@ -633,20 +632,19 @@ public class CarvajalAutomationExe {
 					return;
 				}
 
-				File fileBDPath = connectionFileChooser.getSelectedFile();
-				String directoryBDPath = (fileBDPath.getAbsolutePath());
-				SftpAndDbDataElement sftpDbData;
+				File connectionFile = connectionFileChooser.getSelectedFile();
+				String connectionFilePath = connectionFile.getAbsolutePath();
 
 				try {
-					sftpDbData = CarvajalUtils.loadConnectionsData(directoryBDPath);
-					PostgresConnector conn = new PostgresConnector(sftpDbData.getUrlDb(), sftpDbData.getUserDb(),
-							sftpDbData.getPasswordDb());
+					SftpAndDbDataElement sftpAndDbDataElement = CarvajalUtils.loadConnectionsData(connectionFilePath);
+					PostgresConnector conn = new PostgresConnector(sftpAndDbDataElement.getUrlDb(), sftpAndDbDataElement.getUserDb(),
+							sftpAndDbDataElement.getPasswordDb());
 					File fileName = selectSrcDirChooser.getSelectedFile();
 					String srcExcel = (fileName.getAbsolutePath());
 					File excel = new File(srcExcel);
 
 					// Obtener padre de dir
-					TestCaseValidator tc = new TestCaseValidator(conn.getConnetion(sftpDbData.getTipoBD()));
+					TestCaseValidator tc = new TestCaseValidator(conn.getConnetion(sftpAndDbDataElement.getTipoBD()));
 					if (excel.exists()) {
 						tc.executeQuery(excel);
 						tc.testCase(srcExcel);

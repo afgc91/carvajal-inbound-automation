@@ -1,5 +1,6 @@
 package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
+import java.io.Closeable;
 import java.io.File;
 
 import com.jcraft.jsch.Channel;
@@ -15,7 +16,7 @@ import com.jcraft.jsch.SftpException;
  * @author Andrés Fernando Gasca Cruz
  *
  */
-public class SftpFilesSender {
+public class SftpFilesSender implements Closeable {
 
 	private ChannelSftp channelSftp;
 	private Session session;
@@ -59,7 +60,7 @@ public class SftpFilesSender {
 	 * Finaliza la sesión SFTP (una vez se hayan enviado todos los archivos, dado
 	 * que no se podrá seguir enviando archivos si se cierra la sesión).
 	 */
-	public void endSftpSession() {
+	public void close() {
 		channelSftp.exit();
 		session.disconnect();
 	}

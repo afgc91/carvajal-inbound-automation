@@ -79,12 +79,12 @@ public class FilesSender implements Progressable {
 			File dir = new File(srcPath);
 			File[] filesFromJson = dir.listFiles();
 			totalItems = filesFromJson.length;
-			SftpFilesSender sftpFilesSender = new SftpFilesSender(url, user, password, port);
-			for (int i = 0; i < filesFromJson.length; i++) {
-				sftpFilesSender.sendFileSftp(filesFromJson[i], dstPath);
-				processedItems += 1;
+			try (SftpFilesSender sftpFilesSender = new SftpFilesSender(url, user, password, port)) {
+				for (int i = 0; i < filesFromJson.length; i++) {
+					sftpFilesSender.sendFileSftp(filesFromJson[i], dstPath);
+					processedItems += 1;
+				}
 			}
-			sftpFilesSender.endSftpSession();
 		} else if (option == 2) {
 			// Opción para enviar archivos según archivo de configuración de casos de prueba
 			// por SFTP - AS2 y AWS
@@ -98,12 +98,12 @@ public class FilesSender implements Progressable {
 					processedItems += 1;
 				}
 			}
-			SftpFilesSender sftpFilesSender = new SftpFilesSender(url, user, password, port);
-			for (int j = 0; j < filesFromXlsList.size(); j++) {
-				sftpFilesSender.sendFileSftp(new File(filesFromXlsList.get(j)), accountsList.get(j));
-				processedItems += 1;
+			try (SftpFilesSender sftpFilesSender = new SftpFilesSender(url, user, password, port)) {
+				for (int j = 0; j < filesFromXlsList.size(); j++) {
+					sftpFilesSender.sendFileSftp(new File(filesFromXlsList.get(j)), accountsList.get(j));
+					processedItems += 1;
+				}	
 			}
-			sftpFilesSender.endSftpSession();
 		}
 	}
 
