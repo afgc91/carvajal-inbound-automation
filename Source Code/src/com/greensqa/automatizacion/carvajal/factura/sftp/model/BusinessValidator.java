@@ -38,6 +38,7 @@ public class BusinessValidator implements Progressable {
 	private int total = 0;
 	private int totalItems;
 	private int processedItems;
+	private boolean keepWorking;
 
 
 	public BusinessValidator(Connection con, String directory) {
@@ -47,6 +48,7 @@ public class BusinessValidator implements Progressable {
 		this.logFilePath = null;
 		this.setFilesFailed(0);
 		this.setFilesOk(0);
+		this.keepWorking = true;
 	}
 
 	public void executeStatusQuery(File file, String pathConfi)
@@ -343,6 +345,15 @@ public class BusinessValidator implements Progressable {
 	
 	public void setTotalItems(int totalItems) {
 		this.totalItems = totalItems;
+	}
+
+	@Override
+	public boolean doWork() {
+		return this.keepWorking;
+	}
+	
+	public void setKeepWorking(boolean keepWorking) {
+		this.keepWorking = keepWorking;
 	}
 
 }

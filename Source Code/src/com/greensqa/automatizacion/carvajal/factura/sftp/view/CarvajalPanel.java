@@ -222,10 +222,10 @@ public class CarvajalPanel extends JPanel {
 			initializeComponentsFilesGeneration(0);
 		}
 		if (option == 1) {
-			initializeComponentsSftpSending(1);
+			initializeComponentsFilesSending(1);
 		}
 		if (option == 2) {
-			initializeComponentsTestSending(2);
+			initializeComponentsTestCases(2);
 		}
 	}
 
@@ -411,7 +411,7 @@ public class CarvajalPanel extends JPanel {
 		filesPerZipField.setVisible(false);
 	}
 
-	public void initializeComponentsSftpSending(int option) {
+	public void initializeComponentsFilesSending(int option) {
 
 		optionLabel = new JLabel("Envío de documentos por medio de SFTP a CEN Financiero");
 		selectDBFileButton = new JButton("Archivo de Conexión");
@@ -497,7 +497,7 @@ public class CarvajalPanel extends JPanel {
 		generateLogButton.setEnabled(false);
 	}
 
-	public void initializeComponentsTestSending(int option) {
+	public void initializeComponentsTestCases(int option) {
 
 		optionLabel = new JLabel("Verificación casos de prueba: ");
 		selectDBFileButton = new JButton("Archivo de Conexión");
@@ -515,6 +515,11 @@ public class CarvajalPanel extends JPanel {
 		selectSrcDirChooser = new JFileChooser();
 		imageLabel = new JLabel(
 				(new ImageIcon("src/com/greensqa/automatizacion/carvajal/factura/sftp/resources/greenSQA.png")));
+		progressBar = new JProgressBar();
+		progressBar.setMaximum(100);
+		progressBar.setMinimum(0);
+		progressBar.setValue(0);
+		progressBar.setStringPainted(true);
 
 		int widthLabel = 250, heightLabel = 14;
 		optionLabel.setSize(optionLabel.getPreferredSize());
@@ -528,6 +533,7 @@ public class CarvajalPanel extends JPanel {
 		backButton.setSize(backButton.getPreferredSize());
 		sendButton.setSize(sendButton.getPreferredSize());
 		generateLogButton.setSize(generateLogButton.getPreferredSize());
+		progressBar.setSize(400, 20);
 
 		int x = 10, y = 20, d = 20;
 		optionLabel.setLocation(x, y);
@@ -547,21 +553,20 @@ public class CarvajalPanel extends JPanel {
 		x = +selectDBFileButton.getWidth() + 50;
 		y = 123;
 		dbFileNameLabel.setLocation(x, y);
-
-		x = 120;
-		y = 180;
+		
+		x = 35; y += 40;
+		progressBar.setLocation(x, y);
+		
+		x = 100; y = 210;
 		backButton.setLocation(x, y);
 
 		x += backButton.getWidth() + d;
-		y = 180;
 		sendButton.setLocation(x, y);
 
 		x += sendButton.getWidth() + d;
-		y = 180;
 		generateLogButton.setLocation(x, y);
 
 		x = 320;
-		y = 180;
 		imageLabel.setLocation(x, y);
 
 		this.add(optionLabel);
@@ -575,10 +580,10 @@ public class CarvajalPanel extends JPanel {
 		this.add(backButton);
 		this.add(sendButton);
 		this.add(generateLogButton);
+		this.add(progressBar);
 
 		selectSrcDirPathLabel.setVisible(false);
 		dbFilePathLabel.setVisible(false);
-		generateLogButton.setEnabled(false);
 	}
 
 	public boolean isValidInput() {

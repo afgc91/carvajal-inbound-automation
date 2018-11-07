@@ -386,7 +386,6 @@ public class CarvajalAutomationExe {
 								JOptionPane.showMessageDialog(null, "Archivos enviados con éxito", "Envío exitoso",
 										JOptionPane.INFORMATION_MESSAGE);
 								sendFilesWithGenericLogPanel.getGenerateLogButton().setEnabled(true);
-								// listenGenerateLog();
 							} catch (JSchException | SftpException | IOException | ParseException
 									| ParserConfigurationException | SAXException e1) {
 								e1.printStackTrace();
@@ -495,8 +494,8 @@ public class CarvajalAutomationExe {
 
 	public static void listenSendFilesWithTestCasesLog() {
 
-		JFileChooser directoryIn = sendFilesWithValidationsPanel.getSelectSrcDirChooser();
-		JFileChooser fileConnection = sendFilesWithValidationsPanel.getConnectionFileChooser();
+		JFileChooser selectSrcDirChooser = sendFilesWithValidationsPanel.getSelectSrcDirChooser();
+		JFileChooser connectionFileChooser = sendFilesWithValidationsPanel.getConnectionFileChooser();
 
 		sendFilesWithValidationsPanel.getSelectSrcPathButton().addActionListener(new ActionListener() {
 
@@ -504,12 +503,11 @@ public class CarvajalAutomationExe {
 			public void actionPerformed(ActionEvent e) {
 				// Botón para seleccionar la carpeta de la cual se seleccionaran los archivos a
 				// enviar.
-
-				directoryIn.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				int option = directoryIn.showOpenDialog(sendFilesWithValidationsPanel);
+				selectSrcDirChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				int option = selectSrcDirChooser.showOpenDialog(sendFilesWithValidationsPanel);
 				if (option == JFileChooser.APPROVE_OPTION) {
 
-					File fileName = directoryIn.getSelectedFile();
+					File fileName = selectSrcDirChooser.getSelectedFile();
 					String outDirectoryPath = (fileName.getAbsolutePath());
 					sendFilesWithValidationsPanel.getSelectSrcDirPathLabel().setText(outDirectoryPath);
 					String nameSrcPath = fileName.getName();
@@ -525,14 +523,14 @@ public class CarvajalAutomationExe {
 				// Botón para seleccionar el archivo de conexión a la BD
 
 				FileNameExtensionFilter Filter = new FileNameExtensionFilter("txt", "txt");
-				fileConnection.setFileFilter(Filter);
-				fileConnection.setCurrentDirectory(directoryIn.getCurrentDirectory());
+				connectionFileChooser.setFileFilter(Filter);
+				connectionFileChooser.setCurrentDirectory(selectSrcDirChooser.getCurrentDirectory());
 
-				fileConnection.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				int option = fileConnection.showOpenDialog(sendFilesWithValidationsPanel);
+				connectionFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				int option = connectionFileChooser.showOpenDialog(sendFilesWithValidationsPanel);
 
 				if (option == JFileChooser.APPROVE_OPTION) {
-					File fileName = fileConnection.getSelectedFile();
+					File fileName = connectionFileChooser.getSelectedFile();
 					String connectionFilePath = (fileName.getAbsolutePath());
 					sendFilesWithValidationsPanel.getDbFilePathLabel().setText(connectionFilePath);
 					String nameBDFile = fileName.getName();
@@ -568,7 +566,7 @@ public class CarvajalAutomationExe {
 				sendFilesWithValidationsPanel.getSelectDBFileButton().setEnabled(false);
 
 				SftpAndDbDataElement sftpDbData = null;
-				File srcPath = directoryIn.getSelectedFile();
+				File srcPath = selectSrcDirChooser.getSelectedFile();
 				String inDirectoryPath = srcPath.getAbsolutePath();
 				FilesSender files = null;
 
@@ -620,20 +618,20 @@ public class CarvajalAutomationExe {
 				sendFilesWithValidationsPanel.getSelectSrcPathButton().setEnabled(true);
 				sendFilesWithValidationsPanel.getSelectDBFileButton().setEnabled(true);
 				sendFilesWithValidationsPanel.getGenerateLogButton().setEnabled(true);
-				validateTestCase();
+				//validateTestCase();
 			}
 		});
-	}
-
-	public static void validateTestCase() {
-
-		JFileChooser connectionFileChooser = sendFilesWithValidationsPanel.getConnectionFileChooser();
-		JFileChooser selectSrcDirChooser = sendFilesWithValidationsPanel.getSelectSrcDirChooser();
-
+		
 		sendFilesWithValidationsPanel.getGenerateLogButton().addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (!sendFilesWithValidationsPanel.isValidInputFileSend()) {
+
+					JOptionPane.showMessageDialog(null, "Las entradas no son válidas", "Entradas Inválidas",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 
 				File fileBDPath = connectionFileChooser.getSelectedFile();
 				String directoryBDPath = (fileBDPath.getAbsolutePath());

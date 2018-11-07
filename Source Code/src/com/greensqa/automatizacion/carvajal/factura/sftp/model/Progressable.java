@@ -12,4 +12,6 @@ public interface Progressable {
 	public int getTotalItems();
 	
 	public int getProcessedItems();
+	
+	public boolean doWork();
 }

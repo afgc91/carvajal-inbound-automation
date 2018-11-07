@@ -106,6 +106,11 @@ public class FilesGenerator implements Progressable {
 	private int processedItems;
 
 	/**
+	 * Bandera que indica si el trabajo en background debe seguir realizándose.
+	 */
+	private boolean keepWorking;
+
+	/**
 	 * Constructor de FilesGenerator para crear archivos distribuidos en varios
 	 * directorios de salida especificados por el usuario.
 	 * 
@@ -151,6 +156,7 @@ public class FilesGenerator implements Progressable {
 		this.totalItems = filesNum;
 		this.standardFactStructure = CarvajalUtils.loadConfigFile(configFilePath, sdf);
 		this.processedItems = 0;
+		this.keepWorking = true;
 	}
 
 	/**
@@ -620,5 +626,14 @@ public class FilesGenerator implements Progressable {
 
 	public int getProcessedItems() {
 		return processedItems;
+	}
+	
+	@Override
+	public boolean doWork() {
+		return this.keepWorking;
+	}
+	
+	public void setKeepWorking(boolean keepWorking) {
+		this.keepWorking = keepWorking;
 	}
 }

@@ -37,6 +37,7 @@ public class FilesSender implements Progressable {
 	private ArrayList<String> pathFileTest = new ArrayList<String>();
 	private int totalItems;
 	private int processedItems;
+	private boolean keepWorking;
 
 	public FilesSender(String srcPath, String dstPath, String user, String password, String url, int port, String key,
 			String secretKey, String nameBucket, String region) {
@@ -50,6 +51,7 @@ public class FilesSender implements Progressable {
 		this.secretKey = secretKey;
 		this.nameBucket = nameBucket;
 		this.region = region;
+		this.keepWorking = true;
 	}
 
 	/**
@@ -231,5 +233,14 @@ public class FilesSender implements Progressable {
 	
 	public int getTotalItems() {
 		return this.totalItems;
+	}
+	
+	@Override
+	public boolean doWork() {
+		return this.keepWorking;
+	}
+	
+	public void setKeepWorking(boolean keepWorking) {
+		this.keepWorking = keepWorking;
 	}
 }
