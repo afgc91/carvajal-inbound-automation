@@ -280,7 +280,7 @@ public class FilesGenerator implements Progressable {
 			String[] lineArray = null;
 			String tag = "";
 			String filePath = "";
-			for (int i = 0; i < this.totalItems; i++) {
+			for (int i = 0; i < this.totalItems && keepWorking; i++) {
 				fileLinesCopy = fileLines;
 				fact = prefix + index;
 

@@ -617,7 +617,7 @@ public class CarvajalAutomationExe {
 				sendFilesWithValidationsPanel.getGenerateLogButton().setEnabled(true);
 			}
 		});
-		
+
 		sendFilesWithValidationsPanel.getGenerateLogButton().addActionListener(new ActionListener() {
 
 			@Override
@@ -634,8 +634,8 @@ public class CarvajalAutomationExe {
 
 				try {
 					SftpAndDbDataElement sftpAndDbDataElement = CarvajalUtils.loadConnectionsData(connectionFilePath);
-					PostgresConnector conn = new PostgresConnector(sftpAndDbDataElement.getUrlDb(), sftpAndDbDataElement.getUserDb(),
-							sftpAndDbDataElement.getPasswordDb());
+					PostgresConnector conn = new PostgresConnector(sftpAndDbDataElement.getUrlDb(),
+							sftpAndDbDataElement.getUserDb(), sftpAndDbDataElement.getPasswordDb());
 					File fileName = selectSrcDirChooser.getSelectedFile();
 					String srcExcel = (fileName.getAbsolutePath());
 					File excel = new File(srcExcel);
@@ -675,7 +675,8 @@ public class CarvajalAutomationExe {
 	}
 
 	/**
-	 * Devuelve el control a la ventana principal y cierra la secundaria.
+	 * Devuelve el control a la ventana principal y cierra la secundaria. Detiene
+	 * las tareas que se estén ejecutando.
 	 * 
 	 * @param frame Ventana que debe cerrarse.
 	 * @param main  Ventana principal.
@@ -683,6 +684,7 @@ public class CarvajalAutomationExe {
 	public static void closeWindow(CarvajalFrame frame, CarvajalFrame main) {
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
+				
 				main.setEnabled(true);
 				frame.setVisible(false);
 			}
