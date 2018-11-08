@@ -28,7 +28,7 @@ import software.amazon.ion.Timestamp.Precision;
 
 public class XmlUblReader {
 
-
+//   cambiar nombre de la clase
 //	public static void main(String[] arg) throws Exception {
 //		getValuePathXmlUbl(
 //				"C:\\Users\\dvalencia\\Documents\\Diana Valencia\\Documentos\\Archivos Configuración\\Cufe.xlsx",

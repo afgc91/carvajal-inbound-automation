@@ -620,8 +620,9 @@ public class CarvajalUtils {
 
 		return null;
 	}
-	public static String getAuthorizationFromUblFile(File file)
+	public static String getAuthorizationFromUblFile(String filePath)
 			throws ParserConfigurationException, SAXException, IOException {
+		File file = new File(filePath);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(file);

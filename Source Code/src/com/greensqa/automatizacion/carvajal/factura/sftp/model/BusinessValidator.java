@@ -39,7 +39,7 @@ public class BusinessValidator implements Progressable {
 	private int totalItems;
 	private int processedItems;
 	private boolean keepWorking;
-
+	private String techicalKey = ""; 
 
 	public BusinessValidator(Connection con, String directory) {
 		this.setLogged(false);
@@ -52,7 +52,7 @@ public class BusinessValidator implements Progressable {
 	}
 
 	public void executeStatusQuery(File file, String pathConfi)
-			throws SQLException, IOException, ParserConfigurationException, SAXException, ParseException {
+			throws Exception {
 
 		File log = null;
 
@@ -86,6 +86,10 @@ public class BusinessValidator implements Progressable {
 				+ "where id_documento = (select id from documentos where numero_documento= ? ))";
 
 		String docFactQuery = "select * from documentos where numero_documento = ? ";
+		
+		String techinicalKeyPrefixQuery = "select * from rangos_autorizacion "
+				+ "where id_autorizacion_gobierno = "
+				+ "(select id from autorizaciones_gobierno where numero_autorizacion = ? )"; 
 
 		if (con == null) {
 			JOptionPane.showMessageDialog(null, "No se pudo realizar la conexión", "Conexión nula",
@@ -96,12 +100,14 @@ public class BusinessValidator implements Progressable {
 				PreparedStatement docPDFNamePs = con.prepareStatement(docNamePDFQuery);
 				PreparedStatement docAcceptNamePs = con.prepareStatement(docNameAcceptQuery);
 				PreparedStatement docRtaDianPs = con.prepareStatement(docNameRtaQuery);
-				PreparedStatement docFactPs = con.prepareStatement(docFactQuery)) {
+				PreparedStatement docFactPs = con.prepareStatement(docFactQuery);
+			    PreparedStatement docNumAuthorizationPs = con.prepareStatement(techinicalKeyPrefixQuery)){
 
 			String factNum = CarvajalUtils.getFactNumber(file.getAbsolutePath());
 			String typeDoc = CarvajalUtils.getTypeId(file.getAbsolutePath());
 			String nitSender = CarvajalUtils.getNitSupplier(file.getAbsolutePath());
 			String nitReceiver = CarvajalUtils.getNitCustomer(file.getAbsolutePath());
+			String numAuthorizarion = CarvajalUtils.getAuthorizationFromUblFile(file.getAbsolutePath());
 
 			docStatusPs.setString(1, file.getName());
 			docXMLNamePs.setString(1, factNum);
@@ -109,13 +115,15 @@ public class BusinessValidator implements Progressable {
 			docAcceptNamePs.setString(1, factNum);
 			docRtaDianPs.setString(1, factNum);
 			docFactPs.setString(1, factNum);
+			docNumAuthorizationPs.setString(1, numAuthorizarion);
 
 			try (ResultSet docStatusRs = docStatusPs.executeQuery();
 					ResultSet docXMLNameRs = docXMLNamePs.executeQuery();
 					ResultSet docNamePDFRs = docPDFNamePs.executeQuery();
 					ResultSet docAcceptNameRs = docAcceptNamePs.executeQuery();
 					ResultSet docRtaDianRs = docRtaDianPs.executeQuery();
-					ResultSet docFactExistRs = docFactPs.executeQuery()) {
+					ResultSet docFactExistRs = docFactPs.executeQuery();
+					ResultSet docNumAuthorizationRs = docNumAuthorizationPs.executeQuery()){
 
 				boolean isAccept = false;
 				boolean isRtaDian = false;
@@ -146,6 +154,11 @@ public class BusinessValidator implements Progressable {
 							isRtaDian = true;
 						}
 					}
+					
+					if(docNumAuthorizationRs.next()) {
+						techicalKey = docNumAuthorizationRs.getString(2);
+						System.out.println(techicalKey);
+					}
 
 					isFailed = true;
 				}
@@ -155,7 +168,6 @@ public class BusinessValidator implements Progressable {
 					boolean failProcess = false;
 					bw.write("Número de Documento: " + factNum + " Tipo: " + typeDoc + "\r\n");
 					bw.write("Nit del Emisor: " + nitSender + "  Nit del Receptor:" + nitReceiver + "\r\n \r\n");
-
 					if (docStatusRs != null) {
 						boolean validateDocumentProcessedOk = false;
 						boolean validateDocumentProcessedNok = false;
