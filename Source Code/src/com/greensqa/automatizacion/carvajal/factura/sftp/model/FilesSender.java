@@ -236,7 +236,7 @@ public class FilesSender implements Progressable {
 	}
 	
 	@Override
-	public boolean doWork() {
+	public boolean isKeepWorking() {
 		return this.keepWorking;
 	}
 	

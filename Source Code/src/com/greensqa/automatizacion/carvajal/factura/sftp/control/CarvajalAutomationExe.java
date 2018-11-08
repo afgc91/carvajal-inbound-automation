@@ -49,7 +49,6 @@ public class CarvajalAutomationExe {
 	 * Método que se encarga de los eventos de los botones para poner la información
 	 * de entrada.
 	 */
-
 	public static void starApp() {
 		mainPanel = new CarvajalPanel(3);
 		mainFrame = new CarvajalFrame("Generador de Archivos FECO", mainPanel);
@@ -62,8 +61,6 @@ public class CarvajalAutomationExe {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
 				int option = mainPanel.getOptionSelect().getSelectedIndex();
 
 				if (option == 0) {

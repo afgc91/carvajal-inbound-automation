@@ -360,7 +360,7 @@ public class BusinessValidator implements Progressable {
 	}
 
 	@Override
-	public boolean doWork() {
+	public boolean isKeepWorking() {
 		return this.keepWorking;
 	}
 	
