@@ -233,6 +233,7 @@ public class FilesGenerator implements Progressable {
 		String prefix = this.standardFactStructure.getFactPrefix();
 		long startingRangeNum = this.standardFactStructure.getStartingRangeNum();
 		long endingRangeNum = this.standardFactStructure.getEndingRangeNum();
+		Date factDate = this.standardFactStructure.getFactDate(); 
 
 		// Identificar el tipo de archivo a replicar.
 
@@ -241,7 +242,12 @@ public class FilesGenerator implements Progressable {
 				return generateTxtFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType,
 						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum);
 			}
-		} else if (type.equalsIgnoreCase("xml")) {
+		}else if (type.equalsIgnoreCase("fe")){
+			if(CarvajalUtils.isValidClaroFe(this.baseFilePath)) {
+				return generateClaroTxtFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType, prefix, factDate);
+			}			
+		}	 
+		else if (type.equalsIgnoreCase("xml")) {
 			int xmlType = CarvajalUtils.getXmlType(this.baseFilePath);
 			if (xmlType == 0) {
 				return false;
@@ -347,6 +353,88 @@ public class FilesGenerator implements Progressable {
 
 						pw.write(line);
 						// System.out.println(line);
+					}
+				}
+
+				index += 1;
+				processedItems += 1;
+			}
+		}
+		return true;
+	}
+	
+	private boolean generateClaroTxtFiles(long factStartNum, long index, String docTypeId, String nitSender,
+			String nitReceiver, String type, int docType, String prefix, Date factDate)
+			throws FileNotFoundException, IOException {
+		File file = new File(this.baseFilePath);
+		ArrayList<String> fileLines = new ArrayList<>();
+		ArrayList<String> fileLinesCopy = null;
+		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
+			String line = "";
+
+			// Guardar líneas del archivo en el ArrayList.
+			while (true) {
+				line = br.readLine();
+				if (line == null) {
+					break;
+				}
+				line = line.replaceAll("[^\\p{Graph}\n\r\t ]", "");
+				fileLines.add(line);
+			}
+
+			String fact = "";
+			String[] lineArray = null;
+			String tag = "";
+			String filePath = "";
+			for (int i = 0; i < this.totalItems; i++) {
+				fileLinesCopy = fileLines;
+				fact = prefix + index;
+
+				// Modificar las líneas que hay que cambiar al archivo base y crear el archivo
+				String fileName = docType == 1 ? "FV"
+						: docType == 2 ? "FE"
+								: docType == 3 ? "FI" : docType == 4 ? "FC" : docType == 9 ? "" : "UNKNOWN";
+				if (fileName == "") {
+					fileName = docTypeId;
+				}
+				fileName += "_" + fact;
+				filePath = this.directoryOut + "/" + fileName + ".fe";
+				File f = new File(filePath);
+				f.createNewFile();
+
+				try (FileWriter fw = new FileWriter(f);
+						BufferedWriter bw = new BufferedWriter(fw);
+						PrintWriter pw = new PrintWriter(bw)) {
+					for (int j = 0; j < fileLinesCopy.size(); j++) {
+						line = fileLinesCopy.get(j);
+						lineArray = line.split("|");
+						tag = lineArray[0];
+						System.out.println(lineArray[0]);
+						if (tag.equalsIgnoreCase("PRC")) {
+							// Modificar campos PRC
+							lineArray[3] = nitSender;
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						} else if (tag.equalsIgnoreCase("CAB")) {
+							// Modificar campos CAB Encabezado
+							lineArray[1] = docTypeId;
+							lineArray[2] = docType + "";
+							lineArray[4] = prefix;
+							lineArray[5] = fact;
+							lineArray[7] = factDate + "";
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						} else if (tag.equalsIgnoreCase("ADQ")) {
+							// Modificar campos ADQ
+							lineArray[3] = nitReceiver;
+							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							fileLinesCopy.set(j, line);
+						}
+						if (j != fileLinesCopy.size() - 1) {
+							line += "\r\n";
+						}
+
+						pw.write(line);
 					}
 				}
 

@@ -15,6 +15,7 @@ public class StandardFactStructureElement {
 	private long endingRangeNum;
 	private String docTypeId;
 	private int docType;
+	private Date factDate; 
 	
 	/**
 	 * Constructor de CarvajalStandardFactStructure.
@@ -32,7 +33,7 @@ public class StandardFactStructureElement {
 	 */
 	public StandardFactStructureElement(String factPrefix, long factStartNum, String nitSender, String nitReceiver,
 			long authNumber, Date startingRangeDate, Date endingRangeDate, long startingRangeNum, long endingRangeNum,
-			String docTypeId, int docType) {
+			String docTypeId, int docType, Date factDate) {
 		this.factPrefix = factPrefix;
 		this.factStartNum = factStartNum;
 		this.nitSender = nitSender;
@@ -44,6 +45,7 @@ public class StandardFactStructureElement {
 		this.endingRangeNum = endingRangeNum;
 		this.docTypeId = docTypeId;
 		this.docType = docType;
+		this.factDate = factDate; 
 	}
 
 	/**
@@ -133,5 +135,11 @@ public class StandardFactStructureElement {
 	public int getDocType() {
 		return docType;
 	}
-	
+ /**
+  * Obtiene la fecha de la factura 
+  * @return fecha de la factura 
+  */
+	public Date getFactDate() {
+		return factDate;
+	}	
 }

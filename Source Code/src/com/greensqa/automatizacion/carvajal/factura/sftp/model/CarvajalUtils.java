@@ -128,10 +128,11 @@ public class CarvajalUtils {
 			long endingRangeNum = Long.parseLong(json.get("numFinalRango") + "");
 			String docTypeId = (String) json.get("idTipoDoc");
 			int docType = Integer.parseInt(json.get("tipoDoc") + "");
+			Date factDate = new Date(sdf.parse((json.get("fechaFactura") + "")).getTime());
 
 			StandardFactStructureElement fact = new StandardFactStructureElement(factPrefix, factStartNum, nitSender,
 					nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum,
-					docTypeId, docType);
+					docTypeId, docType, factDate);
 			return fact;
 		}
 	}
@@ -165,6 +166,25 @@ public class CarvajalUtils {
 				return true;
 			}
 			return false;
+		}
+	}
+	
+	/**
+	 * Precondición: El archivo es de extensión .fe. Verifica si el archivo 
+	 * de factura contiene la etiqueta "PRC" (Proceso)
+	 * @param filePath Ruta del Archivo
+	 * @return true si Contiene la etiqueta PRC false si no contiene la etiqueta.
+	 * @throws FileNotFoundException En caso de no encontrar el archivo.
+	 * @throws IOException           En caso de un error de entrada/salida.
+	 */
+	protected static boolean isValidClaroFe(String filePath) throws FileNotFoundException, IOException {
+		File file = new File(filePath);
+		try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
+			String line = br.readLine();
+			if (line.contains("PRC")) {
+				return true;
+			}
+		return false;
 		}
 	}
 
