@@ -120,15 +120,15 @@ public class CarvajalUtils {
 			long factStartNum = Long.parseLong(json.get("factNumInicial") + "");
 			String nitSender = (String) json.get("nitEmisor");
 			String nitReceiver = (String) json.get("nitReceptor");
-			String strAuthNumber = json.get("numAutorizacion") + "";
+			String strAuthNumber = json.get("numAutorizacion") != null ? json.get("numAutorizacion") + "" : "0";
 			long authNumber = strAuthNumber.equals("") ? 0 : Long.parseLong(strAuthNumber);
-			Date startingRangeDate = new Date(sdf.parse((json.get("fechaRangoInicial") + "")).getTime());
-			Date endingRangeDate = new Date(sdf.parse((json.get("fechaRangoFinal") + "")).getTime());
-			long startingRangeNum = Long.parseLong(json.get("numInicioRango") + "");
-			long endingRangeNum = Long.parseLong(json.get("numFinalRango") + "");
+			Date startingRangeDate = new Date(sdf.parse((json.get("fechaRangoInicial") != null ?  json.get("fechaRangoInicial") + "" : "1990-01-01")).getTime());
+			Date endingRangeDate = new Date(sdf.parse((json.get("fechaRangoFinal")  != null ?  json.get("fechaRangoFinal") + "" : "1990-01-01")).getTime());
+			long startingRangeNum = Long.parseLong(json.get("numInicioRango") != null ? json.get("numInicioRango") + "" : "0");
+			long endingRangeNum = Long.parseLong(json.get("numFinalRango") != null ? json.get("numFinalRango") + "" : "0");
 			String docTypeId = (String) json.get("idTipoDoc");
 			int docType = Integer.parseInt(json.get("tipoDoc") + "");
-			Date factDate = new Date(sdf.parse((json.get("fechaFactura") + "")).getTime());
+			Date factDate = new Date(sdf.parse((json.get("fechaFactura") != null ?  json.get("fechaFactura") + "" : "1990-01-01")).getTime());
 
 			StandardFactStructureElement fact = new StandardFactStructureElement(factPrefix, factStartNum, nitSender,
 					nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum,
@@ -233,6 +233,23 @@ public class CarvajalUtils {
 		return line;
 	}
 
+	/**
+	 * Concatena los elementos de un array separados por pipes (|).
+	 * 
+	 * @param lineArray Array de entrada.
+	 * @return Línea resultante de la concatenación de los elementos del array.
+	 */
+	protected static String concatClaroFileLineArray(String[] lineArray) {
+		String line = "";
+		for (int j = 0; j < lineArray.length; j++) {
+			line += lineArray[j];
+			if (j != lineArray.length - 1) {
+				line += "|";
+			}
+		}
+		return line;
+	}
+	
 	/**
 	 * Crea una copia de un archivo en la ruta especificada.
 	 * 

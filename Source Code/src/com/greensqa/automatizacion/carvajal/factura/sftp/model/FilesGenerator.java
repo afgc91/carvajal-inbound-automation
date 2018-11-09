@@ -386,14 +386,16 @@ public class FilesGenerator implements Progressable {
 			String[] lineArray = null;
 			String tag = "";
 			String filePath = "";
+			String[] monthDate = (factDate + "").split("\\-"); 
+			String monthDatePRC = monthDate[1]; 
 			for (int i = 0; i < this.totalItems; i++) {
 				fileLinesCopy = fileLines;
-				fact = prefix + index;
+				fact = index + "";
 
 				// Modificar las líneas que hay que cambiar al archivo base y crear el archivo
 				String fileName = docType == 1 ? "FV"
 						: docType == 2 ? "FE"
-								: docType == 3 ? "FI" : docType == 4 ? "FC" : docType == 9 ? "" : "UNKNOWN";
+								: docType == 3 ? "FC" : docType == 4 ? "FI" : docType == 9 ? "" : "UNKNOWN";
 				if (fileName == "") {
 					fileName = docTypeId;
 				}
@@ -407,13 +409,14 @@ public class FilesGenerator implements Progressable {
 						PrintWriter pw = new PrintWriter(bw)) {
 					for (int j = 0; j < fileLinesCopy.size(); j++) {
 						line = fileLinesCopy.get(j);
-						lineArray = line.split("|");
+						lineArray = line.split("\\|");
 						tag = lineArray[0];
 						System.out.println(lineArray[0]);
 						if (tag.equalsIgnoreCase("PRC")) {
 							// Modificar campos PRC
 							lineArray[3] = nitSender;
-							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							lineArray[6] = monthDatePRC; 
+							line = CarvajalUtils.concatClaroFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("CAB")) {
 							// Modificar campos CAB Encabezado
@@ -422,12 +425,12 @@ public class FilesGenerator implements Progressable {
 							lineArray[4] = prefix;
 							lineArray[5] = fact;
 							lineArray[7] = factDate + "";
-							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							line = CarvajalUtils.concatClaroFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("ADQ")) {
 							// Modificar campos ADQ
 							lineArray[3] = nitReceiver;
-							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
+							line = CarvajalUtils.concatClaroFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						}
 						if (j != fileLinesCopy.size() - 1) {
