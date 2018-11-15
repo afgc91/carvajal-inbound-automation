@@ -122,13 +122,21 @@ public class CarvajalUtils {
 			String nitReceiver = (String) json.get("nitReceptor");
 			String strAuthNumber = json.get("numAutorizacion") != null ? json.get("numAutorizacion") + "" : "0";
 			long authNumber = strAuthNumber.equals("") ? 0 : Long.parseLong(strAuthNumber);
-			Date startingRangeDate = new Date(sdf.parse((json.get("fechaRangoInicial") != null ?  json.get("fechaRangoInicial") + "" : "1990-01-01")).getTime());
-			Date endingRangeDate = new Date(sdf.parse((json.get("fechaRangoFinal")  != null ?  json.get("fechaRangoFinal") + "" : "1990-01-01")).getTime());
-			long startingRangeNum = Long.parseLong(json.get("numInicioRango") != null ? json.get("numInicioRango") + "" : "0");
-			long endingRangeNum = Long.parseLong(json.get("numFinalRango") != null ? json.get("numFinalRango") + "" : "0");
+			Date startingRangeDate = new Date(sdf
+					.parse((json.get("fechaRangoInicial") != null ? json.get("fechaRangoInicial") + "" : "1990-01-01"))
+					.getTime());
+			Date endingRangeDate = new Date(
+					sdf.parse((json.get("fechaRangoFinal") != null ? json.get("fechaRangoFinal") + "" : "1990-01-01"))
+							.getTime());
+			long startingRangeNum = Long
+					.parseLong(json.get("numInicioRango") != null ? json.get("numInicioRango") + "" : "0");
+			long endingRangeNum = Long
+					.parseLong(json.get("numFinalRango") != null ? json.get("numFinalRango") + "" : "0");
 			String docTypeId = (String) json.get("idTipoDoc");
 			int docType = Integer.parseInt(json.get("tipoDoc") + "");
-			Date factDate = new Date(sdf.parse((json.get("fechaFactura") != null ?  json.get("fechaFactura") + "" : "1990-01-01")).getTime());
+			Date factDate = new Date(
+					sdf.parse((json.get("fechaFactura") != null ? json.get("fechaFactura") + "" : "1990-01-01"))
+							.getTime());
 
 			StandardFactStructureElement fact = new StandardFactStructureElement(factPrefix, factStartNum, nitSender,
 					nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum,
@@ -168,10 +176,11 @@ public class CarvajalUtils {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Precondición: El archivo es de extensión .fe. Verifica si el archivo 
-	 * de factura contiene la etiqueta "PRC" (Proceso)
+	 * Precondición: El archivo es de extensión .fe. Verifica si el archivo de
+	 * factura contiene la etiqueta "PRC" (Proceso)
+	 * 
 	 * @param filePath Ruta del Archivo
 	 * @return true si Contiene la etiqueta PRC false si no contiene la etiqueta.
 	 * @throws FileNotFoundException En caso de no encontrar el archivo.
@@ -184,7 +193,7 @@ public class CarvajalUtils {
 			if (line.contains("PRC")) {
 				return true;
 			}
-		return false;
+			return false;
 		}
 	}
 
@@ -249,7 +258,7 @@ public class CarvajalUtils {
 		}
 		return line;
 	}
-	
+
 	/**
 	 * Crea una copia de un archivo en la ruta especificada.
 	 * 
@@ -267,6 +276,7 @@ public class CarvajalUtils {
 			}
 		}
 	}
+
 	/**
 	 * Modifica el primer tag del nodeList obtenido con el nombre de la etiqueta,
 	 * con el valor enviado.
@@ -306,22 +316,64 @@ public class CarvajalUtils {
 			String passwordDb = (String) dataBase.get("clave");
 			String urlDb = (String) dataBase.get("urlServidor");
 			int portDb = Integer.parseInt((String) dataBase.get("puerto"));
-			//Objeto AWS 
+			// Objeto AWS
 			JSONObject aws = (JSONObject) json.get("aws");
 			String key = (String) aws.get("clave");
 			String secretKey = (String) aws.get("claveSecreta");
-			String nameBucket = (String) aws.get("nombreBucket"); 
-			String region = (String) aws.get("region"); 
-			//Objeto Archivo CUFE 
-			JSONObject cufe = (JSONObject) json.get("rutaArchivoConfigCufe"); 
-			String path = (String) cufe.get("ruta"); 
+			String nameBucket = (String) aws.get("nombreBucket");
+			String region = (String) aws.get("region");
+			// Objeto Archivo CUFE
+			JSONObject cufe = (JSONObject) json.get("rutaArchivoConfigCufe");
+			String path = (String) cufe.get("ruta");
 
-			SftpAndDbDataElement connectionsData = new SftpAndDbDataElement(userSftp, passwordSftp,
-					urlSftp, portSftp, destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region, path);
+			SftpAndDbDataElement connectionsData = new SftpAndDbDataElement(userSftp, passwordSftp, urlSftp, portSftp,
+					destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region, path);
 			return connectionsData;
 		}
 	}
 
+	public static String[] getCufeValuesByLocation(String filePath, String label, int position)
+			throws FileNotFoundException, IOException {
+		ArrayList<String> fileLines = new ArrayList<>();
+		String strWithLabelLines = "";
+		String[] cufeItems = null;
+		File f = new File(filePath);
+		if (!f.exists()) {
+			return null;
+		}
+
+		try (FileReader fr = new FileReader(f); BufferedReader br = new BufferedReader(fr)) {
+			// Guardar líneas del archivo en el ArrayList.
+			String line = "";
+			while (true) {
+				line = br.readLine();
+				if (line == null) {
+					break;
+				}
+				line = line.replaceAll("[^\\p{Graph}\n\r\t ]", "");
+				fileLines.add(line);
+			}
+			for (int i = 0; i < fileLines.size(); i++) {
+				line = fileLines.get(i);
+				if (line.contains(label)) {
+					strWithLabelLines += line + "\t";
+				}
+			}
+			strWithLabelLines = strWithLabelLines.substring(0, strWithLabelLines.length() - 1);
+			String[] labelLines = strWithLabelLines.split("\t");
+			cufeItems = new String[labelLines.length]; 
+//			System.out.println(label +"\n"+ position);
+			//System.out.println(strWithLabelLines);
+			for (int i = 0; i < labelLines.length; i++) {
+				//System.out.println(labelLines[i].split("\\|").length + "-" + position);
+				cufeItems[i] = labelLines[i].split("\\|")[position];
+				System.out.println("ver" + labelLines[i].split("\\|")[position]);
+			
+			}  
+			
+			return cufeItems;
+		}
+	}
 	protected static String getFactNumber(String filePath)
 			throws ParserConfigurationException, SAXException, IOException {
 		File f = new File(filePath);
@@ -657,6 +709,7 @@ public class CarvajalUtils {
 
 		return null;
 	}
+
 	public static String getAuthorizationFromUblFile(String filePath)
 			throws ParserConfigurationException, SAXException, IOException {
 		File file = new File(filePath);
@@ -667,5 +720,5 @@ public class CarvajalUtils {
 		Node prefixNode = doc.getElementsByTagName("sts:InvoiceAuthorization").item(0);
 		String prefix = prefixNode.getTextContent();
 		return prefix;
-	}	
+	}
 }

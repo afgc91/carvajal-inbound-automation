@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.BusinessValidator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.PostgresConnector;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.CufeGenerator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesCompressor;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesGenerator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbDataElement;
@@ -40,9 +41,13 @@ public class CarvajalAutomationExe {
 			sendFilesWithValidationsPanel;
 	private static CarvajalFrame mainFrame, filesGenerationFrame, sendFilesWithGenericLogFrame,
 			sendFilesWithValidationsFrame;
+	private static CufeGenerator cufe; 
 
-	public static void main(String[] args) {
-		starApp();
+	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
+		starApp();	
+//		cufe = new CufeGenerator("C:\\Users\\dvalencia\\Documents\\Test FECO\\generarCufe.txt",
+//				"C:\\Users\\dvalencia\\Documents\\Test FECO\\FC_00000000163.fe"); 
+//		cufe.generateCufeClaroFile();
 	}
 
 	/**
