@@ -442,7 +442,7 @@ public class FilesGenerator implements Progressable {
 					}
 				}
 
-				CufeGenerator cufe = new CufeGenerator(cufePath, f);
+				ClaroCufeGenerator cufe = new ClaroCufeGenerator(cufePath, f);
 				String cufeClaro = cufe.generateCufeClaroFile();
 
 				try (FileWriter fw = new FileWriter(f);
@@ -498,7 +498,7 @@ public class FilesGenerator implements Progressable {
 					lineArray = line.split("\\|");
 					tag = lineArray[0];
 					if (tag.equalsIgnoreCase("CAB")) {
-						CufeGenerator cufe = new CufeGenerator(
+						ClaroCufeGenerator cufe = new ClaroCufeGenerator(
 								"C:\\Users\\dvalencia\\Documents\\Test FECO\\generarCufe.xlsx", f);
 						String cufeFile = cufe.generateCufeClaroFile();
 						lineArray[6] = cufeFile;

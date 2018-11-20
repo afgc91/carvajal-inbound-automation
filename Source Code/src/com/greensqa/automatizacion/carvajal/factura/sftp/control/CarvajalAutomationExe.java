@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.BusinessValidator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.PostgresConnector;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.CarvajalUtils;
-import com.greensqa.automatizacion.carvajal.factura.sftp.model.CufeGenerator;
+import com.greensqa.automatizacion.carvajal.factura.sftp.model.ClaroCufeGenerator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesCompressor;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.FilesGenerator;
 import com.greensqa.automatizacion.carvajal.factura.sftp.model.SftpAndDbDataElement;
@@ -41,7 +41,7 @@ public class CarvajalAutomationExe {
 			sendFilesWithValidationsPanel;
 	private static CarvajalFrame mainFrame, filesGenerationFrame, sendFilesWithGenericLogFrame,
 			sendFilesWithValidationsFrame;
-	private static CufeGenerator cufe; 
+	private static ClaroCufeGenerator cufe; 
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
 		starApp();	
@@ -455,7 +455,7 @@ public class CarvajalAutomationExe {
 							@Override
 							protected Object doInBackground() throws Exception {
 								for (int i = 0; i < files.length; i++) {
-									bv.executeStatusQuery(files[i], connectionFilePath);
+									bv.executeStatusQuery(files[i], sftpAndDbDataElement.getCufePath());
 									bv.setProcessedItems(bv.getProcessedItems() + 1);
 								}
 								bv.getSummary();

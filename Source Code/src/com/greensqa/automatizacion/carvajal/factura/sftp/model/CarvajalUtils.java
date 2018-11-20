@@ -94,6 +94,44 @@ public class CarvajalUtils {
 	}
 
 	/**
+	 * Leer archivo de configuración para realizar las peticiones WS de login,
+	 * notificación y activacion.
+	 * 
+	 * @throws ParseException En caso de error al leer el JSON
+	 * @throws IOException    En caso de error de Entrada/Salida
+	 */
+	public static WSStructureElement loadWSConfiFile(String filePath) throws IOException, ParseException {
+		File file = new File(filePath);
+		if (!file.exists()) {
+			return null;
+		}
+
+		try (FileReader fr = new FileReader(file)) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(fr);
+			// Objeto LOGIN
+			JSONObject login = (JSONObject) json.get("login");
+			String loginUrl = (String) login.get("url");
+			String user = (String) login.get("usuario");
+			String password = (String) login.get("clave");
+			// Objeto NOTIFICACION
+			JSONObject notification = (JSONObject) json.get("notificacion");
+			String notificationUrl = (String) notification.get("url");
+			long companyId = Long.parseLong(json.get("numFinalRango") + "");
+			String account = (String) notification.get("cuenta");
+			String path = (String) notification.get("ruta");
+			// Objeto Activation
+			JSONObject activation = (JSONObject) json.get("activation");
+			String activationUrl = (String) activation.get("url");
+			int action = Integer.parseInt(activation.get("accion") + "");
+
+			WSStructureElement wsData = new WSStructureElement(loginUrl, user, password, notificationUrl, companyId,
+					account, path, activationUrl, action);
+			return wsData;
+		}
+	}
+
+	/**
 	 * Lee el archivo con las configuraciones iniciales de los archivos de factura a
 	 * generar.
 	 * 
@@ -141,7 +179,7 @@ public class CarvajalUtils {
 
 			StandardFactStructureElement fact = new StandardFactStructureElement(factPrefix, factStartNum, nitSender,
 					nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum,
-					docTypeId, docType, factDate,cufePath);
+					docTypeId, docType, factDate, cufePath);
 			return fact;
 		}
 	}
@@ -325,10 +363,10 @@ public class CarvajalUtils {
 			String region = (String) aws.get("region");
 			// Objeto Archivo CUFE
 			JSONObject cufe = (JSONObject) json.get("rutaArchivoConfigCufe");
-			String path = (String) cufe.get("ruta");
+			String cufePath = (String) cufe.get("ruta");
 
 			SftpAndDbDataElement connectionsData = new SftpAndDbDataElement(userSftp, passwordSftp, urlSftp, portSftp,
-					destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region, path);
+					destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region, cufePath);
 			return connectionsData;
 		}
 	}

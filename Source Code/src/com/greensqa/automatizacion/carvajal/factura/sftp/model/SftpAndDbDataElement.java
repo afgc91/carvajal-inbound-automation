@@ -21,10 +21,10 @@ public class SftpAndDbDataElement {
 	private String nameBucket; 
 	private String region; 
 	//Atributos Archivo Configuración CUFE 
-	private String path; 
+	private String cufePath; 
 	
 	public SftpAndDbDataElement(String userSftp, String passwordSftp, String urlSftp, int portSftp, String destSftp, int tipoBD,	String userDb, String passwordDb, String urlDb, 
-			int portDb, String key, String secretKey, String nameBucket, String region, String path) {
+			int portDb, String key, String secretKey, String nameBucket, String region, String cufePath) {
 
 		this.userSftp = userSftp;
 		this.passwordSftp = passwordSftp;
@@ -40,7 +40,7 @@ public class SftpAndDbDataElement {
 		this.secretKey = secretKey; 
 		this.nameBucket = nameBucket; 
 		this.region = region;
-		this.path = path; 
+		this.cufePath = cufePath; 
 	}
 
 	public String getUserSftp() {
@@ -155,11 +155,12 @@ public class SftpAndDbDataElement {
 		this.region = region;
 	}
 
-	public String getPath() {
-		return path;
+	public String getCufePath() {
+		return cufePath;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
-	}	
+	public void setCufePath(String cufePath) {
+		this.cufePath = cufePath;
+	}
+
 }

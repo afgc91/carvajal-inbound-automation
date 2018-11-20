@@ -27,7 +27,7 @@ import org.json.simple.parser.ParseException;
 import com.jcraft.jsch.jce.SHA1;
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
-public class CufeGenerator {
+public class ClaroCufeGenerator {
 
 	private String cufeConfigFilePath;
 	private File claroFile = null;
@@ -40,7 +40,7 @@ public class CufeGenerator {
 	private ArrayList<String> valuesFileList = new ArrayList<String>();
 	private ArrayList<String> valueConditionList = null;
 
-	public CufeGenerator(String cufeConfigFilePath, File claroFile) {
+	public ClaroCufeGenerator(String cufeConfigFilePath, File claroFile) {
 		this.cufeConfigFilePath = cufeConfigFilePath;
 		this.claroFile = claroFile;
 	}

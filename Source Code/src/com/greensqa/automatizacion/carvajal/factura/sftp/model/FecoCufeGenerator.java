@@ -5,13 +5,11 @@ import java.io.FileInputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -21,30 +19,35 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import com.amazonaws.services.codebuild.model.Build;
+public class FecoCufeGenerator {
 
-import io.netty.util.internal.MathUtil;
-import software.amazon.ion.Timestamp.Precision;
+	private String pathConfiFile = ""; 
+	private File xmlFile; 
 
-public class XmlUblReader {
 
-//   cambiar nombre de la clase
+public FecoCufeGenerator(String pathConfiFile, File xmlFile) {
+		super();
+		this.pathConfiFile = pathConfiFile;
+		this.xmlFile = xmlFile;
+	}
+
+
 //	public static void main(String[] arg) throws Exception {
+//		File file = new File("C:\\Users\\dvalencia\\Documents\\Test FECO\\Resultados\\FV_CPV10490.xml");
 //		getValuePathXmlUbl(
-//				"C:\\Users\\dvalencia\\Documents\\Diana Valencia\\Documentos\\Archivos Configuración\\Cufe.xlsx",
-//				"C:\\Users\\dvalencia\\Documents\\Test FECO\\Resultados\\FV_CPV10481.xml");
+//				"C:\\Users\\dvalencia\\Documents\\Diana Valencia\\Documentos\\Archivos Configuración\\Cufe.xlsx", file);
 //	}
 
 	/*
-	 * Clase que permite obtener el valor del path ingresado por el usuario en el
-	 * archivo de configuración con los datos de generación del CUFE
+	 * Clase que forma la cadena a partir de un insumo XML y genera el CUFE para el documento. 
 	 */
 
-	public static String getValuePathXmlUbl(String pathConfiFile, File xmlFile) throws Exception {
+	public String getValuePathXmlUbl() throws Exception {
 
 		ArrayList<String> valuesPathCufe = new ArrayList<String>();
 		ArrayList<String> xPathFile = ExcelReader.getValueFieldPosition(pathConfiFile, 0);
 		String valuesItemsCufe = "";
+		String sha_1 = "";
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true);
@@ -61,8 +64,7 @@ public class XmlUblReader {
 		Object result = null;
 		NodeList nodes = null;
 
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < xPathFile.size(); i++) {
+		for (int i = 0; i < xPathFile.size()-1; i++) {
 			xPathCufe = xPathFile.get(i);
 			xPathUblExpression = xPathXmlUbl.compile(xPathCufe);
 			result = xPathUblExpression.evaluate(cufeConfiFile, XPathConstants.NODESET);
@@ -71,6 +73,7 @@ public class XmlUblReader {
 				valuesPathCufe.add(nodes.item(j).getTextContent());
 			}
 		}
+		
 
 		// Reglas para generar el CUFE 
 		
@@ -116,8 +119,16 @@ public class XmlUblReader {
 		for (int i = 0; i < valuesPathCufe.size(); i++) {
 			valuesItemsCufe += valuesPathCufe.get(i);
 		}
+		
+		//El último elemento de la lista será la clave técnica del prefijo, 
+		//la cual se debe anexar a la cadena para la generación del Cufe
+		
+		int lastElement = xPathFile.size(); 
+		valuesItemsCufe += xPathFile.get(lastElement-1);
 
-		return valuesItemsCufe;
+		sha_1 = DigestUtils.sha1Hex(valuesItemsCufe);
+		System.out.println(sha_1);
+		return sha_1;
 	}
 }
 
@@ -146,5 +157,4 @@ class NamespaceResolver implements NamespaceContext {
 	public Iterator getPrefixes(String namespaceURI) {
 		return null;
 	}
-
 }

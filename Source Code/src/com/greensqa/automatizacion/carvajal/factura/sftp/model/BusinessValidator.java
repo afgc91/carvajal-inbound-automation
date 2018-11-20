@@ -39,7 +39,10 @@ public class BusinessValidator implements Progressable {
 	private int totalItems;
 	private int processedItems;
 	private boolean keepWorking;
-	private String techicalKey = ""; 
+	private String techicalKey = "";
+	private boolean cufeOK = false;
+	private String statusCufe = "";
+	private String cufeFile = ""; 
 
 	public BusinessValidator(Connection con, String directory) {
 		this.setLogged(false);
@@ -51,8 +54,7 @@ public class BusinessValidator implements Progressable {
 		this.keepWorking = true;
 	}
 
-	public void executeStatusQuery(File file, String pathConfi)
-			throws Exception {
+	public void executeStatusQuery(File file, String cufePath) throws Exception {
 
 		File log = null;
 
@@ -65,6 +67,7 @@ public class BusinessValidator implements Progressable {
 		} else {
 			log = new File(logFilePath);
 		}
+
 
 		String docStatusQuery = "select * from estados_procesamiento where id_transaccion = "
 				+ "(select * from (select id " + "	from transacciones " + "	where nombre_archivo_original = ? "
@@ -86,10 +89,9 @@ public class BusinessValidator implements Progressable {
 				+ "where id_documento = (select id from documentos where numero_documento= ? ))";
 
 		String docFactQuery = "select * from documentos where numero_documento = ? ";
-		
-		String techinicalKeyPrefixQuery = "select * from rangos_autorizacion "
-				+ "where id_autorizacion_gobierno = "
-				+ "(select id from autorizaciones_gobierno where numero_autorizacion = ? )"; 
+
+		String techinicalKeyPrefixQuery = "select * from rangos_autorizacion " + "where id_autorizacion_gobierno = "
+				+ "(select id from autorizaciones_gobierno where numero_autorizacion = ? )";
 
 		if (con == null) {
 			JOptionPane.showMessageDialog(null, "No se pudo realizar la conexión", "Conexión nula",
@@ -101,7 +103,7 @@ public class BusinessValidator implements Progressable {
 				PreparedStatement docAcceptNamePs = con.prepareStatement(docNameAcceptQuery);
 				PreparedStatement docRtaDianPs = con.prepareStatement(docNameRtaQuery);
 				PreparedStatement docFactPs = con.prepareStatement(docFactQuery);
-			    PreparedStatement docNumAuthorizationPs = con.prepareStatement(techinicalKeyPrefixQuery)){
+				PreparedStatement docNumAuthorizationPs = con.prepareStatement(techinicalKeyPrefixQuery)) {
 
 			String factNum = CarvajalUtils.getFactNumber(file.getAbsolutePath());
 			String typeDoc = CarvajalUtils.getTypeId(file.getAbsolutePath());
@@ -123,11 +125,12 @@ public class BusinessValidator implements Progressable {
 					ResultSet docAcceptNameRs = docAcceptNamePs.executeQuery();
 					ResultSet docRtaDianRs = docRtaDianPs.executeQuery();
 					ResultSet docFactExistRs = docFactPs.executeQuery();
-					ResultSet docNumAuthorizationRs = docNumAuthorizationPs.executeQuery()){
+					ResultSet docNumAuthorizationRs = docNumAuthorizationPs.executeQuery()) {
 
 				boolean isAccept = false;
 				boolean isRtaDian = false;
 				boolean isFailed = false;
+
 
 				if (docFactExistRs.next()) {
 
@@ -154,8 +157,8 @@ public class BusinessValidator implements Progressable {
 							isRtaDian = true;
 						}
 					}
-					
-					if(docNumAuthorizationRs.next()) {
+
+					if (docNumAuthorizationRs.next()) {
 						techicalKey = docNumAuthorizationRs.getString(2);
 						System.out.println(techicalKey);
 					}
@@ -171,6 +174,7 @@ public class BusinessValidator implements Progressable {
 					if (docStatusRs != null) {
 						boolean validateDocumentProcessedOk = false;
 						boolean validateDocumentProcessedNok = false;
+						
 						while (docStatusRs.next()) {
 
 							status = docStatusRs.getString(4);
@@ -186,15 +190,30 @@ public class BusinessValidator implements Progressable {
 										+ "\r\nEstado: " + status + " Mensaje: " + message + "\r\n");
 								failProcess = true;
 							}
+							
+							if (isFailed) {
+								System.out.println(file.getAbsolutePath());
+								cufeFile = cufeFile(file,cufePath);
+								if (cufeFile.equalsIgnoreCase(cufe)) {
+									cufeOK = true;
+									statusCufe = "OK"; 
+								} else {
+									statusCufe = "NOK"; 
+								}}
 
 							// Validar documento procesado OK.
-							if (!validateDocumentProcessedOk) {
+							if (!validateDocumentProcessedOk) {								 
 								if (("DOCUMENT_PROCESSED").equals(processName)) {
-									if (("OK").equals(status)) {
+									if (("OK").equals(status)){ 
+										System.out.println(cufeOK);
+										if(cufeOK==true) {
 										filesOk += 1;
 										validateDocumentProcessedOk = true;
+									}else {
+										filesFailed += 1;
+										validateDocumentProcessedNok = true;
 									}
-								}
+								}}
 							}
 
 							// Validar documento procesado NOK
@@ -202,8 +221,8 @@ public class BusinessValidator implements Progressable {
 								if ("FAIL".equals(status)) {
 									filesFailed += 1;
 									validateDocumentProcessedNok = true;
-								}
-							}
+								
+							}}
 						}
 					} else {
 						bw.write("El archivo no ha sido enviado a CEN Financiero. \r\n");
@@ -214,8 +233,9 @@ public class BusinessValidator implements Progressable {
 					}
 
 					if (isFailed) {
+		
 						bw.write("\r\nNombre Archivo de Gobierno: " + nameFileGovernment + "\r\nNombre Archivo PDF: "
-								+ namePDFFact + "\r\nCUFE : " + cufe + "\r\n");
+								+ namePDFFact + "\r\nCUFE : " + cufe + "\r\n" +"Cufe Calculado: "+cufeFile +"\r\nEstado Cufe:"+ statusCufe + "\r\n");
 						if (isAccept) {
 							bw.write("Nombre Archivo de Aceptación Cliente: " + nameFileAccept + "\r\n");
 						} else {
@@ -232,8 +252,7 @@ public class BusinessValidator implements Progressable {
 
 					bw.write("---------------------------------------------------------------------------------------"
 							+ "-------------------------------------------------------------\r\n");
-				
-				
+
 				}
 			}
 		}
@@ -241,6 +260,12 @@ public class BusinessValidator implements Progressable {
 
 	public int getStartProcess() {
 		return startProcess;
+	}
+
+	private String cufeFile(File file, String pathConfigConnection) throws Exception {
+		FecoCufeGenerator cufe = new FecoCufeGenerator(pathConfigConnection, file);
+		String cufeFeco = cufe.getValuePathXmlUbl();
+		return cufeFeco;
 	}
 
 	// Contar la cantidad de archivos en la carpeta
@@ -350,11 +375,11 @@ public class BusinessValidator implements Progressable {
 		// TODO Auto-generated method stub
 		return processedItems;
 	}
-	
+
 	public void setProcessedItems(int processedItems) {
 		this.processedItems = processedItems;
 	}
-	
+
 	public void setTotalItems(int totalItems) {
 		this.totalItems = totalItems;
 	}
@@ -363,7 +388,7 @@ public class BusinessValidator implements Progressable {
 	public boolean isKeepWorking() {
 		return this.keepWorking;
 	}
-	
+
 	public void setKeepWorking(boolean keepWorking) {
 		this.keepWorking = keepWorking;
 	}
