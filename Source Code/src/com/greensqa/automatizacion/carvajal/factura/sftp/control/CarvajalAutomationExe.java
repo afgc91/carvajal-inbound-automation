@@ -45,10 +45,6 @@ public class CarvajalAutomationExe {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
 		starApp();	
-//		File file = new File("C:\\Users\\dvalencia\\Documents\\Test FECO\\Resultados\\FI_10480.fe");
-//		cufe = new CufeGenerator("C:\\Users\\dvalencia\\Documents\\Test FECO\\generarCufe.xlsx",
-//				file); 
-//		cufe.generateCufeClaroFile();
 	}
 
 	/**
