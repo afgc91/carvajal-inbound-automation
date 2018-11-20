@@ -2,9 +2,9 @@ package com.greensqa.automatizacion.carvajal.factura.sftp.model;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -14,6 +14,8 @@ public class FilesCompressor {
 
 	private String dstPath;
 	private String srcPath;
+	private int filesPerDirectory;
+	private int filesPerZipLabel;
 
 	public FilesCompressor(String srcPath, String dstPath) {
 
@@ -22,50 +24,47 @@ public class FilesCompressor {
 
 	}
 
-	public void compressFiles(File file) throws Exception {
+	public void zipFiles(String srcPath, int filesPerDirectory, int filesPerZipLabel) {
+		try {
 
-		ZipOutputStream zip = null;
-		FileOutputStream fileWriter = null;
-		fileWriter = new FileOutputStream(dstPath);
-		zip = new ZipOutputStream(fileWriter);
-		addDirectoryToZip("", srcPath, zip);
+			getLogFile(srcPath);
+			File file = new File(srcPath);
+			File[] files = file.listFiles();
+			
+			int index = 0;
+			int filesPerZip = filesPerDirectory / filesPerZipLabel;
+			for (int i = 0; i < filesPerZip; i++) {
 
-		zip.flush();
-		zip.close();
-
-	}
-
-	private static void addFilesToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
-
-		File folder = new File(srcFile);
-		// Integer total = getTotalFiles(folder);
-
-		if (folder.isDirectory()) {
-			addDirectoryToZip(path, srcFile, zip);
-
-		} else {
-			byte[] buf = new byte[1024];
-			int len = 0;
-			@SuppressWarnings("resource")
-			FileInputStream in = new FileInputStream(srcFile);
-			zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
-			while ((len = in.read(buf)) > 0) {
-				zip.write(buf, 0, len);
+				FileOutputStream fos = new FileOutputStream((file.getParentFile()).getAbsolutePath()+"\\Paquetes\\Paquete" + i + ".zip");
+				ZipOutputStream zos = new ZipOutputStream(fos);
+				for (int j = 0; j < filesPerZipLabel; j++) {
+					@SuppressWarnings("resource")
+					FileInputStream in = new FileInputStream(files[index].getAbsoluteFile());
+					zos.putNextEntry(new ZipEntry((files[index]).getName()));
+	
+					byte[] bytes = new byte[2048];
+					int len;
+					while ((len = in.read(bytes)) > 0) {
+						zos.write(bytes, 0, len);
+					}
+					index++;
+				}
+				zos.closeEntry();
+				zos.close();
 			}
+
+		} catch (FileNotFoundException ex) {
+			System.err.println("Archivo no Existe: " + ex);
+		} catch (IOException ex) {
+			System.err.println("Entrada Inválida: " + ex);
 		}
 	}
 
-	// Adicionar Archivos a la carpeta comprimida
-	private static void addDirectoryToZip(String path, String srcDirectory, ZipOutputStream zip) throws Exception {
-		File folder = new File(srcDirectory);
-
-		for (String fileName : folder.list()) {
-			if (path.equals("")) {
-				addFilesToZip(folder.getName(), srcDirectory + "/" + fileName, zip);
-			} else {
-				addFilesToZip(path + "/" + folder.getName(), srcDirectory + "/" + fileName, zip);
-			}
-		}
+	private void getLogFile(String srcPath) throws IOException {
+		File file = new File(srcPath);
+		String dirPath = file.getParent() + "\\Paquetes";
+		File dir = new File(dirPath);
+		dir.mkdir();
 	}
 
 	/**
@@ -74,6 +73,7 @@ public class FilesCompressor {
 	 * @param directory
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private static int getTotalFiles(File directory) {
 		int total = 0;
 		String[] arrArchivos = directory.list();

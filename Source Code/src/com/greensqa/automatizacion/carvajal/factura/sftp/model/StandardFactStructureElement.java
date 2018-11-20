@@ -15,25 +15,28 @@ public class StandardFactStructureElement {
 	private long endingRangeNum;
 	private String docTypeId;
 	private int docType;
-	private Date factDate; 
-	
+	private Date factDate;
+	private String cufePath;
+
 	/**
 	 * Constructor de CarvajalStandardFactStructure.
-	 * @param factPrefix Prefijo de las facturas.
-	 * @param factStartNum Número inicial de las facturas.
-	 * @param nitSender NIT del emisor.
-	 * @param nitReceiver NIT del receptor.
-	 * @param authNumber Número de autorización.
+	 * 
+	 * @param factPrefix        Prefijo de las facturas.
+	 * @param factStartNum      Número inicial de las facturas.
+	 * @param nitSender         NIT del emisor.
+	 * @param nitReceiver       NIT del receptor.
+	 * @param authNumber        Número de autorización.
 	 * @param startingRangeDate Fecha de inicio del rango.
-	 * @param endingRangeDate Fecha de fin del rango.
-	 * @param startingRangeNum Número inicial del rango.
-	 * @param endingRangeNum Número final del rango.
-	 * @param docTypeId Id del tipo de documento.
-	 * @param docType Tipo del documento.
+	 * @param endingRangeDate   Fecha de fin del rango.
+	 * @param startingRangeNum  Número inicial del rango.
+	 * @param endingRangeNum    Número final del rango.
+	 * @param docTypeId         Id del tipo de documento.
+	 * @param docType           Tipo del documento.
+	 * @param cufePath
 	 */
 	public StandardFactStructureElement(String factPrefix, long factStartNum, String nitSender, String nitReceiver,
 			long authNumber, Date startingRangeDate, Date endingRangeDate, long startingRangeNum, long endingRangeNum,
-			String docTypeId, int docType, Date factDate) {
+			String docTypeId, int docType, Date factDate, String cufePath) {
 		this.factPrefix = factPrefix;
 		this.factStartNum = factStartNum;
 		this.nitSender = nitSender;
@@ -45,11 +48,13 @@ public class StandardFactStructureElement {
 		this.endingRangeNum = endingRangeNum;
 		this.docTypeId = docTypeId;
 		this.docType = docType;
-		this.factDate = factDate; 
+		this.factDate = factDate;
+		this.cufePath = cufePath;
 	}
 
 	/**
 	 * Obtiene el prefijo de las facturas.
+	 * 
 	 * @return Prefijo de las facturas.
 	 */
 	public String getFactPrefix() {
@@ -58,6 +63,7 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene el número inicial de las facturas.
+	 * 
 	 * @return Npumero inicial de las facturas.
 	 */
 	public long getFactStartNum() {
@@ -66,6 +72,7 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene el NIT del emisor.
+	 * 
 	 * @return NIT del emisor.
 	 */
 	public String getNitSender() {
@@ -74,6 +81,7 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene el NIT del receptor.
+	 * 
 	 * @return NIT del receptor.
 	 */
 	public String getNitReceiver() {
@@ -82,6 +90,7 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene el número de autorización.
+	 * 
 	 * @return Número de autorización.
 	 */
 	public long getAuthNumber() {
@@ -90,6 +99,7 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene la fecha inicial del rango.
+	 * 
 	 * @return Fecha inicial del rango.
 	 */
 	public Date getStartingRangeDate() {
@@ -98,6 +108,7 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene la fecha fin del rango.
+	 * 
 	 * @return Fecha fin del rango.
 	 */
 	public Date getEndingRangeDate() {
@@ -106,14 +117,16 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene el número inicial del rango.
+	 * 
 	 * @return Número inicial del rango.
 	 */
 	public long getStartingRangeNum() {
 		return startingRangeNum;
 	}
-	
+
 	/**
 	 * Obtiene el número final del rango.
+	 * 
 	 * @return Número final del rango.
 	 */
 	public long getEndingRangeNum() {
@@ -122,6 +135,7 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene el id de tipo de documento.
+	 * 
 	 * @return Id de tipo de documento.
 	 */
 	public String getDocTypeId() {
@@ -130,16 +144,23 @@ public class StandardFactStructureElement {
 
 	/**
 	 * Obtiene el tipo de documento.
+	 * 
 	 * @return Tipo de documento.
 	 */
 	public int getDocType() {
 		return docType;
 	}
- /**
-  * Obtiene la fecha de la factura 
-  * @return fecha de la factura 
-  */
+
+	/**
+	 * Obtiene la fecha de la factura
+	 * 
+	 * @return fecha de la factura
+	 */
 	public Date getFactDate() {
 		return factDate;
-	}	
+	}
+
+	public String getCufePath() {
+		return cufePath;
+	}
 }

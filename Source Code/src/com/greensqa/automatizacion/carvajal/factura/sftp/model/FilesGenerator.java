@@ -216,9 +216,10 @@ public class FilesGenerator implements Progressable {
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws TransformerException
+	 * @throws                              java.text.ParseException
 	 */
 	public boolean generateTestFiles() throws FileNotFoundException, IOException, ParserConfigurationException,
-			SAXException, TransformerException {
+			SAXException, TransformerException, java.text.ParseException {
 		// Obtener datos del archivo base.
 		long factStartNum = this.standardFactStructure.getFactStartNum();
 		long index = factStartNum;
@@ -233,7 +234,9 @@ public class FilesGenerator implements Progressable {
 		String prefix = this.standardFactStructure.getFactPrefix();
 		long startingRangeNum = this.standardFactStructure.getStartingRangeNum();
 		long endingRangeNum = this.standardFactStructure.getEndingRangeNum();
-		Date factDate = this.standardFactStructure.getFactDate(); 
+		Date factDate = this.standardFactStructure.getFactDate();
+		String cufePath = this.standardFactStructure.getCufePath(); 
+
 
 		// Identificar el tipo de archivo a replicar.
 
@@ -242,12 +245,12 @@ public class FilesGenerator implements Progressable {
 				return generateTxtFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType,
 						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum);
 			}
-		}else if (type.equalsIgnoreCase("fe")){
-			if(CarvajalUtils.isValidClaroFe(this.baseFilePath)) {
-				return generateClaroTxtFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType, prefix, factDate);
-			}			
-		}	 
-		else if (type.equalsIgnoreCase("xml")) {
+		} else if (type.equalsIgnoreCase("fe")) {
+			if (CarvajalUtils.isValidClaroFe(this.baseFilePath)) {
+				return generateClaroTxtFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType,
+						prefix, factDate, cufePath);
+			}
+		} else if (type.equalsIgnoreCase("xml")) {
 			int xmlType = CarvajalUtils.getXmlType(this.baseFilePath);
 			if (xmlType == 0) {
 				return false;
@@ -362,10 +365,10 @@ public class FilesGenerator implements Progressable {
 		}
 		return true;
 	}
-	
+
 	private boolean generateClaroTxtFiles(long factStartNum, long index, String docTypeId, String nitSender,
-			String nitReceiver, String type, int docType, String prefix, Date factDate)
-			throws FileNotFoundException, IOException {
+			String nitReceiver, String type, int docType, String prefix, Date factDate, String cufePath)
+			throws FileNotFoundException, IOException, java.text.ParseException {
 		File file = new File(this.baseFilePath);
 		ArrayList<String> fileLines = new ArrayList<>();
 		ArrayList<String> fileLinesCopy = null;
@@ -386,8 +389,8 @@ public class FilesGenerator implements Progressable {
 			String[] lineArray = null;
 			String tag = "";
 			String filePath = "";
-			String[] monthDate = (factDate + "").split("\\-"); 
-			String monthDatePRC = monthDate[1]; 
+			String[] monthDate = (factDate + "").split("\\-");
+			String monthDatePRC = monthDate[1];
 			for (int i = 0; i < this.totalItems; i++) {
 				fileLinesCopy = fileLines;
 				fact = index + "";
@@ -411,11 +414,10 @@ public class FilesGenerator implements Progressable {
 						line = fileLinesCopy.get(j);
 						lineArray = line.split("\\|");
 						tag = lineArray[0];
-						System.out.println(lineArray[0]);
 						if (tag.equalsIgnoreCase("PRC")) {
 							// Modificar campos PRC
 							lineArray[3] = nitSender;
-							lineArray[6] = monthDatePRC; 
+							lineArray[6] = monthDatePRC;
 							line = CarvajalUtils.concatClaroFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("CAB")) {
@@ -436,16 +438,85 @@ public class FilesGenerator implements Progressable {
 						if (j != fileLinesCopy.size() - 1) {
 							line += "\r\n";
 						}
-
-						pw.write(line);
+						bw.write(line);
 					}
 				}
 
+				CufeGenerator cufe = new CufeGenerator(cufePath, f);
+				String cufeClaro = cufe.generateCufeClaroFile();
+
+				try (FileWriter fw = new FileWriter(f);
+						BufferedWriter bw = new BufferedWriter(fw);
+						PrintWriter pw = new PrintWriter(bw)) {
+				for (int j = 0; j < fileLinesCopy.size(); j++) {
+					line = fileLinesCopy.get(j);
+					lineArray = line.split("\\|");
+					tag = lineArray[0];
+					if (tag.equalsIgnoreCase("CAB")) {						
+						lineArray[6] = cufeClaro;
+						line = CarvajalUtils.concatClaroFileLineArray(lineArray);
+						fileLinesCopy.set(j, line);
+					}
+					if (j != fileLinesCopy.size() - 1) {
+						line += "\r\n";
+					}
+					pw.write(line);
+				}}
 				index += 1;
 				processedItems += 1;
 			}
+
 		}
 		return true;
+	}
+
+	private boolean writterCufe(File f) throws FileNotFoundException, IOException, java.text.ParseException {
+
+		ArrayList<String> fileLines = new ArrayList<>();
+		ArrayList<String> fileLinesCopy = null;
+		try (FileReader fr = new FileReader(f); BufferedReader br = new BufferedReader(fr)) {
+			String line = "";
+
+			// Guardar líneas del archivo en el ArrayList.
+			while (true) {
+				line = br.readLine();
+				if (line == null) {
+					break;
+				}
+				line = line.replaceAll("[^\\p{Graph}\n\r\t ]", "");
+				fileLines.add(line);
+			}
+			String[] lineArray = null;
+			String tag = "";
+
+			fileLinesCopy = fileLines;
+			try (FileWriter fw = new FileWriter(f);
+					BufferedWriter bw = new BufferedWriter(fw);
+					PrintWriter pw = new PrintWriter(bw)) {
+				for (int j = 0; j < fileLinesCopy.size(); j++) {
+					line = fileLinesCopy.get(j);
+					lineArray = line.split("\\|");
+					tag = lineArray[0];
+					if (tag.equalsIgnoreCase("CAB")) {
+						CufeGenerator cufe = new CufeGenerator(
+								"C:\\Users\\dvalencia\\Documents\\Test FECO\\generarCufe.xlsx", f);
+						String cufeFile = cufe.generateCufeClaroFile();
+						lineArray[6] = cufeFile;
+						System.out.println("ver" + cufeFile);
+						line = CarvajalUtils.concatClaroFileLineArray(lineArray);
+						fileLinesCopy.set(j, line);
+						System.out.println("ver linea" + line);
+					}
+					if (j != fileLinesCopy.size() - 1) {
+						line += "\r\n";
+					}
+					System.out.println("ver + " + line);
+
+					pw.write(line);
+				}
+			}
+			return true;
+		}
 	}
 
 	private boolean generateXmlStandardFiles(long factStartNum, long index, String docTypeId, String nitSender,
@@ -504,7 +575,8 @@ public class FilesGenerator implements Progressable {
 				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
-			processedItems += 1;;
+			processedItems += 1;
+			;
 		}
 
 		return true;
@@ -642,7 +714,8 @@ public class FilesGenerator implements Progressable {
 				transformer.transform(domSource, streamResult);
 			}
 			index += 1;
-			processedItems += 1;;
+			processedItems += 1;
+			;
 		}
 		return true;
 	}
@@ -718,12 +791,12 @@ public class FilesGenerator implements Progressable {
 	public int getProcessedItems() {
 		return processedItems;
 	}
-	
+
 	@Override
 	public boolean isKeepWorking() {
 		return this.keepWorking;
 	}
-	
+
 	public void setKeepWorking(boolean keepWorking) {
 		this.keepWorking = keepWorking;
 	}

@@ -137,10 +137,11 @@ public class CarvajalUtils {
 			Date factDate = new Date(
 					sdf.parse((json.get("fechaFactura") != null ? json.get("fechaFactura") + "" : "1990-01-01"))
 							.getTime());
+			String cufePath = (String) json.get("rutaCufe");
 
 			StandardFactStructureElement fact = new StandardFactStructureElement(factPrefix, factStartNum, nitSender,
 					nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum,
-					docTypeId, docType, factDate);
+					docTypeId, docType, factDate,cufePath);
 			return fact;
 		}
 	}
@@ -332,7 +333,7 @@ public class CarvajalUtils {
 		}
 	}
 
-	public static String[] getCufeValuesByLocation(String filePath, String label, int position)
+	public static String getCufeValuesByLocation(String filePath, String label, int position, int index)
 			throws FileNotFoundException, IOException {
 		ArrayList<String> fileLines = new ArrayList<>();
 		String strWithLabelLines = "";
@@ -361,19 +362,18 @@ public class CarvajalUtils {
 			}
 			strWithLabelLines = strWithLabelLines.substring(0, strWithLabelLines.length() - 1);
 			String[] labelLines = strWithLabelLines.split("\t");
-			cufeItems = new String[labelLines.length]; 
-//			System.out.println(label +"\n"+ position);
-			//System.out.println(strWithLabelLines);
+			cufeItems = new String[labelLines.length];
 			for (int i = 0; i < labelLines.length; i++) {
-				//System.out.println(labelLines[i].split("\\|").length + "-" + position);
 				cufeItems[i] = labelLines[i].split("\\|")[position];
-				System.out.println("ver" + labelLines[i].split("\\|")[position]);
-			
-			}  
-			
-			return cufeItems;
+			}
+		}
+		if (index < cufeItems.length) {
+			return cufeItems[index];
+		} else {
+			return null;
 		}
 	}
+
 	protected static String getFactNumber(String filePath)
 			throws ParserConfigurationException, SAXException, IOException {
 		File f = new File(filePath);

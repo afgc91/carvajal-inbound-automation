@@ -45,8 +45,9 @@ public class CarvajalAutomationExe {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
 		starApp();	
-//		cufe = new CufeGenerator("C:\\Users\\dvalencia\\Documents\\Test FECO\\generarCufe.txt",
-//				"C:\\Users\\dvalencia\\Documents\\Test FECO\\FC_00000000163.fe"); 
+//		File file = new File("C:\\Users\\dvalencia\\Documents\\Test FECO\\Resultados\\FI_10480.fe");
+//		cufe = new CufeGenerator("C:\\Users\\dvalencia\\Documents\\Test FECO\\generarCufe.xlsx",
+//				file); 
 //		cufe.generateCufeClaroFile();
 	}
 
@@ -265,8 +266,8 @@ public class CarvajalAutomationExe {
 				boolean selectOptionZip = filesGenerationPanel.getCompressionCheck().isSelected();
 
 				if (selectOptionZip != false) {
-					// panel1.getFilesPerZipLabel().setVisible(true);
-					// panel1.getFilesPerZipField().setVisible(true);
+					filesGenerationPanel.getFilesPerZipLabel().setVisible(true);
+					filesGenerationPanel.getFilesPerZipField().setVisible(true);
 					return;
 				}
 			}
@@ -669,13 +670,15 @@ public class CarvajalAutomationExe {
 
 		JFileChooser directory = filesGenerationPanel.getOutDirectoryChooser();
 		File filesPath = directory.getSelectedFile();
+		int filesPerDirectory = Integer.parseInt(filesGenerationPanel.getFilesPerDirectoryField().getText());
+		int filesPerZipLabel = Integer.parseInt(filesGenerationPanel.getFilesPerZipField().getText());
 		String directoryPath = filesPath.getAbsolutePath();
 		String desFile = filesPath.getParentFile().getAbsolutePath();
 		String nameFile = filesPath.getName();
 		String desFileZip = desFile + "\\" + nameFile + ".zip";
 
 		FilesCompressor compress = new FilesCompressor(directoryPath, desFileZip);
-		compress.compressFiles(filesPath);
+		compress.zipFiles(directoryPath,filesPerDirectory,filesPerZipLabel);
 
 	}
 

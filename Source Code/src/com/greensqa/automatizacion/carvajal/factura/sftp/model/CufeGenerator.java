@@ -19,100 +19,125 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.jcraft.jsch.jce.SHA1;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 public class CufeGenerator {
 
 	private String cufeConfigFilePath;
-	private String claroFilePath;
-	private String order = "";
+	private File claroFile = null;
+	private static int valuePrevious;
+	private ArrayList<String> labelList = null;
+	private ArrayList<String> indexList = null;
+	private ArrayList<String> typeList = null;
+	private ArrayList<String> formatList = null;
+	private ArrayList<String> conditionList = null;
+	private ArrayList<String> valuesFileList = new ArrayList<String>();
+	private ArrayList<String> valueConditionList = null;
 
-	public CufeGenerator(String cufeConfigFilePath, String claroFilePath) {
+	public CufeGenerator(String cufeConfigFilePath, File claroFile) {
 		this.cufeConfigFilePath = cufeConfigFilePath;
-		this.claroFilePath = claroFilePath;
+		this.claroFile = claroFile;
 	}
 
-	public String generateCufeClaroFile()
-			throws FileNotFoundException, IOException, ParseException, java.text.ParseException {
-		ArrayList<String> valuesFile = new ArrayList<String>();
-		File file = new File(cufeConfigFilePath);
-		if (!file.exists()) {
-			return null;
-		}
-		try (FileReader fr = new FileReader(file)) {
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(fr);
-			int index = 0;
+	public String generateCufeClaroFile() throws IOException, java.text.ParseException {
 
-			String type = "";
-			String format = "";
-			String label = ""; 
-			int position = 0;
-			Set<Object> jsonSet = json.keySet();
-			ArrayList<String> cufeItems = new ArrayList<String>();	
-			
-			for (Object objKey : jsonSet) {
-				String key = (String) objKey;
-				JSONObject cufeItem = (JSONObject) json.get(key);
-				type = (String) cufeItem.get("tipo");
-				format = (String) cufeItem.get("formato");
-				order = (String) cufeItem.get("orden");
-				String[] labelArray = key.split("\\_");
+		ArrayList<String> cufeItems = new ArrayList<String>();
+		String claroFilePath =  claroFile.getAbsolutePath(); 
+		String label = "";
+		String value = "";
+		String sha_1 = "";
+		int position = 0;
+		int index = 0;
+
+		labelList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 0);
+		indexList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 1);
+		typeList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 2);
+		formatList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 3);
+		conditionList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 4);
+		valueConditionList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 5);
+		for (int i = 0; i < labelList.size(); i++) {			
+			if (!typeList.get(i).isEmpty()) {
+				String[] labelArray = labelList.get(i).split("\\_");
 				label = labelArray[0];
-				position = Integer.parseInt(labelArray[1]);
-				String[] values = CarvajalUtils.getCufeValuesByLocation(claroFilePath, label, position);
-				cufeItems.addAll(transformationDate(values, type, format));
-				
-				index++;
-			}
-			
-			
-			System.out.println("Cufe: " + cufeItems);
-			Collections.sort(cufeItems);
-			String cufe = "";
-			for (int i = 0; i < cufeItems.size(); i++) {
-				cufe += cufeItems.get(i).split("-")[1]+"-";
-			}
-
-			System.out.println("Cufe: " + cufe);
-			return cufe;
-		}
-	}
-
-	private ArrayList<String> transformationDate(String[] value, String type, String format)
-			throws java.text.ParseException {
-		// rules for transformation
-
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		ArrayList<String> data = new ArrayList<String>();
-
-		for (int i = 0; i < value.length; i++) {
-			if (type.equalsIgnoreCase("fecha")) {
-				Date date = sdf.parse(value[i]);
-				String dateFact = sdf.format(date);
-				data.add(order + "-" + dateFact);
-			} else if (type.equalsIgnoreCase("hora")) {
-				LocalTime fechaHora = LocalTime.parse(value[i]);
-				String hourFact = (DateTimeFormatter.ofPattern("hhmmss").format(fechaHora));
-				data.add(order + "-" + hourFact);
-			} else if (type.equalsIgnoreCase("double")) {
-				Double totalValueFact = Double.parseDouble(value[i]);
-				DecimalFormat df = new DecimalFormat(format);
-				String totalValueFactFormat = df.format(totalValueFact).replaceAll("[,]", ".");
-				data.add(order + "-" + totalValueFactFormat);
-			} else if (type.equalsIgnoreCase("impuesto")) {
-				if (!value[i].matches(format)) {
-					String tax = String.format("%02d", Integer.parseInt(value[i]));
-					data.add(order + "-" + tax);
-				} else {
-					data.add(order + "-" + value[i]);
-				}
+				position = (labelArray[1])  != null ? Integer.parseInt(labelArray[1]) : 0;
+				String[] indexArray = indexList.get(i).split("\\.");
+				index = Integer.parseInt(indexArray[0]);
+				value = CarvajalUtils.getCufeValuesByLocation(claroFilePath, label, position, index);
+				valuesFileList.add(value);
+				cufeItems.add(transformationDate(value, typeList.get(i), formatList.get(i), conditionList.get(i)));
 			} else {
-				data.add(order + "-" + value[i]);
+				cufeItems.add(labelList.get(i)+ "");
+			}
+			valuePrevious = i;
+		}
+		String cufe = "";
+		for (int i = 0; i < cufeItems.size(); i++) {
+			cufe += cufeItems.get(i);
+		}
+		sha_1 = DigestUtils.sha1Hex(cufe);
+		return sha_1;
+		
+	}
+
+	private String transformationDate(String value, String type, String format, String condition)
+			throws java.text.ParseException, FileNotFoundException, IOException {
+
+		// Rules for transformation
+		SimpleDateFormat originalDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyyMMdd");
+		String temp = "";
+
+		if (value == null) {
+			temp = "";
+		} else if (type.equalsIgnoreCase("fecha")) {
+			Date date = originalDateFormat.parse(value);
+			String dateFact = newDateFormat.format(date);
+			temp = dateFact;
+		} else if (type.equalsIgnoreCase("hora")) {
+			LocalTime fechaHora = LocalTime.parse(value);
+			String hourFact = (DateTimeFormatter.ofPattern("hhmmss").format(fechaHora));
+			temp = hourFact;
+		} else if (type.equalsIgnoreCase("double")) {
+			Double totalValueFact = Double.parseDouble(value);
+			DecimalFormat df = new DecimalFormat(format);
+			String totalValueFactFormat = df.format(totalValueFact).replaceAll("[,]", ".");
+			temp = totalValueFactFormat;
+		} else if (type.equalsIgnoreCase("impuesto")) {
+			if (!value.matches(format)) {
+				String tax = String.format("%02d", Integer.parseInt(value));
+				temp = tax;
+			} else {
+				temp = value;
+			}
+		} else {
+			temp = value.toString();
+		}
+
+		if (!condition.isEmpty()) {
+			if (!temp.equalsIgnoreCase(condition)) {
+				temp = condition;
 			}
 		}
-		return data;
+
+		int i = valuePrevious--;
+		if (conditionList.size() > 0 && !conditionList.get(i).isEmpty()) {
+			value = valuesFileList.get(i);
+			if (typeList.get(i).contains("impuesto")) {
+				if (value != null && !value.matches(formatList.get(i))) {
+					value = String.format("%02d", Integer.parseInt(value));
+				}
+				if ((value == null) || !value.equalsIgnoreCase(conditionList.get(i))) {
+					temp = valueConditionList.get(valuePrevious);
+				}
+			}
+		}
+		return temp;
 	}
+
 }
