@@ -30,20 +30,6 @@ public class FileLogger {
 		return log;
 	}
 
-	private void generateLog(String directory) throws IOException {
-
-		File log = null;
-
-		if (!isLogged) {
-			isLogged = true;
-			log = getLogFile(directory);
-			log.createNewFile();
-			logFilePath = log.getAbsolutePath();
-		} else {
-			log = new File(logFilePath);
-		}
-	}
-
 	public boolean isLogged() {
 		return isLogged;
 	}

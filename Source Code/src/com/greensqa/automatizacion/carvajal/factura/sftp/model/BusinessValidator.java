@@ -43,6 +43,8 @@ public class BusinessValidator implements Progressable {
 	private boolean cufeOK = false;
 	private String statusCufe = "";
 	private String cufeFile = ""; 
+	private boolean validateDocumentProcessedOk = false;
+	private boolean validateDocumentProcessedNok = false;
 
 	public BusinessValidator(Connection con, String directory) {
 		this.setLogged(false);
@@ -165,6 +167,16 @@ public class BusinessValidator implements Progressable {
 
 					isFailed = true;
 				}
+				
+				if (isFailed) {
+					System.out.println(file.getAbsolutePath());
+					cufeFile = cufeFile(file,cufePath);
+					if (cufeFile.equalsIgnoreCase(cufe)) {
+						cufeOK = true;
+						statusCufe = "OK"; 
+					} else {
+						statusCufe = "NOK"; 
+					}}
 
 				try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true);
 						BufferedWriter bw = new BufferedWriter(fw)) {
@@ -172,9 +184,7 @@ public class BusinessValidator implements Progressable {
 					bw.write("Número de Documento: " + factNum + " Tipo: " + typeDoc + "\r\n");
 					bw.write("Nit del Emisor: " + nitSender + "  Nit del Receptor:" + nitReceiver + "\r\n \r\n");
 					if (docStatusRs != null) {
-						boolean validateDocumentProcessedOk = false;
-						boolean validateDocumentProcessedNok = false;
-						
+
 						while (docStatusRs.next()) {
 
 							status = docStatusRs.getString(4);
@@ -190,16 +200,6 @@ public class BusinessValidator implements Progressable {
 										+ "\r\nEstado: " + status + " Mensaje: " + message + "\r\n");
 								failProcess = true;
 							}
-							
-							if (isFailed) {
-								System.out.println(file.getAbsolutePath());
-								cufeFile = cufeFile(file,cufePath);
-								if (cufeFile.equalsIgnoreCase(cufe)) {
-									cufeOK = true;
-									statusCufe = "OK"; 
-								} else {
-									statusCufe = "NOK"; 
-								}}
 
 							// Validar documento procesado OK.
 							if (!validateDocumentProcessedOk) {								 
