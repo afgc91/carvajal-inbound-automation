@@ -1,0 +1,6 @@
+#Carvajal properties
+url=aurora-quality.cfclcsq5vazq.us-east-1.rds.amazonaws.com
+port=5432
+nameDB=auroraquality
+user=quality
+password=c39Ar*d202Es

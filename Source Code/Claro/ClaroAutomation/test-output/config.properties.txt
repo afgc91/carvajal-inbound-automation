@@ -1,0 +1,4 @@
+#Carvajal properties
+url=aurora-quality.cfclcsq5vazq.us-east-1.rds.amazonaws.com
+user=quality
+password=c39Ar*d202Es
