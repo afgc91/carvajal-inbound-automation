@@ -1,14 +1,8 @@
 package com.carvajal.facturaclaro.test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 
 import org.testng.Assert;
@@ -17,9 +11,7 @@ import org.testng.annotations.Test;
 
 import com.carvajal.facturaclaro.bc.AuthorizationBC;
 import com.carvajal.facturaclaro.ral.AuthorizationRAL;
-import com.carvajal.facturaclaro.ral.StatusPackageQueryRAL;
 import com.carvajal.facturaclaro.ral.dto.AuthorizationDTO;
-import com.carvajal.facturaclaro.ral.dto.ResponseDTO;
 import com.carvajal.facturaclaro.utils.PATH;
 import com.carvajal.facturaclaro.utils.PostgresConnector;
 import com.jcraft.jsch.JSchException;
@@ -89,6 +81,11 @@ public class CP_1_Emision_Factura_Retencion_Test {
 				if (response == false) {
 					FileLogger.log(authorization);
 				}
+				AuthorizationBC.validacionEventosRetencion(authorization);
+				if (AuthorizationBC.validacionEventosRetencion(authorization).getCodError() != "200") {
+					response = false; 
+					FileLogger.log(authorization); 
+				} 
 				break;
 			case "1.3":
 				response = AuthorizationBC.isOkSendPackage(authorization);

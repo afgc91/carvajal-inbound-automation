@@ -1,11 +1,9 @@
 package com.carvajal.facturaclaro.bc;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -104,8 +102,6 @@ public class AuthorizationBC {
 		StatusProcessingQueryRAL.statusProcessingQuery(aut);
 		String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
 
-		String itemStatus = "";
-
 		if (statusProcessingPackage.equalsIgnoreCase("OK")) {
 			StatusPackageQueryRAL.statusPackage(aut);
 			String status = StatusPackageQueryRAL.status;
@@ -118,10 +114,10 @@ public class AuthorizationBC {
 				for (int i = 0; i < itemsStatus.size(); i++) {
 					if (itemsStatus.get(i).equalsIgnoreCase("STOPPED")) {
 						response.setCodErrorItem("200");
-						response.setMessageItem(itemStatus);
+						response.setMessageItem(itemsStatus.get(i));
 					} else {
 						response.setCodErrorItem("404");
-						response.setMessageItem("El estado del paquete es: " + itemStatus);
+						response.setMessageItem("El estado del paquete es: " + itemsStatus.get(i));
 					}
 				}
 			} else {
@@ -133,6 +129,23 @@ public class AuthorizationBC {
 			response.setMessage("El paquete enviado sin retención no ha sido procesado");
 		}
 		return response;
+	}
+	
+	public static ResponseDTO validacionEventosRetencion(AuthorizationDTO aut) throws SQLException{
+		EventsPackageQuery.eventsPackage(aut);
+		ArrayList<String> eventsPackage = EventsPackageQuery.messageEvent; 
+		
+		for (int i = 0; i < eventsPackage.size(); i++) {
+			if (eventsPackage.get(i).contains("EVENT10")) {
+				response.setCodErrorItem("200");
+				response.setMessage("El paquete genero correctamente el EVENT10: " + eventsPackage.get(i));
+			} else {
+				response.setCodErrorItem("404");
+				response.setMessageItem("El estado del paquete es: " + eventsPackage.get(i));
+			}
+		}
+		
+		return response;		
 	}
 
 	public static ResponseDTO notificacionEnvioSinRetencion(AuthorizationDTO aut)
