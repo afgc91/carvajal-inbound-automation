@@ -10,8 +10,14 @@ public class AuthorizationDTO {
  private String pathSftp; 
  private String confiDB; 
  private String confiSftp;
+ private String pathWS; 
  
-
+public String getPathWS() {
+	return pathWS;
+}
+public void setPathWS(String pathWS) {
+	this.pathWS = pathWS;
+}
 public String getConfiDB() {
 	return confiDB;
 }

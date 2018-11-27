@@ -12,6 +12,7 @@ import java.util.TimeZone;
 
 import com.carvajal.facturaclaro.ral.EventsPackageQuery;
 import com.carvajal.facturaclaro.ral.MD5GeneratorRAL;
+import com.carvajal.facturaclaro.ral.RenameInvoiceFile;
 import com.carvajal.facturaclaro.ral.StatusPackageQueryRAL;
 import com.carvajal.facturaclaro.ral.StatusProcessingQueryRAL;
 import com.carvajal.facturaclaro.ral.dto.ActivationDTO;
@@ -62,8 +63,7 @@ public class AuthorizationBC {
 	 * 
 	 **/
 
-	public static boolean isOkRetention(AuthorizationDTO aut)
-			throws IOException, SQLException, JSchException, SftpException {
+	public boolean isOkRetention(AuthorizationDTO aut) throws IOException, SQLException, JSchException, SftpException {
 		notificacionEnvioPaqueteRetencion(aut);
 		if (response.getCodError().equalsIgnoreCase("200") && response.getCodErrorItem().equalsIgnoreCase("200")) {
 			return true;
@@ -72,8 +72,8 @@ public class AuthorizationBC {
 		}
 	}
 
-	public static boolean isOkSendPackage(AuthorizationDTO aut)
-			throws IOException, JSchException, SftpException, SQLException {
+	public boolean isOkSendPackage(AuthorizationDTO aut)
+			throws IOException, JSchException, SftpException, SQLException, InterruptedException {
 		notificacionEnvioSinRetencion(aut);
 		if (response.getCodError().equalsIgnoreCase("200") && response.getCodErrorItem().equalsIgnoreCase("200")) {
 			return true;
@@ -81,8 +81,17 @@ public class AuthorizationBC {
 			return false;
 		}
 	}
+	
+	public boolean isOkFailPackage(AuthorizationDTO aut) throws IOException, JSchException, SftpException, SQLException, InterruptedException {
+		notificacionEnvioFallidoSinRetencion(aut); 
+		if (response.getCodError().equalsIgnoreCase("200") && response.getCodErrorItem().equalsIgnoreCase("200")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-	public static boolean isOkCancelledPackage(AuthorizationDTO aut)
+	public boolean isOkCancelledPackage(AuthorizationDTO aut)
 			throws JSchException, SftpException, IOException, SQLException {
 		cancelarEnvioPaquete(aut);
 		if (response.getCodError().equalsIgnoreCase("200") && response.getCodErrorItem().equalsIgnoreCase("200")) {
@@ -91,8 +100,17 @@ public class AuthorizationBC {
 			return false;
 		}
 	}
+	
+	public boolean isOkAuthorizationPackage(AuthorizationDTO aut) throws IOException, JSchException, SftpException, SQLException, InterruptedException{
+		notificacionEnvioConRetencion(aut); 
+		if (response.getCodError().equalsIgnoreCase("200") && response.getCodErrorItem().equalsIgnoreCase("200")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-	public static ResponseDTO notificacionEnvioPaqueteRetencion(AuthorizationDTO aut)
+	public ResponseDTO notificacionEnvioPaqueteRetencion(AuthorizationDTO aut)
 			throws IOException, SQLException, JSchException, SftpException {
 		FilesSender fileSender = new FilesSender();
 		fileSender.sendFiles(aut);
@@ -130,44 +148,206 @@ public class AuthorizationBC {
 		}
 		return response;
 	}
-	
-	public static ResponseDTO validacionEventosRetencion(AuthorizationDTO aut) throws SQLException{
+
+	public boolean validacionEventosRetencion(AuthorizationDTO aut) throws SQLException {
 		EventsPackageQuery.eventsPackage(aut);
-		ArrayList<String> eventsPackage = EventsPackageQuery.messageEvent; 
-		
+		ArrayList<String> eventsPackage = EventsPackageQuery.messageEvent;
+
 		for (int i = 0; i < eventsPackage.size(); i++) {
 			if (eventsPackage.get(i).contains("EVENT10")) {
 				response.setCodErrorItem("200");
 				response.setMessage("El paquete genero correctamente el EVENT10: " + eventsPackage.get(i));
 			} else {
 				response.setCodErrorItem("404");
-				response.setMessageItem("El estado del paquete es: " + eventsPackage.get(i));
+				response.setMessageItem("No se genero el evento EVENT10 para envío de paquetes sin retención");
 			}
 		}
-		
-		return response;		
+
+		for (int i = 0; i < eventsPackage.size(); i++) {
+			if (eventsPackage.get(i).contains("EVENT20")) {
+				response.setCodError("200");
+				response.setMessage("El paquete genero correctamente el EVENT20: " + eventsPackage.get(i));
+				break;
+			} else {
+				response.setCodError("404");
+				response.setMessage("No se genero el evento EVENT20 para envío de paquetes sin retención");
+			}
+		}
+
+		if (response.getCodError().equalsIgnoreCase("200")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	public static ResponseDTO notificacionEnvioSinRetencion(AuthorizationDTO aut)
-			throws IOException, JSchException, SftpException, SQLException {
+	public boolean validacionEventosSinRetencion(AuthorizationDTO aut) throws SQLException {
+		EventsPackageQuery.eventsPackage(aut);
+		ArrayList<String> eventsPackage = EventsPackageQuery.messageEvent;
+
+		for (int i = 0; i < eventsPackage.size(); i++) {
+			if (eventsPackage.get(i).contains("EVENT10")) {
+				response.setCodError("200");
+				response.setMessage("El paquete genero correctamente el EVENT10: " + eventsPackage.get(i));
+				break;
+			} else {
+				response.setCodError("404");
+				response.setMessageItem("No se genero el evento EVENT10 para envío de paquetes sin retención");
+			}
+		}
+
+		for (int i = 0; i < eventsPackage.size(); i++) {
+			if (eventsPackage.get(i).contains("EVENT40")) {
+				response.setCodError("200");
+				response.setMessage("El paquete genero correctamente el EVENT40: " + eventsPackage.get(i));
+				break;
+			} else {
+				response.setCodError("404");
+				response.setMessage("No se genero el evento EVENT40 para envío de paquetes sin retención");
+			}
+		}
+
+		if (response.getCodError().equalsIgnoreCase("200")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean validacionEventosSinRetencionFallido(AuthorizationDTO aut) throws SQLException {
+		EventsPackageQuery.eventsPackage(aut);
+		ArrayList<String> eventsPackage = EventsPackageQuery.messageEvent;
+
+		for (int i = 0; i < eventsPackage.size(); i++) {
+			if (eventsPackage.get(i).contains("EVENT10")) {
+				response.setCodError("200");
+				response.setMessage("El paquete genero correctamente el EVENT10: " + eventsPackage.get(i));
+				break;
+			} else {
+				response.setCodError("404");
+				response.setMessageItem("No se genero el evento EVENT10 para envío de paquetes sin retención");
+			}
+		}
+
+		for (int i = 0; i < eventsPackage.size(); i++) {
+			if (eventsPackage.get(i).contains("EVENT50")) {
+				response.setCodError("200");
+				response.setMessage("El paquete genero correctamente el EVENT50: " + eventsPackage.get(i));
+				break;
+			} else {
+				response.setCodError("404");
+				response.setMessage("No se genero el evento EVENT50 para envío de paquetes sin retención");
+			}
+		}
+
+		if (response.getCodError().equalsIgnoreCase("200")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean validacionEventosCancelacionPaquete(AuthorizationDTO aut) throws SQLException {
+		EventsPackageQuery.eventsPackage(aut);
+		ArrayList<String> eventsPackage = EventsPackageQuery.messageEvent;
+
+		for (int i = 0; i < eventsPackage.size(); i++) {
+			if (eventsPackage.get(i).contains("EVENT10")) {
+				response.setCodError("200");
+				response.setMessage("El paquete genero correctamente el EVENT10: " + eventsPackage.get(i));
+				break;
+			} else {
+				response.setCodError("404");
+				response.setMessageItem("No se genero el evento EVENT10 para envío de paquetes sin retención");
+			}
+		}
+
+		for (int i = 0; i < eventsPackage.size(); i++) {
+			if (eventsPackage.get(i).contains("EVENT30")) {
+				response.setCodError("200");
+				response.setMessage("El paquete genero correctamente el EVENT30: " + eventsPackage.get(i));
+				break;
+			} else {
+				response.setCodError("404");
+				response.setMessage("No se genero el evento EVENT30 para envío de paquetes sin retención");
+			}
+		}
+
+		if (response.getCodError().equalsIgnoreCase("200")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean alertaCufe(AuthorizationDTO aut) throws SQLException {
+
+		EventsPackageQuery.eventsPackage(aut);
+		ArrayList<String> eventsPackage = EventsPackageQuery.messageEvent;
+		ArrayList<String> nameItemsPackage = StatusPackageQueryRAL.nameDocument;
+		for (int j = 0; j < nameItemsPackage.size(); j++) {
+			for (int i = 0; i < eventsPackage.size(); i++) {
+				if (eventsPackage.get(i).contains(nameItemsPackage.get(j)) && eventsPackage.get(i).contains(
+						"El CUFE de factura de venta enviado no cumple con el cálculo especificado por la DIAN")) {
+					response.setCodError("200");
+					response.setMessage("El mensaje generado es: " + eventsPackage.get(i));
+					break;
+				} else {
+					response.setCodError("404");
+					response.setMessage("No se genero mensaje de alerta sobre la validación de Cufe");
+				}
+			}
+		}
+		if (response.getCodError().equalsIgnoreCase("200")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean renombramientoArchivos(AuthorizationDTO aut) throws SQLException {
+
+		RenameInvoiceFile.docNameXML(aut);
+		String nameFileGovernment = RenameInvoiceFile.docNameXML;
+
+		if (nameFileGovernment.matches("face_[f,c,n,d][0-9]{10,11}[0-9A-Fa-f]{10}")) {
+			response.setCodError("200");
+			response.setMessage("El nombre del documento corresponde a la estructura: " + nameFileGovernment);
+		} else {
+			response.setCodError("404");
+			response.setMessage("El nombre del documento no corresponse a la estructura: " + nameFileGovernment);
+		}
+
+		if (response.getCodError().equalsIgnoreCase("200")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public ResponseDTO notificacionEnvioSinRetencion(AuthorizationDTO aut)
+			throws IOException, JSchException, SftpException, SQLException, InterruptedException {
 		FilesSender fileSender = new FilesSender();
 		fileSender.sendFiles(aut);
 		realizarNotificacion(aut);
+		this.waitQuery(80);
 		ArrayList<String> itemsStatus = new ArrayList<String>();
-
+		ArrayList<String> nameItems = new ArrayList<String>();
 		StatusProcessingQueryRAL.statusProcessingQuery(aut);
 		String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
+		System.out.println("status paquete" + statusProcessingPackage);
 
 		String itemStatus = "";
 
 		if (statusProcessingPackage.equalsIgnoreCase("OK")) {
 			StatusPackageQueryRAL.statusPackage(aut);
 			String status = StatusPackageQueryRAL.status;
-			if (status.equalsIgnoreCase("COMPLETED")) {
+			if (status.equalsIgnoreCase("COMPLETED") || status.equalsIgnoreCase("PROCESSING")) {
 				response.setCodError("200");
 				response.setMessage("El estado del paquete es: " + status);
 				StatusPackageQueryRAL.statusPackageItems(aut);
 				itemsStatus = StatusPackageQueryRAL.itemStatus;
+				nameItems = StatusPackageQueryRAL.nameDocument;
 
 				for (int i = 0; i < itemsStatus.size(); i++) {
 					if (itemsStatus.get(i).equalsIgnoreCase("COMPLETED")) {
@@ -175,7 +355,55 @@ public class AuthorizationBC {
 						response.setMessageItem(itemStatus);
 					} else {
 						response.setCodErrorItem("404");
-						response.setMessageItem("El estado del paquete es: " + itemStatus);
+						response.setMessageItem(
+								"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
+						System.out.println("El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
+					}
+				}
+			} else {
+				response.setCodError("404");
+				response.setMessage("El estado del paquete es: " + status);
+			}
+		} else {
+			response.setCodError("404");
+			response.setMessage("El paquete enviado no ha sido procesado");
+		}
+		return response;
+	}
+	
+	public ResponseDTO notificacionEnvioFallidoSinRetencion(AuthorizationDTO aut)
+			throws IOException, JSchException, SftpException, SQLException, InterruptedException {
+		FilesSender fileSender = new FilesSender();
+		fileSender.sendFiles(aut);
+		realizarNotificacion(aut);
+		this.waitQuery(80);
+		ArrayList<String> itemsStatus = new ArrayList<String>();
+		ArrayList<String> nameItems = new ArrayList<String>();
+		StatusProcessingQueryRAL.statusProcessingQuery(aut);
+		String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
+		System.out.println("status paquete" + statusProcessingPackage);
+
+		String itemStatus = "";
+
+		if (statusProcessingPackage.equalsIgnoreCase("OK")) {
+			StatusPackageQueryRAL.statusPackage(aut);
+			String status = StatusPackageQueryRAL.status;
+			if (status.equalsIgnoreCase("PROCESSING")) {
+				response.setCodError("200");
+				response.setMessage("El estado del paquete es: " + status);
+				StatusPackageQueryRAL.statusPackageItems(aut);
+				itemsStatus = StatusPackageQueryRAL.itemStatus;
+				nameItems = StatusPackageQueryRAL.nameDocument;
+
+				for (int i = 0; i < itemsStatus.size(); i++) {
+					if (itemsStatus.get(i).equalsIgnoreCase("FAIL")) {
+						response.setCodErrorItem("200");
+						response.setMessageItem(itemStatus);
+					} else {
+						response.setCodErrorItem("404");
+						response.setMessageItem(
+								"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
+						System.out.println("El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
 					}
 				}
 			} else {
@@ -189,18 +417,18 @@ public class AuthorizationBC {
 		return response;
 	}
 
-	private static ResponseDTO cancelarEnvioPaquete(AuthorizationDTO aut)
+
+	private ResponseDTO cancelarEnvioPaquete(AuthorizationDTO aut)
 			throws JSchException, SftpException, IOException, SQLException {
 		FilesSender fileSender = new FilesSender();
 		fileSender.sendFiles(aut);
 		realizarNotificacion(aut);
+		this.waitQuery(10);
 		activacionDeEnvio(aut);
 
 		ArrayList<String> itemsStatus = new ArrayList<String>();
 		StatusProcessingQueryRAL.statusProcessingQuery(aut);
 		String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
-
-		String itemStatus = "";
 
 		if (statusProcessingPackage.equalsIgnoreCase("OK")) {
 			StatusPackageQueryRAL.statusPackage(aut);
@@ -214,10 +442,10 @@ public class AuthorizationBC {
 				for (int i = 0; i < itemsStatus.size(); i++) {
 					if (itemsStatus.get(i).equalsIgnoreCase("CANCELLED")) {
 						response.setCodErrorItem("200");
-						response.setMessageItem(itemStatus);
+						response.setMessageItem(itemsStatus.get(i));
 					} else {
 						response.setCodErrorItem("404");
-						response.setMessageItem("El estado del paquete es: " + itemStatus);
+						response.setMessageItem("El estado del paquete es: " + itemsStatus.get(i));
 					}
 				}
 			} else {
@@ -231,7 +459,54 @@ public class AuthorizationBC {
 		return response;
 	}
 
-	private static LoginDTO obtenerToken(AuthorizationDTO aut) throws IOException {
+	public ResponseDTO notificacionEnvioConRetencion(AuthorizationDTO aut)
+			throws IOException, JSchException, SftpException, SQLException, InterruptedException {
+		FilesSender fileSender = new FilesSender();
+		fileSender.sendFiles(aut);
+		realizarNotificacion(aut);
+		this.waitQuery(10);
+		activacionDeEnvio(aut);
+		this.waitQuery(80);
+		ArrayList<String> itemsStatus = new ArrayList<String>();
+		ArrayList<String> nameItems = new ArrayList<String>();
+		StatusProcessingQueryRAL.statusProcessingQuery(aut);
+		String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
+		System.out.println("status paquete" + statusProcessingPackage);
+
+		String itemStatus = "";
+
+		if (statusProcessingPackage.equalsIgnoreCase("OK")) {
+			StatusPackageQueryRAL.statusPackage(aut);
+			String status = StatusPackageQueryRAL.status;
+			if (status.equalsIgnoreCase("COMPLETED") || status.equalsIgnoreCase("PROCESSING")) {
+				response.setCodError("200");
+				response.setMessage("El estado del paquete es: " + status);
+				StatusPackageQueryRAL.statusPackageItems(aut);
+				itemsStatus = StatusPackageQueryRAL.itemStatus;
+				nameItems = StatusPackageQueryRAL.nameDocument;
+
+				for (int i = 0; i < itemsStatus.size(); i++) {
+					if (itemsStatus.get(i).equalsIgnoreCase("COMPLETED")) {
+						response.setCodErrorItem("200");
+						response.setMessageItem(itemStatus);
+					} else {
+						response.setCodErrorItem("404");
+						response.setMessageItem(
+								"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
+						System.out.println("El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
+					}
+				}
+			} else {
+				response.setCodError("404");
+				response.setMessage("El estado del paquete es: " + status);
+			}
+		} else {
+			response.setCodError("404");
+			response.setMessage("El paquete enviado no ha sido procesado");
+		}
+		return response;
+	}
+	private LoginDTO obtenerToken(AuthorizationDTO aut) throws IOException {
 
 		Random aleatorio = new Random(System.currentTimeMillis());
 		int intAletorio = aleatorio.nextInt(3000);
@@ -250,7 +525,7 @@ public class AuthorizationBC {
 
 	}
 
-	public static NotificationDTO realizarNotificacion(AuthorizationDTO aut) throws IOException {
+	public NotificationDTO realizarNotificacion(AuthorizationDTO aut) throws IOException {
 
 		Random aleatorio = new Random(System.currentTimeMillis());
 		int intAletorio = aleatorio.nextInt(3000);
@@ -269,7 +544,7 @@ public class AuthorizationBC {
 		return NotificationSL.getNotification(bodyWS, token, md5, date, transationId, length);
 	}
 
-	private static ActivationDTO activacionDeEnvio(AuthorizationDTO aut) throws IOException {
+	private ActivationDTO activacionDeEnvio(AuthorizationDTO aut) throws IOException {
 
 		Random aleatorio = new Random(System.currentTimeMillis());
 		int intAletorio = aleatorio.nextInt(3000);
@@ -287,7 +562,7 @@ public class AuthorizationBC {
 		return ActivationSL.getActivation(bodyWS, token, md5, date, transationId, length);
 	}
 
-	private static String returnDate() {
+	private String returnDate() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime());
 		calendar.add(Calendar.HOUR, 5);
@@ -297,4 +572,11 @@ public class AuthorizationBC {
 
 	}
 
+	private void waitQuery(int segundos) {
+		try {
+			Thread.sleep(segundos * 1000);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+	}
 }

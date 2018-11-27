@@ -8,6 +8,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import com.carvajal.facturaclaro.ral.dto.AuthorizationDTO;
+
 public class PostgresConnector {
 
 	// private static InputStream inputStream;
@@ -29,8 +31,10 @@ public class PostgresConnector {
 
 	public static void getConnetion() throws SQLException, ClassNotFoundException, IOException {
 
+		AuthorizationDTO aut = new AuthorizationDTO(); 
 		Properties property = new Properties();
-		String properyFileName = "config.properties.txt";
+		String properyFileName = aut.getConfiDB();
+		//String properyFileName = "config.properties.txt";
 		// InputStream inputStream =
 		// getClass.getClassLoader().getResourceAsStream(properyFileName);
 		InputStream inputStream = new FileInputStream(properyFileName);

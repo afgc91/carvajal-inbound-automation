@@ -14,28 +14,24 @@ public class StatusProcessingQueryRAL {
 
 	public static void statusProcessingQuery(AuthorizationDTO aut) throws SQLException {
 
-		statusProcessingQuery = "select * from estados_procesamiento where id_transaccion = '839cb901a7e3493a8e6aa2661aa50ffc'"
-				//+ "(select id  from transacciones where nombre_archivo_original = ? "
-				+ "and tipo_mensaje = 'DOCUMENT_PROCESSED' and nombre_proceso='PACKAGES' and estado_proceso = ? order by fecha_creacion desc limit 1 ";
-		
-	/**	statusProcessingQuery = "select * from estados_procesamiento where id_transaccion = "
+	statusProcessingQuery = "select * from estados_procesamiento where id_transaccion = "
 				+ "(select id  from transacciones where nombre_archivo_original = ? "
-				+ "order by fecha_creacion desc limit 1) and tipo_mensaje = 'DOCUMENT_PROCESSED'";**/
+				+ "order by fecha_creacion desc limit 1) and nombre_proceso='PACKAGES' and  tipo_mensaje = 'DOCUMENT_PROCESSED'";
 
 		try (PreparedStatement statusProccesingQueryPs = PostgresConnector.con
 				.prepareStatement(statusProcessingQuery)) {
 
 			String namePackage = aut.getActivation().getPackagesName();
-			statusProccesingQueryPs.setString(1, "OK");
+			System.out.println("Nombre paquete" +namePackage );
+			statusProccesingQueryPs.setString(1, namePackage);
 
 			try (ResultSet statusProccesingQueryRs = statusProccesingQueryPs.executeQuery()) {
-				System.out.println("verla " + ((statusProccesingQueryRs.next())));
-				if (statusProccesingQueryRs.next() == true) {
+	
+				if (statusProccesingQueryRs.next()) {
 						statusProcessingPackage = statusProccesingQueryRs.getString(4);
-					} else {
-						statusProcessingPackage = "";
+						System.out.println("Estado del paquete:" + statusProcessingPackage);
+					} 
 				}
 			}
 		}
 	}
-}

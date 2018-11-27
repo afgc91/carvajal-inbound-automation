@@ -14,6 +14,7 @@ import com.carvajal.facturaclaro.ral.AuthorizationRAL;
 import com.carvajal.facturaclaro.ral.dto.AuthorizationDTO;
 import com.carvajal.facturaclaro.utils.PATH;
 import com.carvajal.facturaclaro.utils.PostgresConnector;
+import com.carvajal.facturaclaro.utils.WSPropertiesReader;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.carvajal.facturaclaro.utils.FileLogger;
@@ -42,6 +43,7 @@ public class CP_1_Emision_Factura_Retencion_Test {
 	// Ingresa los objetos con la configuración para realizar cada una de las
 	// peticiones.
 	public void setup() throws ClassNotFoundException, SQLException, IOException {
+		WSPropertiesReader.getWSPath();
 		PostgresConnector.getConnetion();
 		this.dataPool = AuthorizationRAL.getAutorization(PATH.DATA_POOL);
 	}
@@ -60,44 +62,130 @@ public class CP_1_Emision_Factura_Retencion_Test {
 	 * @throws ClassNotFoundException
 	 * @throws SftpException
 	 * @throws JSchException
+	 * @throws InterruptedException
 	 * 
 	 **/
 	@Test
-	public void emisionFacturaRetencion()
-			throws IOException, ClassNotFoundException, SQLException, JSchException, SftpException {
+	public void emisionFacturaRetencion() throws IOException, ClassNotFoundException, SQLException, JSchException,
+			SftpException, InterruptedException {
 		setup();
-		
+
 		boolean response = false;
+		AuthorizationBC authoBD = new AuthorizationBC();
 
 		for (AuthorizationDTO authorization : dataPool) {
 			/* Enviar cada objeto que contiene el escenario */
-			
 
 			switch (authorization.getTestCase()) {
 			case "1.1":
 				System.out.println("entro al case 1.1: " + authorization.getTestCase());
-				response = AuthorizationBC.isOkRetention(authorization);
-				this.wait(60);
+				response = authoBD.isOkRetention(authorization);
 				if (response == false) {
 					FileLogger.log(authorization);
 				}
-				AuthorizationBC.validacionEventosRetencion(authorization);
-				if (AuthorizationBC.validacionEventosRetencion(authorization).getCodError() != "200") {
-					response = false; 
-					FileLogger.log(authorization); 
-				} 
+				response = authoBD.validacionEventosRetencion(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				break;
+			case "1.2":
+				System.out.println("entro al case 1.1: " + authorization.getTestCase());
+				response = authoBD.isOkRetention(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.validacionEventosRetencion(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
 				break;
 			case "1.3":
-				response = AuthorizationBC.isOkSendPackage(authorization);
+				response = authoBD.isOkSendPackage(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.validacionEventosSinRetencion(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.alertaCufe(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				break;
+			case "1.4":
+				response = authoBD.isOkSendPackage(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.validacionEventosSinRetencion(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.alertaCufe(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.renombramientoArchivos(authorization);
 				if (response == false) {
 					FileLogger.log(authorization);
 				}
 				break;
 			case "1.5":
-				response = AuthorizationBC.isOkCancelledPackage(authorization);
+				response = authoBD.isOkCancelledPackage(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.validacionEventosCancelacionPaquete(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+			case "1.6":
+				response = authoBD.isOkCancelledPackage(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.validacionEventosCancelacionPaquete(authorization);
+				if (response == false) {
+					FileLogger.log(authorization);
+				}
+				break;
+			case "1.7": 
+				response = authoBD.isOkAuthorizationPackage(authorization); 
 				if(response == false) {
 					FileLogger.log(authorization);
 				}
+				response = authoBD.renombramientoArchivos(authorization); 
+				if(response == false) {
+					FileLogger.log(authorization);
+				}
+			case "1.8": 
+				response = authoBD.isOkAuthorizationPackage(authorization); 
+				if(response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.renombramientoArchivos(authorization); 
+				if(response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.alertaCufe(authorization); 
+				if(response == true) {
+					FileLogger.log(authorization);
+				}
+			case "1.9": 
+				response = authoBD.isOkFailPackage(authorization); 
+				if(response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.validacionEventosSinRetencionFallido(authorization);
+				if(response == false) {
+					FileLogger.log(authorization);
+				}
+				response = authoBD.alertaCufe(authorization); 
+				if(response == false) {
+					FileLogger.log(authorization);
+				}
+			break;
 			default:
 				break;
 			}
@@ -113,13 +201,4 @@ public class CP_1_Emision_Factura_Retencion_Test {
 	public void stopAllDrivers() {
 
 	}
-
-	private void wait(int segundos) {
-		try {
-			Thread.sleep(segundos*1000);
-		} catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-	}
-
 }

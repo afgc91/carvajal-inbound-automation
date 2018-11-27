@@ -45,7 +45,7 @@ public class FileLogger {
 			try (FileWriter fw = new FileWriter(log.getAbsolutePath(), true);
 					BufferedWriter bw = new BufferedWriter(fw)) {
 				int file = CP_1_Emision_Factura_Retencion_Test.file;
-				bw.write("Caso de Prueba Fallido: " + aut.getTestCase() +" Fila en el excel: "+ file + "\r\n"+ "\r\n" + "Error:" + messagePackage +"\n"+messagePackageItems
+				bw.write("Caso de Prueba Fallido: " + aut.getTestCase() +" Fila en el excel: "+ file + "\r\n"+ "\r\n" + "Error:" + messagePackage +"\r\n"+messagePackageItems
 								+ "\r\nEmpresa de Prueba: " + aut.getNotificacion().getCompanyId() + "\r\nCuenta Empresa:"
 								+ aut.getNotificacion().getAccount() + "\r\nRuta del Paquete: " + aut.getNotificacion().getPackagesPaths()+"\r\n");
 				bw.write("-----------------------------------------------------------------"  + "\r\n");

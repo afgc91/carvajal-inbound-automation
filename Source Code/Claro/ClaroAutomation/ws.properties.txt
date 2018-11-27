@@ -1,0 +1,4 @@
+#Carvajal properties 
+loginURL=http://10.10.10.93:4692/api/v1/iam/login
+notificationURL=http://10.10.10.93:4692/api/v1/packages/notification
+activationURL=http://10.10.10.93:4692/api/v1/packages/activation

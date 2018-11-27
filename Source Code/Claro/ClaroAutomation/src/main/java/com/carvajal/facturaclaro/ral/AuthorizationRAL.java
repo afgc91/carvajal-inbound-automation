@@ -49,6 +49,7 @@ public class AuthorizationRAL {
 				authorization.setPathFile(validarDato(hojaExcelDataPool, "RutaArchivo", fila));
 				authorization.setConfiDB(validarDato(hojaExcelDataPool, "confiBD", fila));
 				authorization.setConfiSftp(validarDato(hojaExcelDataPool, "confiSftp", fila));
+				authorization.setPathWS(validarDato(hojaExcelDataPool, "RutaWS", fila));
 	
 				listAutorization.add(authorization);
 			}

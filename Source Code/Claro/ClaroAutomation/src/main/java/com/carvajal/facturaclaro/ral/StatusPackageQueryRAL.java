@@ -44,6 +44,7 @@ public class StatusPackageQueryRAL {
 
 		try (PreparedStatement statusItemsPackagePs = PostgresConnector.con.prepareStatement(statusItemsPackageQuery)) {
 			statusItemsPackagePs.setString(1, idPackage);
+			System.out.println("id del paquete " +idPackage);
 
 			try (ResultSet statusItemsPackageRs = statusItemsPackagePs.executeQuery()) {
 				if (statusItemsPackageRs.next()) {
