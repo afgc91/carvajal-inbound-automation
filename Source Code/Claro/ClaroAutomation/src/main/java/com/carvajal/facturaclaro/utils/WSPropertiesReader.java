@@ -3,6 +3,7 @@ package com.carvajal.facturaclaro.utils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import com.carvajal.facturaclaro.ral.dto.AuthorizationDTO;
@@ -21,11 +22,11 @@ public class WSPropertiesReader {
 	 * @throws IOException
 	 */
 
-	public static void getWSPath() throws IOException {
-	
+	public static void getWSPath(String wsPath) throws IOException {
+		
 		Properties property = new Properties();
-		String properyFileName = "ws.properties.txt";
-		InputStream inputStream = new FileInputStream(properyFileName);
+		System.out.println("WS " + wsPath);
+		InputStream inputStream = new FileInputStream(wsPath);
 		property.load(inputStream);
 
 		loginURL = property.getProperty("loginURL");

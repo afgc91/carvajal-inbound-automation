@@ -21,7 +21,7 @@ public class EventsPackageQuery {
 		try (PreparedStatement eventsPackagePs = PostgresConnector.con.prepareStatement(eventsPackageQuery)) {
 			//String namePackage = aut.getActivation().getPackagesName();
 			//eventsPackagePs.setString(1, namePackage);
-			String id_emisor= aut.getActivation().getCompanyID();
+			String id_emisor= aut.getActivation().getCompanyId();
 			eventsPackagePs.setString(1, id_emisor);
 
 			try (ResultSet eventsPackageRs = eventsPackagePs.executeQuery()) {

@@ -36,10 +36,10 @@ public class AuthorizationRAL {
 				notification.setAccount(validarDato(hojaExcelDataPool, "account", fila));
 				notification.setBatchId(validarDato(hojaExcelDataPool, "batchId", fila));
 				notification.setPackagesPaths(validarDato(hojaExcelDataPool, "packagesPaths", fila));
-				activation.setPackagesName(validarDato(hojaExcelDataPool, "package", fila));
-				activation.setCompanyID(validarDato(hojaExcelDataPool, "companyId", fila));
+				activation.setPackagesName(validarDato(hojaExcelDataPool, "packagesName", fila));
+				activation.setCompanyId(validarDato(hojaExcelDataPool, "companyId", fila));
 				activation.setAction(validarDato(hojaExcelDataPool, "action", fila));
-				activation.setBatchID(validarDato(hojaExcelDataPool, "batchId", fila));
+				activation.setBatchId(validarDato(hojaExcelDataPool, "batchId", fila));
 				
 				authorization.setLogin(login);
 				authorization.setNotificacion(notification);

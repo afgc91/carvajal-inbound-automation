@@ -43,9 +43,9 @@ public class CP_1_Emision_Factura_Retencion_Test {
 	// Ingresa los objetos con la configuración para realizar cada una de las
 	// peticiones.
 	public void setup() throws ClassNotFoundException, SQLException, IOException {
-		WSPropertiesReader.getWSPath();
-		PostgresConnector.getConnetion();
 		this.dataPool = AuthorizationRAL.getAutorization(PATH.DATA_POOL);
+		WSPropertiesReader.getWSPath(dataPool.get(file).getPathWS());
+		PostgresConnector.getConnetion(dataPool.get(file).getConfiDB());
 	}
 
 	/**
@@ -122,10 +122,12 @@ public class CP_1_Emision_Factura_Retencion_Test {
 				if (response == false) {
 					FileLogger.log(authorization);
 				}
+				this.waitQuery(10);
 				response = authoBD.alertaCufe(authorization);
 				if (response == false) {
 					FileLogger.log(authorization);
 				}
+				this.waitQuery(10);
 				response = authoBD.renombramientoArchivos(authorization);
 				if (response == false) {
 					FileLogger.log(authorization);
@@ -155,6 +157,7 @@ public class CP_1_Emision_Factura_Retencion_Test {
 				if(response == false) {
 					FileLogger.log(authorization);
 				}
+				this.waitQuery(10);
 				response = authoBD.renombramientoArchivos(authorization); 
 				if(response == false) {
 					FileLogger.log(authorization);
@@ -164,10 +167,12 @@ public class CP_1_Emision_Factura_Retencion_Test {
 				if(response == false) {
 					FileLogger.log(authorization);
 				}
+				this.waitQuery(10);
 				response = authoBD.renombramientoArchivos(authorization); 
 				if(response == false) {
 					FileLogger.log(authorization);
 				}
+				this.waitQuery(10);
 				response = authoBD.alertaCufe(authorization); 
 				if(response == true) {
 					FileLogger.log(authorization);
@@ -181,6 +186,7 @@ public class CP_1_Emision_Factura_Retencion_Test {
 				if(response == false) {
 					FileLogger.log(authorization);
 				}
+				this.waitQuery(10);
 				response = authoBD.alertaCufe(authorization); 
 				if(response == false) {
 					FileLogger.log(authorization);
@@ -193,6 +199,14 @@ public class CP_1_Emision_Factura_Retencion_Test {
 		}
 		if (response == false) {
 			Assert.assertEquals(response, true, "Caso de prueba Fallido, revisar el Log de Errores");
+		}
+	}
+	
+	private void waitQuery(int segundos) {
+		try {
+			Thread.sleep(segundos * 1000);
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 	}
 

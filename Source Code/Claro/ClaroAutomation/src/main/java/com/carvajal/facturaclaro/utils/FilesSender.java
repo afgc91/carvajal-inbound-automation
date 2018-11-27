@@ -29,11 +29,10 @@ public class FilesSender {
 	 * @throws IOException   Excepción de Entrada y salida
 	 */
 
-	public FilesSender() throws JSchException, SftpException, IOException {
+	public FilesSender(String sftpPath) throws JSchException, SftpException, IOException {
 
 		Properties property = new Properties();
-		String properyFileName = "sftp.properties.txt";
-		InputStream inputStream = new FileInputStream(properyFileName);
+		InputStream inputStream = new FileInputStream(sftpPath);
 		property.load(inputStream);
 
 		String user = property.getProperty("user").trim();
