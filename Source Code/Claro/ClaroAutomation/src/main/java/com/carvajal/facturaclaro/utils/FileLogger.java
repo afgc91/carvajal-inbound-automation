@@ -35,7 +35,7 @@ public class FileLogger {
 		return log;
 	}
 
-	public static void log(AuthorizationDTO aut) throws IOException, SQLException, JSchException, SftpException {
+	public static void log(AuthorizationDTO aut, String status) throws IOException, SQLException, JSchException, SftpException {
 		
 		String messagePackage = AuthorizationBC.response.getMessage(); 
 		String messagePackageItems = AuthorizationBC.response.getMessageItem();
@@ -46,7 +46,7 @@ public class FileLogger {
 					BufferedWriter bw = new BufferedWriter(fw)) {
 				int file = CP_1_Emision_Factura_Retencion_Test.file;
 				
-				bw.write("Caso de Prueba Fallido: " + aut.getTestCase() +" Fila en el excel: "+ file + "\r\n"+ "\r\n" + "Error:" + messagePackage +"\r\n"+messagePackageItems
+				bw.write(status + aut.getTestCase() +" Fila en el excel: "+ file + "\r\n"+ "\r\n" + "Error:" + messagePackage +"\r\n"+messagePackageItems
 								+ "\r\nEmpresa de Prueba: " + aut.getNotificacion().getCompanyId() + "\r\nCuenta Empresa:"
 								+ aut.getNotificacion().getAccount() + "\r\nRuta del Paquete: " + aut.getNotificacion().getPackagesPaths()+"\r\n");
 				bw.write(Utils.errorHTTP + "\r\n");

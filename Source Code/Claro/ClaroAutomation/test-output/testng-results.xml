@@ -2,24 +2,19 @@
 <testng-results skipped="0" failed="1" ignored="0" total="1" passed="0">
   <reporter-output>
   </reporter-output>
-  <suite name="Default suite" duration-ms="556731" started-at="2018-11-27T18:31:18Z" finished-at="2018-11-27T18:40:35Z">
+  <suite name="Default suite" duration-ms="4161" started-at="2018-11-28T06:59:01Z" finished-at="2018-11-28T06:59:05Z">
     <groups>
     </groups>
-    <test name="Default test" duration-ms="556731" started-at="2018-11-27T18:31:18Z" finished-at="2018-11-27T18:40:35Z">
+    <test name="Default test" duration-ms="4161" started-at="2018-11-28T06:59:01Z" finished-at="2018-11-28T06:59:05Z">
       <class name="com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test">
-        <test-method status="FAIL" signature="emisionFacturaRetencion()[pri:0, instance:com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test@18be83e4]" name="emisionFacturaRetencion" duration-ms="556702" started-at="2018-11-27T18:31:18Z" finished-at="2018-11-27T18:40:35Z">
-          <exception class="java.lang.AssertionError">
-            <message>
-              <![CDATA[Caso de prueba Fallido, revisar el Log de Errores expected [true] but found [false]]]>
-            </message>
+        <test-method status="FAIL" signature="emisionFacturaRetencion()[pri:0, instance:com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test@18be83e4]" name="emisionFacturaRetencion" duration-ms="4123" started-at="2018-11-28T06:59:01Z" finished-at="2018-11-28T06:59:05Z">
+          <exception class="java.lang.NullPointerException">
             <full-stacktrace>
-              <![CDATA[java.lang.AssertionError: Caso de prueba Fallido, revisar el Log de Errores expected [true] but found [false]
-at org.testng.Assert.fail(Assert.java:96)
-at org.testng.Assert.failNotEquals(Assert.java:776)
-at org.testng.Assert.assertEqualsImpl(Assert.java:137)
-at org.testng.Assert.assertEquals(Assert.java:118)
-at org.testng.Assert.assertEquals(Assert.java:568)
-at com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test.emisionFacturaRetencion(CP_1_Emision_Factura_Retencion_Test.java:201)
+              <![CDATA[java.lang.NullPointerException
+at com.carvajal.facturaclaro.bc.AuthorizationBC.realizarNotificacion(AuthorizationBC.java:560)
+at com.carvajal.facturaclaro.bc.AuthorizationBC.notificacionEnvioConRetencion(AuthorizationBC.java:487)
+at com.carvajal.facturaclaro.bc.AuthorizationBC.isOkAuthorizationPackage(AuthorizationBC.java:107)
+at com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test.emisionFacturaRetencion(CP_1_Emision_Factura_Retencion_Test.java:176)
 at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -47,11 +42,11 @@ at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
 at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
 ]]>
             </full-stacktrace>
-          </exception> <!-- java.lang.AssertionError -->
+          </exception> <!-- java.lang.NullPointerException -->
           <reporter-output>
           </reporter-output>
         </test-method> <!-- emisionFacturaRetencion -->
-        <test-method status="PASS" signature="stopAllDrivers()[pri:0, instance:com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test@18be83e4]" name="stopAllDrivers" is-config="true" duration-ms="1" started-at="2018-11-27T18:40:35Z" finished-at="2018-11-27T18:40:35Z">
+        <test-method status="PASS" signature="stopAllDrivers()[pri:0, instance:com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test@18be83e4]" name="stopAllDrivers" is-config="true" duration-ms="1" started-at="2018-11-28T06:59:05Z" finished-at="2018-11-28T06:59:05Z">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- stopAllDrivers -->

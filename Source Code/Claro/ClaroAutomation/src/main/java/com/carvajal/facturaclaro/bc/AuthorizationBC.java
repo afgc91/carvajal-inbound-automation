@@ -122,31 +122,36 @@ public class AuthorizationBC {
 		StatusProcessingQueryRAL.statusProcessingQuery(aut);
 		String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
 
-		if (statusProcessingPackage.equalsIgnoreCase("OK")) {
-			StatusPackageQueryRAL.statusPackage(aut);
-			String status = StatusPackageQueryRAL.status;
-			if (status.equalsIgnoreCase("STOPPED")) {
-				response.setCodError("200");
-				response.setMessage("El estado del paquete es: " + status);
-				StatusPackageQueryRAL.statusPackageItems(aut);
-				itemsStatus = StatusPackageQueryRAL.itemStatus;
+		if (statusProcessingPackage != null) {
+			if (statusProcessingPackage.equalsIgnoreCase("OK")) {
+				StatusPackageQueryRAL.statusPackage(aut);
+				String status = StatusPackageQueryRAL.status;
+				if (status.equalsIgnoreCase("STOPPED")) {
+					response.setCodError("200");
+					response.setMessage("El estado del paquete es: " + status);
+					StatusPackageQueryRAL.statusPackageItems(aut);
+					itemsStatus = StatusPackageQueryRAL.itemStatus;
 
-				for (int i = 0; i < itemsStatus.size(); i++) {
-					if (itemsStatus.get(i).equalsIgnoreCase("STOPPED")) {
-						response.setCodErrorItem("200");
-						response.setMessageItem(itemsStatus.get(i));
-					} else {
-						response.setCodErrorItem("404");
-						response.setMessageItem("El estado del paquete es: " + itemsStatus.get(i));
+					for (int i = 0; i < itemsStatus.size(); i++) {
+						if (itemsStatus.get(i).equalsIgnoreCase("STOPPED")) {
+							response.setCodErrorItem("200");
+							response.setMessageItem(itemsStatus.get(i));
+						} else {
+							response.setCodErrorItem("404");
+							response.setMessageItem("El estado del paquete es: " + itemsStatus.get(i));
+						}
 					}
+				} else {
+					response.setCodError("404");
+					response.setMessage("El estado del paquete es: " + status);
 				}
 			} else {
 				response.setCodError("404");
-				response.setMessage("El estado del paquete es: " + status);
+				response.setMessage("El estado de procesamiento del paquete no es OK: " + statusProcessingPackage);
 			}
 		} else {
 			response.setCodError("404");
-			response.setMessage("El paquete enviado sin retención no ha sido procesado");
+			response.setMessage("El paquete no fue procesado");
 		}
 		return response;
 	}
@@ -336,45 +341,57 @@ public class AuthorizationBC {
 			throws IOException, JSchException, SftpException, SQLException, InterruptedException {
 		FilesSender fileSender = new FilesSender(aut.getConfiSftp());
 		fileSender.sendFiles(aut);
-		realizarNotificacion(aut);
-		this.waitQuery(80);
-		ArrayList<String> itemsStatus = new ArrayList<String>();
-		ArrayList<String> nameItems = new ArrayList<String>();
-		StatusProcessingQueryRAL.statusProcessingQuery(aut);
-		String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
-		System.out.println("status paquete" + statusProcessingPackage);
+		NotificationDTO notification = realizarNotificacion(aut);
 
-		String itemStatus = "";
+		if (notification != null) {
+			this.waitQuery(80);
+			ArrayList<String> itemsStatus = new ArrayList<String>();
+			ArrayList<String> nameItems = new ArrayList<String>();
+			StatusProcessingQueryRAL.statusProcessingQuery(aut);
+			String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
+			System.out.println("status paquete" + statusProcessingPackage);
 
-		if (statusProcessingPackage.equalsIgnoreCase("OK")) {
-			StatusPackageQueryRAL.statusPackage(aut);
-			String status = StatusPackageQueryRAL.status;
-			if (status.equalsIgnoreCase("COMPLETED") || status.equalsIgnoreCase("PROCESSING")) {
-				response.setCodError("200");
-				response.setMessage("El estado del paquete es: " + status);
-				StatusPackageQueryRAL.statusPackageItems(aut);
-				itemsStatus = StatusPackageQueryRAL.itemStatus;
-				nameItems = StatusPackageQueryRAL.nameDocument;
+			if (statusProcessingPackage != null) {
+				if (statusProcessingPackage.equalsIgnoreCase("OK")) {
+					StatusPackageQueryRAL.statusPackage(aut);
+					String status = StatusPackageQueryRAL.status;
+					if (status.equalsIgnoreCase("COMPLETED")) {
+						response.setCodError("200");
+						response.setMessage("El estado del paquete es: " + status);
+						StatusPackageQueryRAL.statusPackageItems(aut);
+						itemsStatus = StatusPackageQueryRAL.itemStatus;
+						nameItems = StatusPackageQueryRAL.nameDocument;
 
-				for (int i = 0; i < itemsStatus.size(); i++) {
-					if (itemsStatus.get(i).equalsIgnoreCase("COMPLETED")) {
-						response.setCodErrorItem("200");
-						response.setMessageItem(itemStatus);
+						for (int i = 0; i < itemsStatus.size(); i++) {
+							if (itemsStatus.get(i).equalsIgnoreCase("PROCESSED")) {
+								response.setCodErrorItem("200");
+								response.setMessageItem(
+										"El estado de los items enviados es correcto: " + itemsStatus.get(i));
+							} else {
+								response.setCodErrorItem("404");
+								response.setMessageItem(
+										"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
+								System.out.println(
+										"El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
+								return response;
+							}
+						}
 					} else {
-						response.setCodErrorItem("404");
-						response.setMessageItem(
-								"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
-						System.out.println("El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
+						response.setCodError("404");
+						response.setMessage("El estado del paquete es: " + status);
 					}
+				} else {
+					response.setCodError("404");
+					response.setMessage("El estado de procesamiento del paquete no es OK: " + statusProcessingPackage);
 				}
 			} else {
 				response.setCodError("404");
-				response.setMessage("El estado del paquete es: " + status);
+				response.setMessage("El paquete no fue procesado");
 			}
-		} else {
-			response.setCodError("404");
-			response.setMessage("El paquete enviado no ha sido procesado");
+			return response;
 		}
+		response.setCodError("404");
+		response.setMessage("No se logró realizar la petición de notificación para el paquete");
 		return response;
 	}
 
@@ -382,44 +399,56 @@ public class AuthorizationBC {
 			throws IOException, JSchException, SftpException, SQLException, InterruptedException {
 		FilesSender fileSender = new FilesSender(aut.getConfiSftp());
 		fileSender.sendFiles(aut);
-		realizarNotificacion(aut);
-		this.waitQuery(80);
-		ArrayList<String> itemsStatus = new ArrayList<String>();
-		ArrayList<String> nameItems = new ArrayList<String>();
-		StatusProcessingQueryRAL.statusProcessingQuery(aut);
-		String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
-		System.out.println("status paquete" + statusProcessingPackage);
+		NotificationDTO notification = realizarNotificacion(aut);
 
-		String itemStatus = "";
+		if (notification != null) {
+			this.waitQuery(80);
+			ArrayList<String> itemsStatus = new ArrayList<String>();
+			ArrayList<String> nameItems = new ArrayList<String>();
+			StatusProcessingQueryRAL.statusProcessingQuery(aut);
+			String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
+			System.out.println("status paquete" + statusProcessingPackage);
 
-		if (statusProcessingPackage.equalsIgnoreCase("OK")) {
-			StatusPackageQueryRAL.statusPackage(aut);
-			String status = StatusPackageQueryRAL.status;
-			if (status.equalsIgnoreCase("PROCESSING")) {
-				response.setCodError("200");
-				response.setMessage("El estado del paquete es: " + status);
-				StatusPackageQueryRAL.statusPackageItems(aut);
-				itemsStatus = StatusPackageQueryRAL.itemStatus;
-				nameItems = StatusPackageQueryRAL.nameDocument;
+			if (statusProcessingPackage != null) {
+				if (statusProcessingPackage.equalsIgnoreCase("OK")) {
+					StatusPackageQueryRAL.statusPackage(aut);
+					String status = StatusPackageQueryRAL.status;
+					if (status.equalsIgnoreCase("PROCESSING")) {
+						response.setCodError("200");
+						response.setMessage("El estado del paquete es: " + status);
+						StatusPackageQueryRAL.statusPackageItems(aut);
+						itemsStatus = StatusPackageQueryRAL.itemStatus;
+						nameItems = StatusPackageQueryRAL.nameDocument;
 
-				for (int i = 0; i < itemsStatus.size(); i++) {
-					if (itemsStatus.get(i).equalsIgnoreCase("FAIL")) {
-						response.setCodErrorItem("200");
-						response.setMessageItem(itemStatus);
+						for (int i = 0; i < itemsStatus.size(); i++) {
+							if (itemsStatus.get(i).equalsIgnoreCase("FAIL")) {
+								response.setCodErrorItem("200");
+								response.setMessageItem("El estado del paquete enviado es: " + itemsStatus.get(i));
+							} else {
+								response.setCodErrorItem("404");
+								response.setMessageItem(
+										"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
+								System.out.println(
+										"El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
+								return response;
+							}
+						}
 					} else {
-						response.setCodErrorItem("404");
-						response.setMessageItem(
-								"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
-						System.out.println("El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
+						response.setCodError("404");
+						response.setMessage("El estado del paquete es: " + status);
 					}
+				} else {
+					response.setCodError("404");
+					response.setMessage("El estado de procesamiento del paquete no es OK: " + statusProcessingPackage);
 				}
 			} else {
 				response.setCodError("404");
-				response.setMessage("El estado del paquete es: " + status);
+				response.setMessage("El paquete no fue procesado");
 			}
+			
 		} else {
 			response.setCodError("404");
-			response.setMessage("El paquete enviado no ha sido procesado");
+			response.setMessage("No se logró realizar la petición de notificación para el paquete");
 		}
 		return response;
 	}
@@ -428,95 +457,115 @@ public class AuthorizationBC {
 			throws JSchException, SftpException, IOException, SQLException {
 		FilesSender fileSender = new FilesSender(aut.getConfiSftp());
 		fileSender.sendFiles(aut);
-		realizarNotificacion(aut);
-		this.waitQuery(10);
-		ActivationDTO activation = activacionDeEnvio(aut);
-		if (activation != null) {
-			ArrayList<String> itemsStatus = new ArrayList<String>();
-			StatusProcessingQueryRAL.statusProcessingQuery(aut);
-			String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
+		NotificationDTO notification = realizarNotificacion(aut);
 
-			if (statusProcessingPackage.equalsIgnoreCase("OK")) {
-				StatusPackageQueryRAL.statusPackage(aut);
-				String status = StatusPackageQueryRAL.status;
-				if (status.equalsIgnoreCase("CANCELLED")) {
-					response.setCodError("200");
-					response.setMessage("El estado del paquete es: " + status);
-					StatusPackageQueryRAL.statusPackageItems(aut);
-					itemsStatus = StatusPackageQueryRAL.itemStatus;
+		if (notification != null) {
+			this.waitQuery(10);
+			ActivationDTO activation = activacionDeEnvio(aut);
+			if (activation != null) {
+				ArrayList<String> itemsStatus = new ArrayList<String>();
+				StatusProcessingQueryRAL.statusProcessingQuery(aut);
+				String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
 
-					for (int i = 0; i < itemsStatus.size(); i++) {
-						if (itemsStatus.get(i).equalsIgnoreCase("CANCELLED")) {
-							response.setCodErrorItem("200");
-							response.setMessageItem(itemsStatus.get(i));
-						} else {
-							response.setCodErrorItem("404");
-							response.setMessageItem("El estado del paquete es: " + itemsStatus.get(i));
+				if (statusProcessingPackage.equalsIgnoreCase("OK")) {
+					StatusPackageQueryRAL.statusPackage(aut);
+					String status = StatusPackageQueryRAL.status;
+					if (status.equalsIgnoreCase("CANCELLED")) {
+						response.setCodError("200");
+						response.setMessage("El estado del paquete es correcto: " + status);
+						StatusPackageQueryRAL.statusPackageItems(aut);
+						itemsStatus = StatusPackageQueryRAL.itemStatus;
+
+						for (int i = 0; i < itemsStatus.size(); i++) {
+							if (itemsStatus.get(i).equalsIgnoreCase("CANCELLED")) {
+								response.setCodErrorItem("200");
+								response.setMessageItem(itemsStatus.get(i));
+							} else {
+								response.setCodErrorItem("404");
+								response.setMessageItem("El estado del paquete es incorrecto: " + itemsStatus.get(i));
+								return response;
+							}
 						}
+					} else {
+						response.setCodError("404");
+						response.setMessage("El estado del paquete enviado es: " + status);
 					}
 				} else {
 					response.setCodError("404");
-					response.setMessage("El estado del paquete es: " + status);
+					response.setMessage(
+							"El paquete enviado para el flujo de retención cancelación no ha sido procesado");
 				}
+
 			} else {
 				response.setCodError("404");
-				response.setMessage("El paquete enviado para el flujo de retención cancelación no ha sido procesado");
+				response.setMessage("No se logró realizar la petición de activación para el paquete");
 			}
-			return response;
+		} else {
+			response.setCodError("404");
+			response.setMessage("No se logró realizar la petición de notificación para el paquete");
 		}
-		return null;
+		return response;
 	}
 
 	public ResponseDTO notificacionEnvioConRetencion(AuthorizationDTO aut)
 			throws IOException, JSchException, SftpException, SQLException, InterruptedException {
 		FilesSender fileSender = new FilesSender(aut.getConfiSftp());
 		fileSender.sendFiles(aut);
-		realizarNotificacion(aut);
-		this.waitQuery(10);
 
-		ActivationDTO activation = activacionDeEnvio(aut);
-		if (activation != null) {
-			this.waitQuery(60);
-			ArrayList<String> itemsStatus = new ArrayList<String>();
-			ArrayList<String> nameItems = new ArrayList<String>();
-			StatusProcessingQueryRAL.statusProcessingQuery(aut);
-			String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
-			System.out.println("status paquete" + statusProcessingPackage);
+		NotificationDTO notificacion = realizarNotificacion(aut);
+		if (notificacion != null) {
+			this.waitQuery(10);
 
-			String itemStatus = "";
+			ActivationDTO activation = activacionDeEnvio(aut);
+			if (activation != null) {
+				this.waitQuery(60);
+				ArrayList<String> itemsStatus = new ArrayList<String>();
+				ArrayList<String> nameItems = new ArrayList<String>();
+				StatusProcessingQueryRAL.statusProcessingQuery(aut);
+				String statusProcessingPackage = StatusProcessingQueryRAL.statusProcessingPackage;
+				System.out.println("status paquete" + statusProcessingPackage);
 
-			if (statusProcessingPackage.equalsIgnoreCase("OK")) {
-				StatusPackageQueryRAL.statusPackage(aut);
-				String status = StatusPackageQueryRAL.status;
-				if (status.equalsIgnoreCase("COMPLETED") || status.equalsIgnoreCase("PROCESSING")) {
-					response.setCodError("200");
-					response.setMessage("El estado del paquete es: " + status);
-					StatusPackageQueryRAL.statusPackageItems(aut);
-					itemsStatus = StatusPackageQueryRAL.itemStatus;
-					nameItems = StatusPackageQueryRAL.nameDocument;
+				if (statusProcessingPackage.equalsIgnoreCase("OK")) {
+					StatusPackageQueryRAL.statusPackage(aut);
+					String status = StatusPackageQueryRAL.status;
+					if (status.equalsIgnoreCase("COMPLETED")) {
+						response.setCodError("200");
+						response.setMessage("El estado del paquete es correcto: " + status);
+						StatusPackageQueryRAL.statusPackageItems(aut);
+						itemsStatus = StatusPackageQueryRAL.itemStatus;
+						nameItems = StatusPackageQueryRAL.nameDocument;
 
-					for (int i = 0; i < itemsStatus.size(); i++) {
-						if (itemsStatus.get(i).equalsIgnoreCase("COMPLETED")) {
-							response.setCodErrorItem("200");
-							response.setMessageItem(itemStatus);
-						} else {
-							response.setCodErrorItem("404");
-							response.setMessageItem(
-									"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
-							System.out.println("El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
+						for (int i = 0; i < itemsStatus.size(); i++) {
+							if (itemsStatus.get(i).equalsIgnoreCase("PROCESSED")) {
+								response.setCodErrorItem("200");
+								response.setMessageItem(
+										"El estado de los items enviados es correcto: " + itemsStatus.get(i));
+							} else {
+								response.setCodErrorItem("404");
+								response.setMessageItem(
+										"/r/nEl estado del item " + nameItems.get(i) + " es: " + itemsStatus.get(i));
+								System.out.println(
+										"El estado del item es: " + itemsStatus.get(i) + " " + nameItems.get(i));
+								return response;
+							}
 						}
+					} else {
+						response.setCodError("404");
+						response.setMessage("El estado del paquete no es correcto: " + status);
 					}
 				} else {
 					response.setCodError("404");
-					response.setMessage("El estado del paquete es: " + status);
+					response.setMessage("El paquete enviado no ha sido procesado");
 				}
 			} else {
 				response.setCodError("404");
-				response.setMessage("El paquete enviado no ha sido procesado");
+				response.setMessage("No se logró realizar la petición de activación para el paquete");
 			}
-			return response;
+		} else {
+			response.setCodError("404");
+			response.setMessage("No se logró realizar la petición de notificación para el paquete");
 		}
-		return null;
+		return response;
 	}
 
 	private LoginDTO obtenerToken(AuthorizationDTO aut) throws IOException {
@@ -545,16 +594,20 @@ public class AuthorizationBC {
 		aleatorio.setSeed(System.currentTimeMillis());
 
 		String token = obtenerToken(aut).getToken();
-		System.out.println("token: " + token);
-		String bodyWS = "{\"companyId\":\"" + aut.getNotificacion().getCompanyId() + "\",\"account\":\""
-				+ aut.getNotificacion().getAccount() + "\",\"batchId\":\"" + aut.getNotificacion().getBatchId()
-				+ "\",\"packagesPaths\":[\"" + aut.getNotificacion().getPackagesPaths() + "\"]}";
-		String length = String.valueOf(bodyWS);
-		String md5 = MD5GeneratorRAL.ContentMD5Base64(bodyWS, "MD5").trim();
-		String transationId = "UUID-" + intAletorio;
-		String date = returnDate();
+		if (token != null) {
+			System.out.println("token: " + token);
+			String bodyWS = "{\"companyId\":\"" + aut.getNotificacion().getCompanyId() + "\",\"account\":\""
+					+ aut.getNotificacion().getAccount() + "\",\"batchId\":\"" + aut.getNotificacion().getBatchId()
+					+ "\",\"packagesPaths\":[\"" + aut.getNotificacion().getPackagesPaths() + "\"]}";
+			String length = String.valueOf(bodyWS);
+			String md5 = MD5GeneratorRAL.ContentMD5Base64(bodyWS, "MD5").trim();
+			String transationId = "UUID-" + intAletorio;
+			String date = returnDate();
 
-		return NotificationSL.getNotification(bodyWS, token, md5, date, transationId, length);
+			return NotificationSL.getNotification(bodyWS, token, md5, date, transationId, length);
+		} else {
+			return null;
+		}
 	}
 
 	private ActivationDTO activacionDeEnvio(AuthorizationDTO aut) throws IOException {

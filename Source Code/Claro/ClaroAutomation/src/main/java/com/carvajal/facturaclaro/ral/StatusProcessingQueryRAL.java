@@ -22,7 +22,7 @@ public class StatusProcessingQueryRAL {
 				.prepareStatement(statusProcessingQuery)) {
 
 			String namePackage = aut.getActivation().getPackagesName();
-			System.out.println("Nombre paquete" +namePackage );
+			System.out.println("Nombre paquete: " +namePackage );
 			statusProccesingQueryPs.setString(1, namePackage);
 
 			try (ResultSet statusProccesingQueryRs = statusProccesingQueryPs.executeQuery()) {

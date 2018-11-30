@@ -9,17 +9,15 @@
 <table>
 <tr><th>Test</th><th># Passed</th><th># Skipped</th><th># Failed</th><th>Time (ms)</th><th>Included Groups</th><th>Excluded Groups</th></tr>
 <tr><th colspan="7">Default suite</th></tr>
-<tr><td><a href="#t0">Default test</a></td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">556.731</td><td></td><td></td></tr>
+<tr><td><a href="#t0">Default test</a></td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">4.161</td><td></td><td></td></tr>
 </table>
-<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Default suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Default test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test</td><td><a href="#m0">emisionFacturaRetencion</a></td><td rowspan="1">1543343478772</td><td rowspan="1">556702</td></tr></tbody>
+<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Default suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Default test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test</td><td><a href="#m0">emisionFacturaRetencion</a></td><td rowspan="1">1543388341398</td><td rowspan="1">4123</td></tr></tbody>
 </table>
-<h2>Default test</h2><h3 id="m0">com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test#emisionFacturaRetencion</h3><table class="result"><tr><th>Exception</th></tr><tr><td><div class="stacktrace">java.lang.AssertionError: Caso de prueba Fallido, revisar el Log de Errores expected [true] but found [false]
-	at org.testng.Assert.fail(Assert.java:96)
-	at org.testng.Assert.failNotEquals(Assert.java:776)
-	at org.testng.Assert.assertEqualsImpl(Assert.java:137)
-	at org.testng.Assert.assertEquals(Assert.java:118)
-	at org.testng.Assert.assertEquals(Assert.java:568)
-	at com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test.emisionFacturaRetencion(CP_1_Emision_Factura_Retencion_Test.java:201)
+<h2>Default test</h2><h3 id="m0">com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test#emisionFacturaRetencion</h3><table class="result"><tr><th>Exception</th></tr><tr><td><div class="stacktrace">java.lang.NullPointerException
+	at com.carvajal.facturaclaro.bc.AuthorizationBC.realizarNotificacion(AuthorizationBC.java:560)
+	at com.carvajal.facturaclaro.bc.AuthorizationBC.notificacionEnvioConRetencion(AuthorizationBC.java:487)
+	at com.carvajal.facturaclaro.bc.AuthorizationBC.isOkAuthorizationPackage(AuthorizationBC.java:107)
+	at com.carvajal.facturaclaro.test.CP_1_Emision_Factura_Retencion_Test.emisionFacturaRetencion(CP_1_Emision_Factura_Retencion_Test.java:176)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)

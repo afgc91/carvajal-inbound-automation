@@ -36,7 +36,7 @@ import com.carvajal.facturaclaro.utils.FileLogger;
 
 public class CP_1_Emision_Factura_Retencion_Test {
 
-	public static int file = 1;
+	public static int file = 0;
 	private static File log = null;
 	private ArrayList<AuthorizationDTO> dataPool = new ArrayList<AuthorizationDTO>();
 
@@ -70,6 +70,9 @@ public class CP_1_Emision_Factura_Retencion_Test {
 			SftpException, InterruptedException {
 		setup();
 
+		String testCaseStatusNok = "Caso de Prueba Fallido: ";
+		String testCaseStatusOk = "Caso de Prueba Exitoso: ";
+
 		boolean response = false;
 		AuthorizationBC authoBD = new AuthorizationBC();
 
@@ -80,128 +83,166 @@ public class CP_1_Emision_Factura_Retencion_Test {
 			case "1.1":
 				System.out.println("entro al case 1.1: " + authorization.getTestCase());
 				response = authoBD.isOkRetention(authorization);
-				if (response == false) {
-					FileLogger.log(authorization);
+
+				if (response == true) {
+					FileLogger.log(authorization, testCaseStatusOk);
+				} else {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				this.waitQuery(300);
 				response = authoBD.validacionEventosRetencion(authorization);
-				if (response == false) {
-					FileLogger.log(authorization);
+
+				if (response == true) {
+					FileLogger.log(authorization, testCaseStatusOk);
+				} else {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
 				break;
 			case "1.2":
 				System.out.println("entro al case 1.1: " + authorization.getTestCase());
 				response = authoBD.isOkRetention(authorization);
-				if (response == false) {
-					FileLogger.log(authorization);
+				if (response == true) {
+					FileLogger.log(authorization, testCaseStatusOk);
+				} else {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
 				response = authoBD.validacionEventosRetencion(authorization);
-				if (response == false) {
-					FileLogger.log(authorization);
+				if (response == true) {
+					FileLogger.log(authorization, testCaseStatusOk);
+				} else {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
 				break;
 			case "1.3":
 				response = authoBD.isOkSendPackage(authorization);
-				if (response == false) {
-					FileLogger.log(authorization);
+				if (response == true) {
+					FileLogger.log(authorization, testCaseStatusOk);
+				} else {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				this.waitQuery(300);
+
 				response = authoBD.validacionEventosSinRetencion(authorization);
-				if (response == false) {
-					FileLogger.log(authorization);
+				if (response == true) {
+					FileLogger.log(authorization, testCaseStatusOk);
+				} else {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
 				response = authoBD.alertaCufe(authorization);
-				if (response == false) {
-					FileLogger.log(authorization);
+				if (response == true) {
+					FileLogger.log(authorization, testCaseStatusOk);
 				}
+				FileLogger.log(authorization, testCaseStatusNok);
 				break;
 			case "1.4":
 				response = authoBD.isOkSendPackage(authorization);
 				if (response == false) {
-					FileLogger.log(authorization);
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
+				this.waitQuery(300);
 				response = authoBD.validacionEventosSinRetencion(authorization);
 				if (response == false) {
-					FileLogger.log(authorization);
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
 				this.waitQuery(10);
 				response = authoBD.alertaCufe(authorization);
 				if (response == false) {
-					FileLogger.log(authorization);
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
 				this.waitQuery(10);
 				response = authoBD.renombramientoArchivos(authorization);
 				if (response == false) {
-					FileLogger.log(authorization);
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
 				break;
 			case "1.5":
 				response = authoBD.isOkCancelledPackage(authorization);
 				if (response == false) {
-					FileLogger.log(authorization);
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
+				this.waitQuery(300);
 				response = authoBD.validacionEventosCancelacionPaquete(authorization);
 				if (response == false) {
-					FileLogger.log(authorization);
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
 			case "1.6":
 				response = authoBD.isOkCancelledPackage(authorization);
 				if (response == false) {
-					FileLogger.log(authorization);
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusNok);
+				this.waitQuery(300);
 				response = authoBD.validacionEventosCancelacionPaquete(authorization);
 				if (response == false) {
-					FileLogger.log(authorization);
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
 				break;
-			case "1.7": 
-				response = authoBD.isOkAuthorizationPackage(authorization); 
-				if(response == false) {
-					FileLogger.log(authorization);
+			case "1.7":
+				response = authoBD.isOkAuthorizationPackage(authorization);
+				if (response == false) {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
 				this.waitQuery(10);
-				response = authoBD.renombramientoArchivos(authorization); 
-				if(response == false) {
-					FileLogger.log(authorization);
+				response = authoBD.renombramientoArchivos(authorization);
+				if (response == false) {
+					FileLogger.log(authorization, testCaseStatusOk);
 				}
-			case "1.8": 
-				response = authoBD.isOkAuthorizationPackage(authorization); 
-				if(response == false) {
-					FileLogger.log(authorization);
+				FileLogger.log(authorization, testCaseStatusNok);
+			case "1.8":
+				response = authoBD.isOkAuthorizationPackage(authorization);
+				if (response == false) {
+					FileLogger.log(authorization, testCaseStatusOk);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
 				this.waitQuery(10);
-				response = authoBD.renombramientoArchivos(authorization); 
-				if(response == false) {
-					FileLogger.log(authorization);
+				response = authoBD.renombramientoArchivos(authorization);
+				if (response == false) {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
 				this.waitQuery(10);
-				response = authoBD.alertaCufe(authorization); 
-				if(response == true) {
-					FileLogger.log(authorization);
+				response = authoBD.alertaCufe(authorization);
+				if (response == true) {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
-			case "1.9": 
-				response = authoBD.isOkFailPackage(authorization); 
-				if(response == false) {
-					FileLogger.log(authorization);
+				FileLogger.log(authorization, testCaseStatusOk);
+			case "1.9":
+				response = authoBD.isOkFailPackage(authorization);
+				if (response == false) {
+					FileLogger.log(authorization, testCaseStatusOk);
 				}
+				FileLogger.log(authorization, testCaseStatusOk);
+				this.waitQuery(300);
 				response = authoBD.validacionEventosSinRetencionFallido(authorization);
-				if(response == false) {
-					FileLogger.log(authorization);
+				if (response == false) {
+					FileLogger.log(authorization, testCaseStatusOk);
 				}
+				FileLogger.log(authorization, testCaseStatusNok);
 				this.waitQuery(10);
-				response = authoBD.alertaCufe(authorization); 
-				if(response == false) {
-					FileLogger.log(authorization);
+				response = authoBD.alertaCufe(authorization);
+				if (response == false) {
+					FileLogger.log(authorization, testCaseStatusNok);
 				}
-			break;
+				FileLogger.log(authorization, testCaseStatusOk);
+				break;
 			default:
 				break;
 			}
-			file += file;
+			file++;
 		}
 		if (response == false) {
 			Assert.assertEquals(response, true, "Caso de prueba Fallido, revisar el Log de Errores");
 		}
 	}
-	
+
 	private void waitQuery(int segundos) {
 		try {
 			Thread.sleep(segundos * 1000);
@@ -213,6 +254,5 @@ public class CP_1_Emision_Factura_Retencion_Test {
 	// Se cierran las sesiones del driver.
 	@AfterSuite
 	public void stopAllDrivers() {
-
 	}
 }
