@@ -31,26 +31,28 @@ public class PostgresConnector {
 	 * @throws IOException
 	 */
 
-	public static void getConnetion(String dbPath) throws SQLException, ClassNotFoundException, IOException {
-	
-		Properties property = new Properties();
-		InputStream inputStream = new FileInputStream(dbPath);
-		property.load(inputStream);
-
-		url = property.getProperty("url");
-		port = property.getProperty("port");
-		nameDB = property.getProperty("nameDB");
-		user = property.getProperty("user");
-		password = property.getProperty("password");
-
-		String jdbc = "jdbc:postgresql://";
-		con = DriverManager.getConnection(jdbc+url+":"+port+"/"+nameDB, user, password);
-
+	public static void getConnetion(String dbPath){
 		try {
+			Properties property = new Properties();
+			InputStream inputStream = new FileInputStream(dbPath);
+			property.load(inputStream);
+
+			url = property.getProperty("url");
+			port = property.getProperty("port");
+			nameDB = property.getProperty("nameDB");
+			user = property.getProperty("user");
+			password = property.getProperty("password");
+
+			String jdbc = "jdbc:postgresql://";
+			con = DriverManager.getConnection(jdbc + url + ":" + port + "/" + nameDB, user, password);
+
 			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e) {
-			System.err.println("PostgreSQL DataSource unable to load PostgreSQL JDBC Driver");
+			System.out.println("PostgreSQL DataSource unable to load PostgreSQL JDBC Driver");
+		} catch (SQLException e) {
+			System.out.println("El intento de conexión falló, revisar la conexión a la VPN o los datos de conexión");
+		} catch (IOException e) {
+			System.out.println("No se logró leer el archivo Properties de entrada, verique la ruta del archivo");
 		}
-
 	}
 }

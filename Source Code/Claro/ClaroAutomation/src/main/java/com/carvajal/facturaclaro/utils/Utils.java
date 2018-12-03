@@ -19,8 +19,6 @@ public class Utils<T> {
 	@SuppressWarnings("unchecked")
 	public T doRest(String URL, String method, T className, String body, String token, String md5, String date,
 			String transationId, String length) {
-		System.out.println("Nombre de la clase " + className);
-
 		URL url;
 		T object = null;
 		try {

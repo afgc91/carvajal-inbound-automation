@@ -47,8 +47,6 @@ public class MD5GeneratorRAL {
 		byte[] digest = m.digest();
 
 		String encodedString = Base64.encodeBase64String(digest);
-
-		System.out.println(encodedString);
 		return encodedString;
 	}
 }

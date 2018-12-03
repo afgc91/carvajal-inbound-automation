@@ -36,13 +36,19 @@ import com.carvajal.facturaclaro.utils.FileLogger;
 
 public class CP_1_Emision_Factura_Retencion_Test {
 
-	public static int file = 0;
-	private static File log = null;
+	private static int file = 0;
+	public static int fileExcel = 1; 
+	public static String testCaseStatusMessage;
+	public static boolean testCaseStatus;
 	private ArrayList<AuthorizationDTO> dataPool = new ArrayList<AuthorizationDTO>();
-
+	private static boolean response;
+	private static boolean eventResponse;
+	private static boolean cufeResponse;
+	private static boolean fileRenameResponse;
+     
 	// Ingresa los objetos con la configuración para realizar cada una de las
 	// peticiones.
-	public void setup() throws ClassNotFoundException, SQLException, IOException {
+	public void setup() {
 		this.dataPool = AuthorizationRAL.getAutorization(PATH.DATA_POOL);
 		WSPropertiesReader.getWSPath(dataPool.get(file).getPathWS());
 		PostgresConnector.getConnetion(dataPool.get(file).getConfiDB());
@@ -66,15 +72,10 @@ public class CP_1_Emision_Factura_Retencion_Test {
 	 * 
 	 **/
 	@Test
-	public void emisionFacturaRetencion() throws IOException, ClassNotFoundException, SQLException, JSchException,
-			SftpException, InterruptedException {
+	public void emisionFacturaRetencion() {
 		setup();
 
-		String testCaseStatusNok = "Caso de Prueba Fallido: ";
-		String testCaseStatusOk = "Caso de Prueba Exitoso: ";
-
-		boolean response = false;
-		AuthorizationBC authoBD = new AuthorizationBC();
+		AuthorizationBC authoBC = new AuthorizationBC();
 
 		for (AuthorizationDTO authorization : dataPool) {
 			/* Enviar cada objeto que contiene el escenario */
@@ -82,165 +83,146 @@ public class CP_1_Emision_Factura_Retencion_Test {
 			switch (authorization.getTestCase()) {
 			case "1.1":
 				System.out.println("entro al case 1.1: " + authorization.getTestCase());
-				response = authoBD.isOkRetention(authorization);
-
-				if (response == true) {
-					FileLogger.log(authorization, testCaseStatusOk);
-				} else {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
+				response = authoBC.isOkRetention(authorization);
+				FileLogger.log(authorization);
+				System.out.println("Esperando actualización de eventos");
 				this.waitQuery(300);
-				response = authoBD.validacionEventosRetencion(authorization);
-
-				if (response == true) {
-					FileLogger.log(authorization, testCaseStatusOk);
+				eventResponse = authoBC.validacionEventosRetencion(authorization);
+				FileLogger.log(authorization);
+				if (response == true && eventResponse == true) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
 				} else {
-					FileLogger.log(authorization, testCaseStatusNok);
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
 				break;
 			case "1.2":
-				System.out.println("entro al case 1.1: " + authorization.getTestCase());
-				response = authoBD.isOkRetention(authorization);
-				if (response == true) {
-					FileLogger.log(authorization, testCaseStatusOk);
+				System.out.println("entro al case 1.2: " + authorization.getTestCase());
+				response = authoBC.isOkRetention(authorization);
+				FileLogger.log(authorization);
+				System.out.println("Esperando actualización de eventos");
+				this.waitQuery(300);
+				eventResponse = authoBC.validacionEventosRetencion(authorization);
+				FileLogger.log(authorization);
+				if (response == true && eventResponse == true) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
 				} else {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
-				response = authoBD.validacionEventosRetencion(authorization);
-				if (response == true) {
-					FileLogger.log(authorization, testCaseStatusOk);
-				} else {
-					FileLogger.log(authorization, testCaseStatusNok);
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
 				break;
 			case "1.3":
-				response = authoBD.isOkSendPackage(authorization);
-				if (response == true) {
-					FileLogger.log(authorization, testCaseStatusOk);
-				} else {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
+				response = authoBC.isOkSendPackage(authorization);
+				FileLogger.log(authorization);
+				System.out.println("Esperando actualización de eventos");
 				this.waitQuery(300);
-
-				response = authoBD.validacionEventosSinRetencion(authorization);
-				if (response == true) {
-					FileLogger.log(authorization, testCaseStatusOk);
+				eventResponse = authoBC.validacionEventosSinRetencion(authorization);
+				FileLogger.log(authorization);
+				this.waitQuery(10);
+				cufeResponse = authoBC.alertaCufe(authorization);
+				FileLogger.log(authorization);
+				if (response == true && eventResponse == true) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
 				} else {
-					FileLogger.log(authorization, testCaseStatusNok);
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
-				response = authoBD.alertaCufe(authorization);
-				if (response == true) {
-					FileLogger.log(authorization, testCaseStatusOk);
-				}
-				FileLogger.log(authorization, testCaseStatusNok);
 				break;
 			case "1.4":
-				response = authoBD.isOkSendPackage(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				response = authoBC.isOkSendPackage(authorization);
+				FileLogger.log(authorization);
 				this.waitQuery(300);
-				response = authoBD.validacionEventosSinRetencion(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				eventResponse = authoBC.validacionEventosSinRetencion(authorization);
+				FileLogger.log(authorization);
 				this.waitQuery(10);
-				response = authoBD.alertaCufe(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				cufeResponse = authoBC.alertaCufe(authorization);
+				FileLogger.log(authorization);
 				this.waitQuery(10);
-				response = authoBD.renombramientoArchivos(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
+				fileRenameResponse = authoBC.renombramientoArchivos(authorization);
+				FileLogger.log(authorization);
+				if (response == true && eventResponse == true && cufeResponse && fileRenameResponse) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
+				} else {
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
-				FileLogger.log(authorization, testCaseStatusOk);
 				break;
 			case "1.5":
-				response = authoBD.isOkCancelledPackage(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				response = authoBC.isOkCancelledPackage(authorization);
+				FileLogger.log(authorization);
+				System.out.println("Esperando actualización de eventos");
 				this.waitQuery(300);
-				response = authoBD.validacionEventosCancelacionPaquete(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
+				eventResponse = authoBC.validacionEventosCancelacionPaquete(authorization);
+				FileLogger.log(authorization);
+				if (response == true && eventResponse) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
+				} else {
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
-				FileLogger.log(authorization, testCaseStatusOk);
 			case "1.6":
-				response = authoBD.isOkCancelledPackage(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
-				FileLogger.log(authorization, testCaseStatusNok);
+				response = authoBC.isOkAutomaticCancelledPackage(authorization);
+				FileLogger.log(authorization);
+				System.out.println("Esperando actualización de eventos");
 				this.waitQuery(300);
-				response = authoBD.validacionEventosCancelacionPaquete(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
+				eventResponse = authoBC.validacionEventosCancelacionPaquete(authorization);
+				FileLogger.log(authorization);
+				if (response == true && eventResponse) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
+				} else {
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
-				FileLogger.log(authorization, testCaseStatusOk);
 				break;
 			case "1.7":
-				response = authoBD.isOkAuthorizationPackage(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				response = authoBC.isOkAuthorizationPackage(authorization);
+				FileLogger.log(authorization);
 				this.waitQuery(10);
-				response = authoBD.renombramientoArchivos(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusOk);
+				fileRenameResponse = authoBC.renombramientoArchivos(authorization);
+				FileLogger.log(authorization);
+				if (response == true && fileRenameResponse == true) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
+				} else {
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
-				FileLogger.log(authorization, testCaseStatusNok);
+				break;
 			case "1.8":
-				response = authoBD.isOkAuthorizationPackage(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusOk);
-				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				response = authoBC.isOkAuthorizationPackage(authorization);
+				FileLogger.log(authorization);
 				this.waitQuery(10);
-				response = authoBD.renombramientoArchivos(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
-				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				fileRenameResponse = authoBC.renombramientoArchivos(authorization);
+				FileLogger.log(authorization);
 				this.waitQuery(10);
-				response = authoBD.alertaCufe(authorization);
-				if (response == true) {
-					FileLogger.log(authorization, testCaseStatusNok);
+				cufeResponse = authoBC.alertaCufe(authorization);
+				FileLogger.log(authorization);
+				if (response == true && fileRenameResponse == true && cufeResponse == true) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
+				} else {
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				break;
 			case "1.9":
-				response = authoBD.isOkFailPackage(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusOk);
-				}
-				FileLogger.log(authorization, testCaseStatusOk);
+				response = authoBC.isOkFailPackage(authorization);
+				FileLogger.log(authorization);
+				System.out.println("Esperando actualización de eventos");
 				this.waitQuery(300);
-				response = authoBD.validacionEventosSinRetencionFallido(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusOk);
-				}
-				FileLogger.log(authorization, testCaseStatusNok);
+				eventResponse = authoBC.validacionEventosSinRetencionFallido(authorization);
+				FileLogger.log(authorization);
 				this.waitQuery(10);
-				response = authoBD.alertaCufe(authorization);
-				if (response == false) {
-					FileLogger.log(authorization, testCaseStatusNok);
+				cufeResponse = authoBC.alertaCufe(authorization);
+				FileLogger.log(authorization);
+				if (response == true && eventResponse == true && cufeResponse == true) {
+					testCaseStatusMessage = "Caso de Prueba Exitoso: ";
+				} else {
+					testCaseStatusMessage = "Caso de Prueba Fallido: ";
 				}
-				FileLogger.log(authorization, testCaseStatusOk);
 				break;
 			default:
 				break;
 			}
 			file++;
+			fileExcel++; 
 		}
-		if (response == false) {
-			Assert.assertEquals(response, true, "Caso de prueba Fallido, revisar el Log de Errores");
+		if (response == true && eventResponse == true && cufeResponse == true) {
+			testCaseStatus = true;
+		} else {
+			testCaseStatus = false;
 		}
+		Assert.assertEquals(response, true, "Caso de prueba Fallido, revisar el Log de Errores");
 	}
 
 	private void waitQuery(int segundos) {

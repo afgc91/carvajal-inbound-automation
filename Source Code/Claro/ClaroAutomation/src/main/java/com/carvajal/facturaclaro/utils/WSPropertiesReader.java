@@ -10,11 +10,6 @@ import com.carvajal.facturaclaro.ral.dto.AuthorizationDTO;
 
 public class WSPropertiesReader {
 
-	// private static InputStream inputStream;
-	public static String loginURL;
-	public static String notificationURL;
-	public static String activationURL;
-
 	/**
 	 * Permite extraer el path del WS a consultar
 	 * 
@@ -22,15 +17,19 @@ public class WSPropertiesReader {
 	 * @throws IOException
 	 */
 
-	public static void getWSPath(String wsPath) throws IOException {
-		
-		Properties property = new Properties();
-		System.out.println("WS " + wsPath);
-		InputStream inputStream = new FileInputStream(wsPath);
-		property.load(inputStream);
+	public static void getWSPath(String wsPath) {
 
-		loginURL = property.getProperty("loginURL");
-		notificationURL = property.getProperty("notificationURL");
-		activationURL = property.getProperty("activationURL");
+		try {
+			Properties property = new Properties();
+			System.out.println("WS " + wsPath);
+			InputStream inputStream = new FileInputStream(wsPath);
+			property.load(inputStream);
+
+			PATH.LOGINURL = property.getProperty("loginURL").trim();
+			PATH.NOTIFICATIONURL = property.getProperty("notificationURL").trim();
+			PATH.ACTIVATIONIONURL = property.getProperty("activationURL").trim();
+		} catch (IOException e) {
+			System.out.println("No se logró leer el archivo Properties, verique la ruta del archivo");
+		}
 	}
 }

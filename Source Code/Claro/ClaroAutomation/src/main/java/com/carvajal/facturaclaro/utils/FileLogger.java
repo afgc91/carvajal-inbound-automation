@@ -35,22 +35,30 @@ public class FileLogger {
 		return log;
 	}
 
-	public static void log(AuthorizationDTO aut, String status) throws IOException, SQLException, JSchException, SftpException {
-		
-		String messagePackage = AuthorizationBC.response.getMessage(); 
-		String messagePackageItems = AuthorizationBC.response.getMessageItem();
-		
+	public static void log(AuthorizationDTO aut) {
+
+		try {
 			FileLogger fileLogger = new FileLogger();
-			File log = fileLogger.getLogFile();
-			try (FileWriter fw = new FileWriter(log.getAbsolutePath(), true);
-					BufferedWriter bw = new BufferedWriter(fw)) {
-				int file = CP_1_Emision_Factura_Retencion_Test.file;
-				
-				bw.write(status + aut.getTestCase() +" Fila en el excel: "+ file + "\r\n"+ "\r\n" + "Error:" + messagePackage +"\r\n"+messagePackageItems
-								+ "\r\nEmpresa de Prueba: " + aut.getNotificacion().getCompanyId() + "\r\nCuenta Empresa:"
-								+ aut.getNotificacion().getAccount() + "\r\nRuta del Paquete: " + aut.getNotificacion().getPackagesPaths()+"\r\n");
+			String log = fileLogger.getLogFile().getAbsolutePath();
+
+			try (FileWriter fw = new FileWriter(log, true); BufferedWriter bw = new BufferedWriter(fw)) {
+				String messagePackage = AuthorizationBC.response.getMessage();
+				String messagePackageItems = AuthorizationBC.response.getMessageItem();
+
+				int file = CP_1_Emision_Factura_Retencion_Test.fileExcel;
+
+				bw.write(CP_1_Emision_Factura_Retencion_Test.testCaseStatusMessage + aut.getTestCase() + " Fila en el excel: " + file + "\r\n" + "\r\n" 
+						+ messagePackage + "\r\n" + messagePackageItems + "\r\nEmpresa de Prueba: "
+						+ aut.getNotificacion().getCompanyId() + "\r\nCuenta Empresa:"
+						+ aut.getNotificacion().getAccount() + "\r\nRuta del Paquete: "
+						+ aut.getNotificacion().getPackagesPaths() + "\r\n");
+
 				bw.write(Utils.errorHTTP + "\r\n");
-				bw.write("-----------------------------------------------------------------"  + "\r\n");
+				bw.write("-----------------------------------------------------------------" + "\r\n");
+			}
+		} catch (IOException e) {
+			System.out.println("No se logró leer el archivo Properties, verique la ruta del archivo");
+
 		}
 	}
 
