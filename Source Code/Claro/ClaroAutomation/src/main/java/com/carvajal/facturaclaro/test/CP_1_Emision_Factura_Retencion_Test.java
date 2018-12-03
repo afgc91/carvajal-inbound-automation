@@ -82,11 +82,8 @@ public class CP_1_Emision_Factura_Retencion_Test {
 
 			switch (authorization.getTestCase()) {
 			case "1.1":
-				System.out.println("entro al case 1.1: " + authorization.getTestCase());
 				response = authoBC.isOkRetention(authorization);
 				FileLogger.log(authorization);
-				System.out.println("Esperando actualización de eventos");
-				this.waitQuery(300);
 				eventResponse = authoBC.validacionEventosRetencion(authorization);
 				FileLogger.log(authorization);
 				if (response == true && eventResponse == true) {
@@ -96,11 +93,8 @@ public class CP_1_Emision_Factura_Retencion_Test {
 				}
 				break;
 			case "1.2":
-				System.out.println("entro al case 1.2: " + authorization.getTestCase());
 				response = authoBC.isOkRetention(authorization);
 				FileLogger.log(authorization);
-				System.out.println("Esperando actualización de eventos");
-				this.waitQuery(300);
 				eventResponse = authoBC.validacionEventosRetencion(authorization);
 				FileLogger.log(authorization);
 				if (response == true && eventResponse == true) {
@@ -112,8 +106,6 @@ public class CP_1_Emision_Factura_Retencion_Test {
 			case "1.3":
 				response = authoBC.isOkSendPackage(authorization);
 				FileLogger.log(authorization);
-				System.out.println("Esperando actualización de eventos");
-				this.waitQuery(300);
 				eventResponse = authoBC.validacionEventosSinRetencion(authorization);
 				FileLogger.log(authorization);
 				this.waitQuery(10);
@@ -128,7 +120,6 @@ public class CP_1_Emision_Factura_Retencion_Test {
 			case "1.4":
 				response = authoBC.isOkSendPackage(authorization);
 				FileLogger.log(authorization);
-				this.waitQuery(300);
 				eventResponse = authoBC.validacionEventosSinRetencion(authorization);
 				FileLogger.log(authorization);
 				this.waitQuery(10);
@@ -146,8 +137,6 @@ public class CP_1_Emision_Factura_Retencion_Test {
 			case "1.5":
 				response = authoBC.isOkCancelledPackage(authorization);
 				FileLogger.log(authorization);
-				System.out.println("Esperando actualización de eventos");
-				this.waitQuery(300);
 				eventResponse = authoBC.validacionEventosCancelacionPaquete(authorization);
 				FileLogger.log(authorization);
 				if (response == true && eventResponse) {
@@ -158,8 +147,6 @@ public class CP_1_Emision_Factura_Retencion_Test {
 			case "1.6":
 				response = authoBC.isOkAutomaticCancelledPackage(authorization);
 				FileLogger.log(authorization);
-				System.out.println("Esperando actualización de eventos");
-				this.waitQuery(300);
 				eventResponse = authoBC.validacionEventosCancelacionPaquete(authorization);
 				FileLogger.log(authorization);
 				if (response == true && eventResponse) {
@@ -198,8 +185,6 @@ public class CP_1_Emision_Factura_Retencion_Test {
 			case "1.9":
 				response = authoBC.isOkFailPackage(authorization);
 				FileLogger.log(authorization);
-				System.out.println("Esperando actualización de eventos");
-				this.waitQuery(300);
 				eventResponse = authoBC.validacionEventosSinRetencionFallido(authorization);
 				FileLogger.log(authorization);
 				this.waitQuery(10);

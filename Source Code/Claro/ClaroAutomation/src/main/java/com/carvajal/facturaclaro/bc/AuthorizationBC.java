@@ -162,11 +162,14 @@ public class AuthorizationBC {
 					response.setCodError("404");
 					response.setMessage("El paquete no fue procesado");
 				}
+				System.out.println("Esperando actualización de eventos");
+				this.waitQuery(300);
 			} else {
-				response.setCodError("404");
+				response.setCodError("405");
 				response.setMessage("No se logro establecer la petición de notificación del paquete");
-				return response;
+				System.out.println("No se logro establecer la petición de notificación del paquete");
 			}
+			return response;
 		} catch (SQLException e) {
 			System.out.println("El intento de conexión falló, revisar la conexión a la VPN");
 		} catch (JSchException e) {
@@ -378,21 +381,24 @@ public class AuthorizationBC {
 					proccesingIdItem = RenameInvoiceFile.proccesingIdItem;
 					RenameInvoiceFile.xmlDocName(proccesingIdItem);
 					xmlDocName = RenameInvoiceFile.xmlDocName;
-
-					if (xmlDocName.matches("face_[f,c,n,d][0-9]{10,11}[0-9A-Fa-f]{10}")) {
-						response.setCodError("200");
-						response.setMessage(
-								"El nombre del documento corresponde a la estructura: " + nameFileGovernment);
+					if (xmlDocName != null) {
+						if (xmlDocName.matches("face_[f,c,n,d][0-9]{10,11}[0-9A-Fa-f]{10}")) {
+							response.setCodErrorItem("200");
+							response.setMessageItem("El nombre de los items del paquete corresponde a la estructura ");
+						} else {
+							response.setCodErrorItem("404");
+							response.setMessageItem(
+									"El nombre del documento no corresponse a la estructura: " + xmlDocName);
+							return false;
+						}
 					} else {
-						response.setCodError("404");
-						response.setMessage(
-								"El nombre del documento no corresponse a la estructura: " + nameFileGovernment);
-						break;
+						response.setCodErrorItem("404");
+						response.setMessageItem("No se ha generado el archivo de gobierno");
 					}
 				}
 			} else {
 				response.setCodError("404");
-				response.setMessage("No se ha generado el archivo de gobierno");
+				response.setMessage("No se ha realizado el proceso de descomprimir el paquete enviado");
 			}
 
 			if (response.getCodError().equalsIgnoreCase("200")) {
@@ -444,7 +450,6 @@ public class AuthorizationBC {
 									return response;
 								}
 							}
-							return response;
 						} else {
 							response.setCodError("404");
 							response.setMessage("El estado del paquete es: " + status);
@@ -454,18 +459,19 @@ public class AuthorizationBC {
 						response.setCodError("404");
 						response.setMessage(
 								"El estado de procesamiento del paquete no es OK: " + statusProcessingPackage);
-						return response;
 					}
 				} else {
 					response.setCodError("404");
 					response.setMessage("El paquete no fue procesado");
-					return response;
 				}
+				this.waitQuery(300);
+				System.out.println("Esperando actualización de eventos");
 			} else {
-				response.setCodError("404");
+				response.setCodError("405");
 				response.setMessage("No se logró realizar la petición de notificación para el paquete");
-				return response;
+				System.out.println("No se logro establecer la petición de notificación del paquete");
 			}
+			return response;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -531,12 +537,15 @@ public class AuthorizationBC {
 				} else {
 					response.setCodError("404");
 					response.setMessage("El paquete no fue procesado");
-					return response;
-				}
 
+				}
+				System.out.println("Esperando actualización de eventos");
+				this.waitQuery(300);
+				return response;
 			} else {
-				response.setCodError("404");
+				response.setCodError("405");
 				response.setMessage("No se logró realizar la petición de notificación para el paquete");
+				System.out.println("No se logro establecer la petición de notificación del paquete");
 				return response;
 			}
 		} catch (IOException e) {
@@ -598,17 +607,21 @@ public class AuthorizationBC {
 						response.setCodError("404");
 						response.setMessage(
 								"El paquete enviado para el flujo de retención cancelación no ha sido procesado");
-						return response;
-					}
 
+					}
+					System.out.println("Esperando actualización de eventos");
+					this.waitQuery(300);
+					return response;
 				} else {
-					response.setCodError("404");
+					response.setCodError("405");
 					response.setMessage("No se logró realizar la petición de activación para el paquete");
+					System.out.println("No se logro establecer la petición de activación del paquete");
 					return response;
 				}
 			} else {
-				response.setCodError("404");
+				response.setCodError("405");
 				response.setMessage("No se logró realizar la petición de notificación para el paquete");
+				System.out.println("No se logro establecer la petición de notificación del paquete");
 				return response;
 			}
 		} catch (IOException e) {
@@ -666,11 +679,14 @@ public class AuthorizationBC {
 					response.setCodError("404");
 					response.setMessage(
 							"El paquete enviado para el flujo de retención cancelación no ha sido procesado");
-					return response;
 				}
+				System.out.println("Esperando actualización de eventos");
+				this.waitQuery(300);
+				return response;
 			} else {
-				response.setCodError("404");
+				response.setCodError("405");
 				response.setMessage("No se logró realizar la petición de notificación para el paquete");
+				System.out.println("No se logró realizar la petición de notificación para el paquete");
 				return response;
 			}
 		} catch (IOException e) {
@@ -738,13 +754,15 @@ public class AuthorizationBC {
 						return response;
 					}
 				} else {
-					response.setCodError("404");
+					response.setCodError("405");
 					response.setMessage("No se logró realizar la petición de activación para el paquete");
+					System.out.println("No se logró realizar la petición de activación para el paquete");
 					return response;
 				}
 			} else {
-				response.setCodError("404");
+				response.setCodError("405");
 				response.setMessage("No se logró realizar la petición de notificación para el paquete");
+				System.out.println("No se logró realizar la petición de notificación para el paquete");
 				return response;
 			}
 		} catch (IOException e) {
@@ -788,19 +806,26 @@ public class AuthorizationBC {
 			Random aleatorio = new Random(System.currentTimeMillis());
 			int intAletorio = aleatorio.nextInt(3000);
 			aleatorio.setSeed(System.currentTimeMillis());
-			String token = obtenerToken(aut).getToken();
-			if (token != null) {
-				String bodyWS = "{\"companyId\":\"" + aut.getNotificacion().getCompanyId() + "\",\"account\":\""
-						+ aut.getNotificacion().getAccount() + "\",\"batchId\":\"" + aut.getNotificacion().getBatchId()
-						+ "\",\"packagesPaths\":[\"" + aut.getNotificacion().getPackagesPaths() + "\"]}";
-				String length = String.valueOf(bodyWS);
-				String md5 = MD5GeneratorRAL.ContentMD5Base64(bodyWS, "MD5").trim();
-				String transationId = "UUID-" + intAletorio;
-				String date = returnDate();
+			LoginDTO login = obtenerToken(aut);
+			if (login != null) {
+				String token = obtenerToken(aut).getToken();
+				if (token != null) {
+					String bodyWS = "{\"companyId\":\"" + aut.getNotificacion().getCompanyId() + "\",\"account\":\""
+							+ aut.getNotificacion().getAccount() + "\",\"batchId\":\""
+							+ aut.getNotificacion().getBatchId() + "\",\"packagesPaths\":[\""
+							+ aut.getNotificacion().getPackagesPaths() + "\"]}";
+					String length = String.valueOf(bodyWS);
+					String md5 = MD5GeneratorRAL.ContentMD5Base64(bodyWS, "MD5").trim();
+					String transationId = "UUID-" + intAletorio;
+					String date = returnDate();
 
-				System.out.println("Realizando petición de notificación con los siguientes datos: fecha " + date
-						+ " length " + length + " transationId " + transationId + " md5 " + md5 + " token " + token);
-				return NotificationSL.getNotification(bodyWS, token, md5, date, transationId, length);
+					System.out.println(
+							"Realizando petición de notificación con los siguientes datos: fecha " + date + " length "
+									+ length + " transationId " + transationId + " md5 " + md5 + " token " + token);
+					return NotificationSL.getNotification(bodyWS, token, md5, date, transationId, length);
+				} else {
+					return null;
+				}
 			} else {
 				return null;
 			}

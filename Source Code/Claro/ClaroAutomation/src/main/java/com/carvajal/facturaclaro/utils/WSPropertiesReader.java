@@ -21,7 +21,6 @@ public class WSPropertiesReader {
 
 		try {
 			Properties property = new Properties();
-			System.out.println("WS " + wsPath);
 			InputStream inputStream = new FileInputStream(wsPath);
 			property.load(inputStream);
 

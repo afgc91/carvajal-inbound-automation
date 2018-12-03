@@ -44,12 +44,15 @@ public class FileLogger {
 			try (FileWriter fw = new FileWriter(log, true); BufferedWriter bw = new BufferedWriter(fw)) {
 				String messagePackage = AuthorizationBC.response.getMessage();
 				String messagePackageItems = AuthorizationBC.response.getMessageItem();
+				if (messagePackageItems == null) {
+					messagePackageItems = "";
+				}
 
 				int file = CP_1_Emision_Factura_Retencion_Test.fileExcel;
 
-				bw.write(CP_1_Emision_Factura_Retencion_Test.testCaseStatusMessage + aut.getTestCase() + " Fila en el excel: " + file + "\r\n" + "\r\n" 
-						+ messagePackage + "\r\n" + messagePackageItems + "\r\nEmpresa de Prueba: "
-						+ aut.getNotificacion().getCompanyId() + "\r\nCuenta Empresa:"
+				bw.write(CP_1_Emision_Factura_Retencion_Test.testCaseStatusMessage + aut.getTestCase()
+						+ " Fila en el excel: " + file + "\r\n" + "\r\n" + messagePackage + "\r\n" + messagePackageItems
+						+ "\r\nEmpresa de Prueba: " + aut.getNotificacion().getCompanyId() + "\r\nCuenta Empresa:"
 						+ aut.getNotificacion().getAccount() + "\r\nRuta del Paquete: "
 						+ aut.getNotificacion().getPackagesPaths() + "\r\n");
 

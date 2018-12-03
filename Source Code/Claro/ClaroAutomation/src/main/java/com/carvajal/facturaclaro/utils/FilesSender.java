@@ -53,7 +53,6 @@ public class FilesSender {
 	}
 
 	public void sendFiles(AuthorizationDTO aut) throws SftpException {
-		System.out.println(aut.getPathFile() +" "+ aut.getPathSftp());
 		channelSftp.put(aut.getPathFile(), aut.getPathSftp());
 	}
 	
