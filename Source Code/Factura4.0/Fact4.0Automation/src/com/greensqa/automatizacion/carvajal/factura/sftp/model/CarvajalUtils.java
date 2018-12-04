@@ -154,28 +154,80 @@ public class CarvajalUtils {
 		try (FileReader fr = new FileReader(file)) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(fr);
-			String factPrefix = (String) json.get("factPref");
+			String factPrefix = "";
+			if (json.get("factPref") != null) {
+					factPrefix = !json.get("factPref").equals("") ? json.get("factPref") + "" : "";
+			}
 			long factStartNum = Long.parseLong(json.get("factNumInicial") + "");
-			String nitSender = (String) json.get("nitEmisor");
-			String nitReceiver = (String) json.get("nitReceptor");
-			String strAuthNumber = json.get("numAutorizacion") != null ? json.get("numAutorizacion") + "" : "0";
-			long authNumber = strAuthNumber.equals("") ? 0 : Long.parseLong(strAuthNumber);
-			Date startingRangeDate = new Date(sdf
-					.parse((json.get("fechaRangoInicial") != null ? json.get("fechaRangoInicial") + "" : "1990-01-01"))
-					.getTime());
-			Date endingRangeDate = new Date(
-					sdf.parse((json.get("fechaRangoFinal") != null ? json.get("fechaRangoFinal") + "" : "1990-01-01"))
-							.getTime());
-			long startingRangeNum = Long
-					.parseLong(json.get("numInicioRango") != null ? json.get("numInicioRango") + "" : "0");
-			long endingRangeNum = Long
-					.parseLong(json.get("numFinalRango") != null ? json.get("numFinalRango") + "" : "0");
-			String docTypeId = (String) json.get("idTipoDoc");
-			int docType = Integer.parseInt(json.get("tipoDoc") + "");
-			Date factDate = new Date(
-					sdf.parse((json.get("fechaFactura") != null ? json.get("fechaFactura") + "" : "1990-01-01"))
-							.getTime());
-			String cufePath = (String) json.get("rutaCufe");
+			String nitSender = "";
+			if (json.get("nitEmisor") != null) {
+				nitSender = !json.get("nitEmisor").equals("") ? json.get("nitEmisor") + "" : "";
+			}
+			String nitReceiver = "";
+			if (json.get("nitReceptor") != null) {
+				nitReceiver = !json.get("nitReceptor").equals("") ? json.get("nitReceptor") + "" : "";
+			}
+			String strAuthNumber = "";
+			if ((json.get("numAutorizacion") != null)) {
+					strAuthNumber = !json.get("numAutorizacion").equals("") ? json.get("numAutorizacion") + "" : "";
+				} 
+			long authNumber = (!strAuthNumber.equals("")) ? Long.parseLong(strAuthNumber) : 0;
+			// Modificar todos los campos que no estan en el archivo claro
+			Date startingRangeDate = null;
+			if ((json.get("fechaRangoInicial") != null)) {
+				if (!json.get("fechaRangoInicial").equals("")) {
+					startingRangeDate = new Date(sdf.parse((json.get("fechaRangoInicial") + "")).getTime());
+				} else {
+					startingRangeDate = new Date(sdf.parse("1990-01-01").getTime());
+				}
+			} else {
+				startingRangeDate = new Date(sdf.parse("1990-01-01").getTime());
+			}
+
+			Date endingRangeDate = null;
+			if ((json.get("fechaRangoFinal") != null)) {
+				if (!json.get("fechaRangoFinal").equals("")) {
+					endingRangeDate = new Date(sdf.parse(json.get("fechaRangoFinal") + "").getTime());
+				} else {
+					endingRangeDate = new Date(sdf.parse("1990-01-01").getTime());
+				}
+			} else {
+				endingRangeDate = new Date(sdf.parse("1990-01-01").getTime());
+			}
+
+			long startingRangeNum = 0;
+			if ((json.get("numInicioRango") != null)) {
+					startingRangeNum = !json.get("numInicioRango").equals("") ? Long.parseLong(json.get("numInicioRango") + "") : 0;
+			}
+
+			long endingRangeNum = 0;
+			if ((json.get("numFinalRango") != null)) {
+					endingRangeNum = !json.get("numFinalRango").equals("") ? Long.parseLong(json.get("numFinalRango") + "") : 0;
+				}
+			String docTypeId = "";
+			if (json.get("idTipoDoc") != null) {
+				docTypeId = !json.get("idTipoDoc").equals("") ? json.get("idTipoDoc") + "" : "";
+			}
+			int docType = 0;
+			if (json.get("tipoDoc") != null) {
+				docType = !json.get("tipoDoc").equals("") ? Integer.parseInt(json.get("tipoDoc") + "") : 0;
+			}
+			Date factDate = null;
+			if (json.get("fechaFactura") != null) {
+				if (!json.get("fechaFactura").equals("")) {
+					factDate = new Date(sdf.parse(json.get("fechaFactura") + "").getTime());
+				} else {
+					factDate = new Date(sdf.parse("1990-01-01").getTime());
+				}
+			} else {
+				factDate = new Date(sdf.parse("1990-01-01").getTime());
+			}
+			String cufePath = "";
+			if (json.get("rutaCufe") != null) {
+				cufePath = (String) json.get("rutaCufe");
+			} else {
+				cufePath = "";
+			}
 
 			StandardFactStructureElement fact = new StandardFactStructureElement(factPrefix, factStartNum, nitSender,
 					nitReceiver, authNumber, startingRangeDate, endingRangeDate, startingRangeNum, endingRangeNum,

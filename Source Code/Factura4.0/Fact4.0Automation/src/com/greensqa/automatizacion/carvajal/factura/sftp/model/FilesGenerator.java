@@ -235,15 +235,15 @@ public class FilesGenerator implements Progressable {
 		long startingRangeNum = this.standardFactStructure.getStartingRangeNum();
 		long endingRangeNum = this.standardFactStructure.getEndingRangeNum();
 		Date factDate = this.standardFactStructure.getFactDate();
-		String cufePath = this.standardFactStructure.getCufePath(); 
-
+		String cufePath = this.standardFactStructure.getCufePath();
 
 		// Identificar el tipo de archivo a replicar.
 
 		if (type.equalsIgnoreCase("txt")) {
 			if (CarvajalUtils.isValidTxt(this.baseFilePath)) {
 				return generateTxtFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType,
-						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum);
+						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum,
+						factDate);
 			}
 		} else if (type.equalsIgnoreCase("fe")) {
 			if (CarvajalUtils.isValidClaroFe(this.baseFilePath)) {
@@ -256,10 +256,12 @@ public class FilesGenerator implements Progressable {
 				return false;
 			} else if (xmlType == 1) {
 				return generateXmlStandardFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType,
-						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum);
+						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum,
+						factDate);
 			} else {
 				return generateUBLStandardFiles(factStartNum, index, docTypeId, nitSender, nitReceiver, type, docType,
-						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum);
+						authNumber, startingRangeDate, endingRangeDate, prefix, startingRangeNum, endingRangeNum,
+						factDate);
 			}
 
 		}
@@ -268,7 +270,8 @@ public class FilesGenerator implements Progressable {
 
 	private boolean generateTxtFiles(long factStartNum, long index, String docTypeId, String nitSender,
 			String nitReceiver, String type, int docType, long authNumber, Date startingRangeDate, Date endingRangeDate,
-			String prefix, long startingRangeNum, long endingRangeNum) throws FileNotFoundException, IOException {
+			String prefix, long startingRangeNum, long endingRangeNum, Date factDate)
+			throws FileNotFoundException, IOException {
 		File file = new File(this.baseFilePath);
 		ArrayList<String> fileLines = new ArrayList<>();
 		ArrayList<String> fileLinesCopy = null;
@@ -292,14 +295,15 @@ public class FilesGenerator implements Progressable {
 			for (int i = 0; i < this.totalItems && keepWorking; i++) {
 				fileLinesCopy = fileLines;
 				fact = prefix + index;
+				System.out.println("Prefijo " + prefix);
 
 				// Modificar las líneas que hay que cambiar al archivo base y crear el archivo
 				String fileName = docType == 1 ? "FV"
-						: docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "UNKNOWN";
+						: docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "";
 				if (fileName == "") {
 					fileName = docTypeId;
 				}
-				fileName += "_" + fact;
+				fileName += fact;
 				filePath = this.directoryOut + "/" + fileName + ".txt";
 				File f = new File(filePath);
 				f.createNewFile();
@@ -313,39 +317,70 @@ public class FilesGenerator implements Progressable {
 						tag = lineArray[0];
 						if (tag.equalsIgnoreCase("ENC")) {
 							// Modificar campos ENC
-							lineArray[1] = docTypeId;
-							lineArray[2] = nitSender;
-							lineArray[3] = nitReceiver;
+							if (!docTypeId.equalsIgnoreCase("")) {
+								lineArray[1] = docTypeId;
+							}
+							if (!nitSender.equalsIgnoreCase("")) {
+								lineArray[2] = nitSender;
+							}
+							if (!nitReceiver.equalsIgnoreCase("")) {
+								lineArray[3] = nitReceiver;
+							}
 							lineArray[6] = fact;
-							lineArray[9] = docType + "";
+							if (docType != 0) {
+								lineArray[9] = docType + "";
+							}
+							if (!(factDate + "").equalsIgnoreCase("1990-01-01")) {
+								lineArray[7] = factDate + "";
+							}
 							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("EMI")) {
 							// Modificar campos EMI
-							lineArray[2] = nitSender;
+							if (!nitSender.equalsIgnoreCase("")) {
+								lineArray[2] = nitSender;
+							}
 							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("ADQ")) {
 							// Modificar campos ADQ
-							lineArray[2] = nitReceiver;
+							if (!nitReceiver.equalsIgnoreCase("")) {
+								lineArray[2] = nitReceiver;
+							}
 							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("DRF")) {
 							// Modificar campos DRF
-							lineArray[1] = authNumber + "";
-							lineArray[2] = startingRangeDate + "";
-							lineArray[3] = endingRangeDate + "";
-							lineArray[4] = prefix;
-							lineArray[5] = startingRangeNum + "";
-							lineArray[6] = endingRangeNum + "";
+							if (authNumber != 0) {
+								lineArray[1] = authNumber + "";
+							}
+							if (!(startingRangeDate + "").equalsIgnoreCase("1990-01-01")) {
+								lineArray[2] = startingRangeDate + "";
+							}
+							if (!(endingRangeDate + "").equalsIgnoreCase("1990-01-01")) {
+								lineArray[3] = endingRangeDate + "";
+							}
+							if (!prefix.equalsIgnoreCase("")) {
+								lineArray[4] = prefix;
+							}
+							if (!(startingRangeNum + "").equalsIgnoreCase("0")) {
+								lineArray[5] = startingRangeNum + "";
+							}
+							if (!(endingRangeNum + "").equalsIgnoreCase("0")) {
+								lineArray[6] = endingRangeNum + "";
+							}
 							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("QFA")) {
-							lineArray[1] = nitSender;
+							if (!nitSender.equalsIgnoreCase("")) {
+								lineArray[1] = nitSender;
+							}
 							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("AQF")) {
-							lineArray[1] = nitReceiver;
+							if (!nitReceiver.equalsIgnoreCase("")) {
+								lineArray[1] = nitReceiver;
+							}
 							line = CarvajalUtils.concatTxtFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						}
@@ -353,9 +388,8 @@ public class FilesGenerator implements Progressable {
 						if (j != fileLinesCopy.size() - 1) {
 							line += "\r\n";
 						}
-
 						pw.write(line);
-						// System.out.println(line);
+						System.out.println(line);
 					}
 				}
 
@@ -397,12 +431,11 @@ public class FilesGenerator implements Progressable {
 
 				// Modificar las líneas que hay que cambiar al archivo base y crear el archivo
 				String fileName = docType == 1 ? "FV"
-						: docType == 2 ? "FE"
-								: docType == 3 ? "FC" : docType == 4 ? "FI" : docType == 9 ? "" : "UNKNOWN";
+						: docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 4 ? "FI" : docType == 9 ? "" : "";
 				if (fileName == "") {
 					fileName = docTypeId;
 				}
-				fileName += "_" + fact;
+				fileName += fact;
 				filePath = this.directoryOut + "/" + fileName + ".fe";
 				File f = new File(filePath);
 				f.createNewFile();
@@ -416,22 +449,36 @@ public class FilesGenerator implements Progressable {
 						tag = lineArray[0];
 						if (tag.equalsIgnoreCase("PRC")) {
 							// Modificar campos PRC
-							lineArray[3] = nitSender;
-							lineArray[6] = monthDatePRC;
+							if (!nitSender.equalsIgnoreCase("")) {
+								lineArray[3] = nitSender;
+							}
+							if (!(factDate + "").equalsIgnoreCase("1990-01-01")) {
+								lineArray[6] = monthDatePRC;
+							}
 							line = CarvajalUtils.concatClaroFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("CAB")) {
 							// Modificar campos CAB Encabezado
-							lineArray[1] = docTypeId;
-							lineArray[2] = docType + "";
-							lineArray[4] = prefix;
+							if (!docTypeId.equalsIgnoreCase("")) {
+								lineArray[1] = docTypeId;
+							}
+							if (docType != 0) {
+								lineArray[2] = docType + "";
+							}
+							if (!prefix.equalsIgnoreCase("")) {
+								lineArray[4] = prefix;
+							}
 							lineArray[5] = fact;
-							lineArray[7] = factDate + "";
+							if (!(factDate + "").equalsIgnoreCase("1990-01-01")) {
+								lineArray[7] = factDate + "";
+							}
 							line = CarvajalUtils.concatClaroFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						} else if (tag.equalsIgnoreCase("ADQ")) {
 							// Modificar campos ADQ
-							lineArray[3] = nitReceiver;
+							if (!nitReceiver.equalsIgnoreCase("")) {
+								lineArray[3] = nitReceiver;
+							}
 							line = CarvajalUtils.concatClaroFileLineArray(lineArray);
 							fileLinesCopy.set(j, line);
 						}
@@ -439,29 +486,33 @@ public class FilesGenerator implements Progressable {
 							line += "\r\n";
 						}
 						bw.write(line);
+						System.out.println(line);
 					}
 				}
 
-				ClaroCufeGenerator cufe = new ClaroCufeGenerator(cufePath, f);
-				String cufeClaro = cufe.generateCufeClaroFile();
+				if (!cufePath.equals("")) {
+					ClaroCufeGenerator cufe = new ClaroCufeGenerator(cufePath, f);
+					String cufeClaro = cufe.generateCufeClaroFile();
 
-				try (FileWriter fw = new FileWriter(f);
-						BufferedWriter bw = new BufferedWriter(fw);
-						PrintWriter pw = new PrintWriter(bw)) {
-				for (int j = 0; j < fileLinesCopy.size(); j++) {
-					line = fileLinesCopy.get(j);
-					lineArray = line.split("\\|");
-					tag = lineArray[0];
-					if (tag.equalsIgnoreCase("CAB")) {						
-						lineArray[6] = cufeClaro;
-						line = CarvajalUtils.concatClaroFileLineArray(lineArray);
-						fileLinesCopy.set(j, line);
+					try (FileWriter fw = new FileWriter(f);
+							BufferedWriter bw = new BufferedWriter(fw);
+							PrintWriter pw = new PrintWriter(bw)) {
+						for (int j = 0; j < fileLinesCopy.size(); j++) {
+							line = fileLinesCopy.get(j);
+							lineArray = line.split("\\|");
+							tag = lineArray[0];
+							if (tag.equalsIgnoreCase("CAB")) {
+								lineArray[6] = cufeClaro;
+								line = CarvajalUtils.concatClaroFileLineArray(lineArray);
+								fileLinesCopy.set(j, line);
+							}
+							if (j != fileLinesCopy.size() - 1) {
+								line += "\r\n";
+							}
+							pw.write(line);
+						}
 					}
-					if (j != fileLinesCopy.size() - 1) {
-						line += "\r\n";
-					}
-					pw.write(line);
-				}}
+				}
 				index += 1;
 				processedItems += 1;
 			}
@@ -470,58 +521,9 @@ public class FilesGenerator implements Progressable {
 		return true;
 	}
 
-	private boolean writterCufe(File f) throws FileNotFoundException, IOException, java.text.ParseException {
-
-		ArrayList<String> fileLines = new ArrayList<>();
-		ArrayList<String> fileLinesCopy = null;
-		try (FileReader fr = new FileReader(f); BufferedReader br = new BufferedReader(fr)) {
-			String line = "";
-
-			// Guardar líneas del archivo en el ArrayList.
-			while (true) {
-				line = br.readLine();
-				if (line == null) {
-					break;
-				}
-				line = line.replaceAll("[^\\p{Graph}\n\r\t ]", "");
-				fileLines.add(line);
-			}
-			String[] lineArray = null;
-			String tag = "";
-
-			fileLinesCopy = fileLines;
-			try (FileWriter fw = new FileWriter(f);
-					BufferedWriter bw = new BufferedWriter(fw);
-					PrintWriter pw = new PrintWriter(bw)) {
-				for (int j = 0; j < fileLinesCopy.size(); j++) {
-					line = fileLinesCopy.get(j);
-					lineArray = line.split("\\|");
-					tag = lineArray[0];
-					if (tag.equalsIgnoreCase("CAB")) {
-						ClaroCufeGenerator cufe = new ClaroCufeGenerator(
-								"C:\\Users\\dvalencia\\Documents\\Test FECO\\generarCufe.xlsx", f);
-						String cufeFile = cufe.generateCufeClaroFile();
-						lineArray[6] = cufeFile;
-						System.out.println("ver" + cufeFile);
-						line = CarvajalUtils.concatClaroFileLineArray(lineArray);
-						fileLinesCopy.set(j, line);
-						System.out.println("ver linea" + line);
-					}
-					if (j != fileLinesCopy.size() - 1) {
-						line += "\r\n";
-					}
-					System.out.println("ver + " + line);
-
-					pw.write(line);
-				}
-			}
-			return true;
-		}
-	}
-
 	private boolean generateXmlStandardFiles(long factStartNum, long index, String docTypeId, String nitSender,
 			String nitReceiver, String type, int docType, long authNumber, Date startingRangeDate, Date endingRangeDate,
-			String prefix, long startingRangeNum, long endingRangeNum)
+			String prefix, long startingRangeNum, long endingRangeNum, Date factDate)
 			throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
 		File source = new File(this.baseFilePath);
@@ -534,11 +536,11 @@ public class FilesGenerator implements Progressable {
 		// cambiar el contenido de los tags que se deben modificar.
 		for (int i = 0; i < this.totalItems; i++) {
 			fact = prefix + index;
-			fileName = docType == 1 ? "FV" : docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "UNKNOWN";
+			fileName = docType == 1 ? "FV" : docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "";
 			if (fileName == "") {
 				fileName = docTypeId;
 			}
-			fileName += "_" + fact;
+			fileName += fact;
 			filePath = this.directoryOut + "/" + fileName + ".xml";
 			dest = new File(filePath);
 			dest.createNewFile();
@@ -551,21 +553,54 @@ public class FilesGenerator implements Progressable {
 			DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 			Document doc = builder.parse(dest);
 			doc.getDocumentElement().normalize();
-			CarvajalUtils.setXmlNode(doc, "ENC_1", docTypeId);
-			CarvajalUtils.setXmlNode(doc, "ENC_2", nitSender);
-			CarvajalUtils.setXmlNode(doc, "ENC_3", nitReceiver);
-			CarvajalUtils.setXmlNode(doc, "ENC_6", fact);
-			CarvajalUtils.setXmlNode(doc, "ENC_9", docType + "");
-			CarvajalUtils.setXmlNode(doc, "EMI_2", nitSender);
-			CarvajalUtils.setXmlNode(doc, "ADQ_2", nitReceiver);
-			CarvajalUtils.setXmlNode(doc, "DRF_1", authNumber + "");
-			CarvajalUtils.setXmlNode(doc, "DRF_2", startingRangeDate + "");
-			CarvajalUtils.setXmlNode(doc, "DRF_3", endingRangeDate + "");
-			CarvajalUtils.setXmlNode(doc, "DRF_4", prefix);
-			CarvajalUtils.setXmlNode(doc, "DRF_5", startingRangeNum + "");
-			CarvajalUtils.setXmlNode(doc, "DRF_6", endingRangeNum + "");
-			CarvajalUtils.setXmlNode(doc, "QFA_1", nitSender);
-			CarvajalUtils.setXmlNode(doc, "AQF_1", nitReceiver);
+			if (!docTypeId.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "ENC_1", docTypeId);
+			}
+			if (!nitSender.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "ENC_2", nitSender);
+			}
+			if (!nitReceiver.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "ENC_3", nitReceiver);
+			}
+			if (!fact.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "ENC_6", fact);
+			}
+			if (!(factDate + "").equals("")) {
+				CarvajalUtils.setXmlNode(doc, "ENC_7", factDate + "");
+			}
+			if (!(docType + "").equals("0")) {
+				CarvajalUtils.setXmlNode(doc, "ENC_9", docType + "");
+			}
+			if (!nitSender.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "EMI_2", nitSender);
+			}
+			if (!nitReceiver.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "ADQ_2", nitReceiver);
+			}
+			if (!(authNumber + "").equals("0")) {
+				CarvajalUtils.setXmlNode(doc, "DRF_1", authNumber + "");
+			}
+			if (!(startingRangeDate + "").equals("1990-01-01")) {
+				CarvajalUtils.setXmlNode(doc, "DRF_2", startingRangeDate + "");
+			}
+			if (!(endingRangeDate + "").equals("1990-01-01")) {
+				CarvajalUtils.setXmlNode(doc, "DRF_3", endingRangeDate + "");
+			}
+			if (!prefix.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "DRF_4", prefix);
+			}
+			if (!(startingRangeNum + "").equals("0")) {
+				CarvajalUtils.setXmlNode(doc, "DRF_5", startingRangeNum + "");
+			}
+			if (!(endingRangeNum + "").equals("0")) {
+				CarvajalUtils.setXmlNode(doc, "DRF_6", endingRangeNum + "");
+			}
+			if (!nitSender.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "QFA_1", nitSender);
+			}
+			if (!nitReceiver.equals("")) {
+				CarvajalUtils.setXmlNode(doc, "AQF_1", nitReceiver);
+			}
 
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
@@ -584,7 +619,7 @@ public class FilesGenerator implements Progressable {
 
 	private boolean generateUBLStandardFiles(long factStartNum, long index, String docTypeId, String nitSender,
 			String nitReceiver, String type, int docType, long authNumber, Date startingRangeDate, Date endingRangeDate,
-			String prefix, long startingRangeNum, long endingRangeNum)
+			String prefix, long startingRangeNum, long endingRangeNum, Date factDate)
 			throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
 		File source = new File(this.baseFilePath);
@@ -620,49 +655,61 @@ public class FilesGenerator implements Progressable {
 
 			if (authorizationNode != null) {
 				// Tag Número de autorización
-				authorizationNode.setTextContent(authNumber + "");
+				if (!(authNumber + "").equals("0")) {
+					authorizationNode.setTextContent(authNumber + "");
+				}
 			}
-
+			
+			Node factDateNode = doc.getElementsByTagName("cbc:IssueDate").item(0); 
+			if(factDateNode != null) {
+				if(!(factDate + "").equals("1990-01-01")) {
+					factDateNode.setTextContent(factDate + "");
+				}
+			}
+			
 			Node startDateNode = doc.getElementsByTagName("cbc:StartDate").item(0);
-
 			if (startDateNode != null) {
+				if(!(startDateNode + "").equals("1990-01-01")) {
 				// Tag Fecha de Inicio del Rango del Prefijo
 				startDateNode.setTextContent(startingRangeDate + "");
-			}
-
+			}}
 			Node endDateNode = doc.getElementsByTagName("cbc:EndDate").item(0);
-
 			if (endDateNode != null) {
+				if(!(endingRangeDate + "").equals("1990-01-01")) {
 				// Tag Fecha final del rango del prefijo
 				endDateNode.setTextContent(endingRangeDate + "");
-			}
+			}}
 
 			Node prefixNode = doc.getElementsByTagName("sts:Prefix").item(0);
 
 			if (prefixNode != null) {
+				if(!prefix.equals("")) {
 				// Tag Prefijo
 				prefixNode.setTextContent(prefix);
-			}
+			}}
 
 			Node startingRangeNode = doc.getElementsByTagName("sts:From").item(0);
 
 			if (startingRangeNode != null) {
+				if(!(startingRangeNum + "").equals("0")) {
 				// Tag Número de inicio del rango para el prefijo
 				startingRangeNode.setTextContent(startingRangeNum + "");
-			}
+			}}
 
 			Node endingRangeNode = doc.getElementsByTagName("sts:To").item(0);
 
 			if (endingRangeNode != null) {
+				if(!(endingRangeNum + "").equals("0")) {
 				// Tag Número final del rango para el prefijo
 				endingRangeNode.setTextContent(endingRangeNum + "");
-			}
+			}}
 
 			Node typeCodeDocNode = doc.getElementsByTagName("cbc:InvoiceTypeCode").item(0);
 
 			if (typeCodeDocNode != null) {
+				if(!(docType + "").equals("0")) {
 				// Tag código para el tipo de documento
-				typeCodeDocNode.setTextContent(docType + "");
+				typeCodeDocNode.setTextContent(docType + "");}
 			}
 
 			int nodeListIndex = 0;
@@ -688,12 +735,14 @@ public class FilesGenerator implements Progressable {
 						tmpGreatGrndpaNode = tmpGrandpaNode.getParentNode();
 						if (tmpGreatGrndpaNode != null) {
 							if (tmpGreatGrndpaNode.getNodeName().equalsIgnoreCase("fe:AccountingSupplierParty")) {
+								if(!nitSender.equals("")) {
 								// Tag Nit de emisor
-								tmpNode.setTextContent(nitSender);
+								tmpNode.setTextContent(nitSender);}
 							} else if (tmpGreatGrndpaNode.getNodeName()
 									.equalsIgnoreCase("fe:AccountingCustomerParty")) {
 								// Tag Nit Receptor
-								tmpNode.setTextContent(nitReceiver);
+								if(!nitReceiver.equals("")) {
+								tmpNode.setTextContent(nitReceiver);}
 							}
 						}
 					} else {
