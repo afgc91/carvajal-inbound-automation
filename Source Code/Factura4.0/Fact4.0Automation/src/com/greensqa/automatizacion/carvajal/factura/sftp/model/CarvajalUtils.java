@@ -405,20 +405,20 @@ public class CarvajalUtils {
 			String destSftp = (String) channel.get("destino");
 			// Objeto Aurora (DB)
 			JSONObject dataBase = (JSONObject) json.get("baseDeDatos");
-			int tipoDb = Integer.parseInt((String) dataBase.get("tipoBD"));
-			String userDb = (String) dataBase.get("usuario");
-			String passwordDb = (String) dataBase.get("clave");
-			String urlDb = (String) dataBase.get("urlServidor");
-			int portDb = Integer.parseInt((String) dataBase.get("puerto"));
+			int tipoDb = !dataBase.get("tipoBD").equals("") ? Integer.parseInt((String) dataBase.get("tipoBD")) : 0;
+			String userDb =!dataBase.get("usuario").equals("") ? (String) dataBase.get("usuario") : "";
+			String passwordDb = !dataBase.get("clave").equals("") ? (String) dataBase.get("clave") : "";
+			String urlDb = !dataBase.get("urlServidor").equals("") ? (String) dataBase.get("urlServidor") : "";
+			int portDb = !dataBase.get("puerto").equals("") ? Integer.parseInt((String) dataBase.get("puerto")) : 0;
 			// Objeto AWS
 			JSONObject aws = (JSONObject) json.get("aws");
-			String key = (String) aws.get("clave");
-			String secretKey = (String) aws.get("claveSecreta");
-			String nameBucket = (String) aws.get("nombreBucket");
-			String region = (String) aws.get("region");
+			String key = !aws.get("clave").equals("") ? (String) aws.get("clave") : "";
+			String secretKey = !aws.get("claveSecreta").equals("") ? (String) aws.get("claveSecreta") : "";
+			String nameBucket = !aws.get("nombreBucket").equals("") ? (String) aws.get("nombreBucket") : "";
+			String region = !aws.get("nombreBucket").equals("") ? (String) aws.get("region") : "";
 			// Objeto Archivo CUFE
 			JSONObject cufe = (JSONObject) json.get("rutaArchivoConfigCufe");
-			String cufePath = (String) cufe.get("ruta");
+			String cufePath = !cufe.get("ruta").equals("") ? (String) cufe.get("ruta") : "";
 
 			SftpAndDbDataElement connectionsData = new SftpAndDbDataElement(userSftp, passwordSftp, urlSftp, portSftp,
 					destSftp, tipoDb, userDb, passwordDb, urlDb, portDb, key, secretKey, nameBucket, region, cufePath);
