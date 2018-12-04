@@ -158,7 +158,10 @@ public class CarvajalUtils {
 			if (json.get("factPref") != null) {
 					factPrefix = !json.get("factPref").equals("") ? json.get("factPref") + "" : "";
 			}
-			long factStartNum = Long.parseLong(json.get("factNumInicial") + "");
+			long factStartNum = 0; 
+			if(json.get("factNumInicial") != null) {
+			factStartNum = !json.get("factNumInicial").equals("") ? Long.parseLong(json.get("factNumInicial") + "") : 0;}
+			
 			String nitSender = "";
 			if (json.get("nitEmisor") != null) {
 				nitSender = !json.get("nitEmisor").equals("") ? json.get("nitEmisor") + "" : "";

@@ -326,7 +326,9 @@ public class FilesGenerator implements Progressable {
 							if (!nitReceiver.equalsIgnoreCase("")) {
 								lineArray[3] = nitReceiver;
 							}
-							lineArray[6] = fact;
+							if (!fact.equals("0")) {
+								lineArray[6] = fact;
+							}
 							if (docType != 0) {
 								lineArray[9] = docType + "";
 							}
@@ -468,7 +470,9 @@ public class FilesGenerator implements Progressable {
 							if (!prefix.equalsIgnoreCase("")) {
 								lineArray[4] = prefix;
 							}
-							lineArray[5] = fact;
+							if (!fact.equals("0")) {
+								lineArray[5] = fact;
+							}
 							if (!(factDate + "").equalsIgnoreCase("1990-01-01")) {
 								lineArray[7] = factDate + "";
 							}
@@ -633,11 +637,11 @@ public class FilesGenerator implements Progressable {
 		// cambiar el contenido de los tags que se deben modificar.
 		for (int i = 0; i < this.totalItems; i++) {
 			fact = prefix + index;
-			fileName = docType == 1 ? "FV" : docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "UNKNOWN";
+			fileName = docType == 1 ? "FV" : docType == 2 ? "FE" : docType == 3 ? "FC" : docType == 9 ? "" : "";
 			if (fileName == "") {
 				fileName = docTypeId;
 			}
-			fileName += "_" + fact;
+			fileName += fact;
 			filePath = this.directoryOut + "/" + fileName + ".xml";
 			dest = new File(filePath);
 			dest.createNewFile();
@@ -659,57 +663,63 @@ public class FilesGenerator implements Progressable {
 					authorizationNode.setTextContent(authNumber + "");
 				}
 			}
-			
-			Node factDateNode = doc.getElementsByTagName("cbc:IssueDate").item(0); 
-			if(factDateNode != null) {
-				if(!(factDate + "").equals("1990-01-01")) {
+
+			Node factDateNode = doc.getElementsByTagName("cbc:IssueDate").item(0);
+			if (factDateNode != null) {
+				if (!(factDate + "").equals("1990-01-01")) {
 					factDateNode.setTextContent(factDate + "");
 				}
 			}
-			
+
 			Node startDateNode = doc.getElementsByTagName("cbc:StartDate").item(0);
 			if (startDateNode != null) {
-				if(!(startDateNode + "").equals("1990-01-01")) {
-				// Tag Fecha de Inicio del Rango del Prefijo
-				startDateNode.setTextContent(startingRangeDate + "");
-			}}
+				if (!(startDateNode + "").equals("1990-01-01")) {
+					// Tag Fecha de Inicio del Rango del Prefijo
+					startDateNode.setTextContent(startingRangeDate + "");
+				}
+			}
 			Node endDateNode = doc.getElementsByTagName("cbc:EndDate").item(0);
 			if (endDateNode != null) {
-				if(!(endingRangeDate + "").equals("1990-01-01")) {
-				// Tag Fecha final del rango del prefijo
-				endDateNode.setTextContent(endingRangeDate + "");
-			}}
+				if (!(endingRangeDate + "").equals("1990-01-01")) {
+					// Tag Fecha final del rango del prefijo
+					endDateNode.setTextContent(endingRangeDate + "");
+				}
+			}
 
 			Node prefixNode = doc.getElementsByTagName("sts:Prefix").item(0);
 
 			if (prefixNode != null) {
-				if(!prefix.equals("")) {
-				// Tag Prefijo
-				prefixNode.setTextContent(prefix);
-			}}
+				if (!prefix.equals("")) {
+					// Tag Prefijo
+					prefixNode.setTextContent(prefix);
+				}
+			}
 
 			Node startingRangeNode = doc.getElementsByTagName("sts:From").item(0);
 
 			if (startingRangeNode != null) {
-				if(!(startingRangeNum + "").equals("0")) {
-				// Tag Número de inicio del rango para el prefijo
-				startingRangeNode.setTextContent(startingRangeNum + "");
-			}}
+				if (!(startingRangeNum + "").equals("0")) {
+					// Tag Número de inicio del rango para el prefijo
+					startingRangeNode.setTextContent(startingRangeNum + "");
+				}
+			}
 
 			Node endingRangeNode = doc.getElementsByTagName("sts:To").item(0);
 
 			if (endingRangeNode != null) {
-				if(!(endingRangeNum + "").equals("0")) {
-				// Tag Número final del rango para el prefijo
-				endingRangeNode.setTextContent(endingRangeNum + "");
-			}}
+				if (!(endingRangeNum + "").equals("0")) {
+					// Tag Número final del rango para el prefijo
+					endingRangeNode.setTextContent(endingRangeNum + "");
+				}
+			}
 
 			Node typeCodeDocNode = doc.getElementsByTagName("cbc:InvoiceTypeCode").item(0);
 
 			if (typeCodeDocNode != null) {
-				if(!(docType + "").equals("0")) {
-				// Tag código para el tipo de documento
-				typeCodeDocNode.setTextContent(docType + "");}
+				if (!(docType + "").equals("0")) {
+					// Tag código para el tipo de documento
+					typeCodeDocNode.setTextContent(docType + "");
+				}
 			}
 
 			int nodeListIndex = 0;
@@ -729,20 +739,24 @@ public class FilesGenerator implements Progressable {
 					tmpGrandpaNode = tmpParentNode.getParentNode();
 					if (tmpParentNode.getNodeName().equalsIgnoreCase("fe:Invoice")) {
 						// Tag de factura
-						tmpNode.setTextContent(prefix + factIndex);
+						if (!(factStartNum + "").equals("0")) {
+							tmpNode.setTextContent(prefix + factIndex);
+						}
 					}
 					if (tmpGrandpaNode != null) {
 						tmpGreatGrndpaNode = tmpGrandpaNode.getParentNode();
 						if (tmpGreatGrndpaNode != null) {
 							if (tmpGreatGrndpaNode.getNodeName().equalsIgnoreCase("fe:AccountingSupplierParty")) {
-								if(!nitSender.equals("")) {
-								// Tag Nit de emisor
-								tmpNode.setTextContent(nitSender);}
+								if (!nitSender.equals("")) {
+									// Tag Nit de emisor
+									tmpNode.setTextContent(nitSender);
+								}
 							} else if (tmpGreatGrndpaNode.getNodeName()
 									.equalsIgnoreCase("fe:AccountingCustomerParty")) {
 								// Tag Nit Receptor
-								if(!nitReceiver.equals("")) {
-								tmpNode.setTextContent(nitReceiver);}
+								if (!nitReceiver.equals("")) {
+									tmpNode.setTextContent(nitReceiver);
+								}
 							}
 						}
 					} else {
