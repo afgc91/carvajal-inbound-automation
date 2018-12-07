@@ -45,7 +45,7 @@ public FecoCufeGenerator(String pathConfiFile, File xmlFile) {
 	public String getValuePathXmlUbl() throws Exception {
 
 		ArrayList<String> valuesPathCufe = new ArrayList<String>();
-		ArrayList<String> xPathFile = ExcelReader.getValueFieldPosition(pathConfiFile, 0);
+		ArrayList<String> xPathFile = ExcelReader.getValueFieldPosition(pathConfiFile, 0, 0);
 		String valuesItemsCufe = "";
 		String sha_1 = "";
 

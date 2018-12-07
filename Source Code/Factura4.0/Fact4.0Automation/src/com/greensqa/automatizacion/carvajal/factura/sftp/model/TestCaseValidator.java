@@ -95,8 +95,8 @@ public class TestCaseValidator {
 
 		try (FileWriter fw = new FileWriter(log.getAbsoluteFile(), true); BufferedWriter bw = new BufferedWriter(fw)) {
 			
-			ArrayList<String> testCase = ExcelReader.getValueFieldPosition(pathFileTest, 0);
-			ArrayList<String> documents = ExcelReader.getValueFieldPosition(pathFileTest, 2);
+			ArrayList<String> testCase = ExcelReader.getValueFieldPosition(pathFileTest, 0, 0);
+			ArrayList<String> documents = ExcelReader.getValueFieldPosition(pathFileTest, 2, 0);
 
 			for (int i = 0; i < testCase.size(); i++) {
 				File file = new File(documents.get(i));

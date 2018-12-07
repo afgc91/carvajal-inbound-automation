@@ -109,9 +109,9 @@ public class FilesSender implements Progressable {
 
 	private boolean isTestCaseAWS() throws IOException {
 
-		listTestCase = ExcelReader.getValueFieldPosition(srcPath, 0);
-		accountsList = ExcelReader.getValueFieldPosition(srcPath, 1);
-		filesFromXlsList = ExcelReader.getValueFieldPosition(srcPath, 2);
+		listTestCase = ExcelReader.getValueFieldPosition(srcPath, 0, 0);
+		accountsList = ExcelReader.getValueFieldPosition(srcPath, 1, 0);
+		filesFromXlsList = ExcelReader.getValueFieldPosition(srcPath, 2, 0);
 		testCaseAws = new ArrayList<>();
 		pathKeyName = new ArrayList<String>();
 		pathFileTest = new ArrayList<String>();

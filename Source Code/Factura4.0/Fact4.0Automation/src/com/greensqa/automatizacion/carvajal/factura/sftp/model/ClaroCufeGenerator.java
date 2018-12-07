@@ -55,12 +55,12 @@ public class ClaroCufeGenerator {
 		int position = 0;
 		int index = 0;
 
-		labelList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 0);
-		indexList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 1);
-		typeList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 2);
-		formatList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 3);
-		conditionList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 4);
-		valueConditionList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 5);
+		labelList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 0, 0);
+		indexList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 1, 0);
+		typeList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 2, 0);
+		formatList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 3, 0);
+		conditionList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 4, 0);
+		valueConditionList = ExcelReader.getValueFieldPosition(cufeConfigFilePath, 5, 0);
 		for (int i = 0; i < labelList.size(); i++) {			
 			if (!typeList.get(i).isEmpty()) {
 				String[] labelArray = labelList.get(i).split("\\_");

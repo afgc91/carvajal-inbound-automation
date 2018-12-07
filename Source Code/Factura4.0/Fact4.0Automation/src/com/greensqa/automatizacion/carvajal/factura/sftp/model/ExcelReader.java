@@ -17,14 +17,14 @@ public class ExcelReader {
 	private static Workbook workbook;
 
 	// Obtiene el valor de una celda con la posicion de la fila y la columna
-	public static ArrayList<String> getValueFieldPosition(String rutaArchivoExcel, int colIndex) throws IOException {
+	public static ArrayList<String> getValueFieldPosition(String rutaArchivoExcel, int colIndex, int sheet) throws IOException {
 
 		ArrayList<String> list = new ArrayList<String>();
 		int filaActual = 1;
 
 		FileInputStream inputStream = new FileInputStream(new File(rutaArchivoExcel));
 		workbook = new XSSFWorkbook(inputStream);
-		Sheet firstSheet = workbook.getSheetAt(0);
+		Sheet firstSheet = workbook.getSheetAt(sheet);
 		int numFilas = firstSheet.getLastRowNum();
 		while (filaActual <= numFilas) {
 			Row rowActual = firstSheet.getRow(filaActual);
